@@ -64,40 +64,50 @@ void setup() {
 }
 
 void loop() {
+  /****************** Tx Role ***************************/
   if ( Radio_Mode == Tx )  {
 
-    radio.stopListening();                                    // First, stop listening so we can talk.
-
+    //Reads the button pressed located at A0
     uint16_t sensor_in = analogRead(PushButton);
     map(sensor_in, 0, 1023, 0, 33);
-    if (sensor_in >= 10) {
+    Serial.print(sensor_in);
+    int mr_frog;
 
-      Serial.println(F("Now sending"));
-      int mr_frog = 1;
-      if (!radio.write( &mr_frog, sizeof(int) )) {
-        Serial.println(F("radio.write failed"));
-      }
-      
-      // Try again 1s later
-      delay(1000);
+    if (sensor_in >= 10) {
+      //if the button is pressed, mr_frog goes high
+      mr_frog = 1;
+    } else {
+      //otherwise mr_frog goes low
+      mr_frog = 0;
     }
+
+    // Now sends the data of mr_frog to Rx
+    Serial.println(F("Now sending"));
+    if (!radio.write( &mr_frog, sizeof(int) )) {
+      Serial.println(F("radio.write failed"));
+    }
+
+    // Try again 1s later
+    delay(1000);
   }
-  /****************** Pong Back Role ***************************/
+  /****************** Rx Role ***************************/
   if ( Radio_Mode == Rx )
   {
+    // Stores the variable incoming from Tx
     int mrs_frog;
 
     if ( radio.available()) {
-      // Variable for the received timestamp
       while (radio.available()) {                                   // While there is data ready
         radio.read( &mrs_frog, sizeof(int) );                       // Get the payload
       }
-    }
 
-    if (mrs_frog) {
-      digitalWrite(PushButton, HIGH);
-    } else {
-      digitalWrite(PushButton, LOW);
+      // Takes the mrs_frog var and turns on or off the LED
+      Serial.print(mrs_frog);
+      if (mrs_frog) {
+        digitalWrite(PushButton, HIGH);
+      } else {
+        digitalWrite(PushButton, LOW);
+      }
     }
   }
   /****************** Change Roles via Serial Commands ***************************/
@@ -107,11 +117,12 @@ void loop() {
     if ( c == 'T' && Radio_Mode == Rx ) {
       Serial.println(F("*** CHANGING TO TRANSMIT ROLE -- PRESS 'R' TO SWITCH BACK"));
       Radio_Mode = 1;                  // Become the primary transmitter (ping out)
+      radio.startListening();
 
     } else if ( c == 'R' && Radio_Mode == Tx ) {
       Serial.println(F("*** CHANGING TO RECEIVE ROLE -- PRESS 'T' TO SWITCH BACK"));
       Radio_Mode = 0;                // Become the primary receiver (pong back)
-      radio.startListening();
+      radio.stopListening();
 
     }
   }
