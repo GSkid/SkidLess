@@ -7,7 +7,7 @@
 /* Changes the radio number in the network
       -> used to change the reading/writing pipe addresses */
 
-bool radioNumber = 1;
+bool radioNumber = 0;
 
 /* RF Radio setup on the SPI pins
       SPK - D13
@@ -20,13 +20,13 @@ RF24 radio(7, 8);
 /* Address array stores the reading/writing pipes
       -> used for setup only */
 
-byte addresses[][6] = {"1Nano", "2Nano"};
+byte addresses[][6] = {"1Node", "2Node"};
 
 /* Radio_Mode to switch between sending and receiving */
 
 #define Rx 0
 #define Tx 1
-int Radio_Mode = Tx;
+bool Radio_Mode = Rx;
 
 /* IO Pins */
 
@@ -45,18 +45,22 @@ void setup() {
   // Used to set the RF24 power level
   //    -> choose between MAX, HIGH, LOW, MIN
   radio.setPALevel(RF24_PA_MIN);
-
+  
   // Switch the reading/writing pipes based on the radio number
+  Serial.print(radioNumber);
+  Serial.println("\r\n");
   if (radioNumber) {
     radio.openWritingPipe(addresses[1]);
     radio.openReadingPipe(1, addresses[0]);
+    radio.stopListening();
   } else {
     radio.openWritingPipe(addresses[0]);
     radio.openReadingPipe(1, addresses[1]);
+    radio.startListening();
   }
 
   radio.startListening();
-  radio.printDetails();
+//  radio.printDetails();
 
   // Test pin modes
   pinMode(PushButton, INPUT);
@@ -69,9 +73,10 @@ void loop() {
 
     //Reads the button pressed located at A0
     uint16_t sensor_in = analogRead(PushButton);
-    map(sensor_in, 0, 1023, 0, 33);
+    sensor_in = map(sensor_in, 0, 1023, 0, 33);
     Serial.print(sensor_in);
-    int mr_frog;
+    Serial.print("\r\n");
+    uint16_t mr_frog;
 
     if (sensor_in >= 10) {
       //if the button is pressed, mr_frog goes high
@@ -83,32 +88,36 @@ void loop() {
 
     // Now sends the data of mr_frog to Rx
     Serial.println(F("Now sending"));
-    if (!radio.write( &mr_frog, sizeof(int) )) {
+    if (!radio.write( &mr_frog, sizeof(uint16_t) )) {
       Serial.println(F("radio.write failed"));
     }
 
     // Try again 1s later
-    delay(1000);
+    delay(250);
   }
   /****************** Rx Role ***************************/
   if ( Radio_Mode == Rx )
   {
     // Stores the variable incoming from Tx
-    int mrs_frog;
+    uint16_t mrs_frog;
 
     if ( radio.available()) {
       while (radio.available()) {                                   // While there is data ready
-        radio.read( &mrs_frog, sizeof(int) );                       // Get the payload
+        radio.read( &mrs_frog, sizeof(uint16_t) );                       // Get the payload
       }
 
       // Takes the mrs_frog var and turns on or off the LED
       Serial.print(mrs_frog);
+      Serial.println("\r\n");
       if (mrs_frog) {
-        digitalWrite(PushButton, HIGH);
+        digitalWrite(LED, HIGH);
       } else {
-        digitalWrite(PushButton, LOW);
+        digitalWrite(LED, LOW);
       }
     }
+    
+    // Try again later
+    delay(250);
   }
   /****************** Change Roles via Serial Commands ***************************/
   if ( Serial.available() )
@@ -117,12 +126,12 @@ void loop() {
     if ( c == 'T' && Radio_Mode == Rx ) {
       Serial.println(F("*** CHANGING TO TRANSMIT ROLE -- PRESS 'R' TO SWITCH BACK"));
       Radio_Mode = 1;                  // Become the primary transmitter (ping out)
-      radio.startListening();
+      radio.stopListening();
 
     } else if ( c == 'R' && Radio_Mode == Tx ) {
       Serial.println(F("*** CHANGING TO RECEIVE ROLE -- PRESS 'T' TO SWITCH BACK"));
       Radio_Mode = 0;                // Become the primary receiver (pong back)
-      radio.stopListening();
+      radio.startListening();
 
     }
   }
