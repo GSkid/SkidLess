@@ -43,28 +43,29 @@ void loop() {
   // Keep the network updated
   mesh.update();
 
-  if (!mesh.checkConnection()) {
-    // Refresh network address
-    mesh.renewAddress();
-  }
+//  if (!mesh.checkConnection()) {
+//    // Refresh network address
+//    mesh.renewAddress();
+//  }
 
   /**** Network Data Loop ****/
   // Check for incoming data from other nodes
-  while (network.available()) {
+  if (network.available()) {
 
     // Create a header var to store incoming network header
     RF24NetworkHeader header;
     // Get the data from the current header
     network.peek(header);
 
-
     // Use this var to store the header data
     uint32_t dat = 0;
+    Serial.println(header.type);
 
     // Switch on the header type, we only want the data if addressed to the master
     switch (header.type) {
       // Retrieve the data from the header and print out the data
       case 'P': network.read(header, &dat, sizeof(dat));
+        Serial.println("Received data: ");
         Serial.println(dat);
         dataFlag = dat;
         break;
@@ -98,8 +99,8 @@ void loop() {
     // Sets a variable to the voltage of the pushbutton and maps it into mV
     uint16_t miso_soup = 0;
     miso_soup = map(analogRead(pushButton), 0, 1023, 0, 33);
-    Serial.println(pushButton);
-    Serial.print("\r\n");
+    Serial.print("Mapped Miso Soup: ");
+    Serial.println(miso_soup);
 
     // Sets a high or low variable based on the input of the pushbutton
     uint16_t bread;
@@ -113,7 +114,7 @@ void loop() {
     if (!mesh.write(&bread, 'M', sizeof(bread), 0)) {
       Serial.println("Send fail, Test OK");
     } else {
-      Serial.print("Send OK: "); Serial.println(bread);
+      Serial.print("Sending Bread: "); Serial.println(bread);
     }
   }
 } // Loop
