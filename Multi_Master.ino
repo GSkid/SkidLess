@@ -18,7 +18,8 @@ RF24Mesh mesh(radio, network);
 
 // Data Vars
 uint32_t P_Dat = 0;
-uint32_t D_Dat = 0;
+uint16_t pFlag = 0;
+uint32_t dataDat = 1;
 uint32_t C_Dat = 0;
 
 // Timers
@@ -66,7 +67,7 @@ void setup() {
   // Set this node as the master node
   mesh.setNodeID(nodeID);
   Serial.print("Mesh Network ID: "); Serial.println(mesh.getNodeID());
-  Serial.println("\r\n Mesh Created Using This Node As Master\r\n**********************************\r\n");
+  Serial.println("Mesh Created Using This Node As Master\r\n**********************************\r\n");
 
   // Initialize & connect to the mesh
   mesh.begin();
@@ -101,6 +102,7 @@ void loop() {
         case 'P':
           network.read(header, &P_Dat, sizeof(P_Dat));
           Serial.print("Received 'P' Type Data: "); Serial.println(P_Dat);
+          pFlag = 1;
           break;
 
         // Retrieve ack message that C thresholds have been changed/configured
@@ -112,7 +114,7 @@ void loop() {
           // Use this data struct to store all the incoming data
           D_Struct D_Dat;
           network.read(header, &D_Dat, sizeof(D_Dat));
-          Serial.print("Received 'D' Type Data: "); D_Struct_Serial_print(D_Dat);
+          Serial.println("Received 'D' Type Data"); D_Struct_Serial_print(D_Dat);
           Serial.println(F("**********************************\r\n"));
           break;
 
@@ -129,15 +131,18 @@ void loop() {
 
   /**** 'P' Type Data Evaluation ****/
 
-  // Based on the data values, turn on or off the LED
-  if (P_Dat) {
-    Serial.println("Data Transmission -HIGH-; LED Going -ON-");
-    Serial.println(F("**********************************\r\n"));
-    digitalWrite(LED, HIGH);
-  } else {
-    Serial.println("Data Transmission -LOW-; LED Going -OFF-");
-    Serial.println(F("**********************************\r\n"));
-    digitalWrite(LED, LOW);
+  if (pFlag) {
+    pFlag = 0;
+    // Based on the data values, turn on or off the LED
+    if (P_Dat) {
+      Serial.println("Data Transmission -HIGH-; LED Going -ON-");
+      Serial.println(F("**********************************\r\n"));
+      digitalWrite(LED, HIGH);
+    } else {
+      Serial.println("Data Transmission -LOW-; LED Going -OFF-");
+      Serial.println(F("**********************************\r\n"));
+      digitalWrite(LED, LOW);
+    }
   }
 
 
@@ -150,13 +155,13 @@ void loop() {
     dTimer = millis();
 
     //Prepare the data to be sent
-    RF24NetworkHeader d_header(mesh.addrList[addrIndex].address, 'D'); 
+    RF24NetworkHeader d_header(mesh.addrList[addrIndex].address, 'D');
     // addrIndex will be changed to reflect the a selectable option from the UI
-    if (network.write(d_header, &D_Dat, sizeof(pingDat))) {
+    if (network.write(d_header, &dataDat, sizeof(dataDat))) {
       Serial.println(F("**********************************"));
       Serial.print("Sent 'D' Message To: "); Serial.println(mesh.addrList[addrIndex].nodeID);
     } else {
-      if (network.write(d_header, &D_Dat, sizeof(pingDat))) {
+      if (network.write(d_header, &dataDat, sizeof(dataDat))) {
         Serial.println(F("**********************************"));
         Serial.print("Sent 'D' Message To: "); Serial.println(mesh.addrList[addrIndex].nodeID);
       } else {
@@ -174,7 +179,7 @@ void loop() {
   /**** Ping Data Nodes ****/
 
   // Tells the master to send out pings every 1 mins
-  if ((millis() - pingTimer) >= 60000) {
+  if ((millis() - pingTimer) >= 6000) {
     pingFlag = 1;
   }
 
@@ -188,7 +193,8 @@ void loop() {
     if (network.write(p_header, &pingDat, sizeof(pingDat))) {
       Serial.println(F("**********************************"));
       Serial.print("Sent Ping To: "); Serial.println(mesh.addrList[addrIndex].nodeID);
-      if (addrIndex < mesh.addrListTop) {
+      if ((addrIndex + 1) < mesh.addrListTop) {
+        Serial.println(mesh.addrListTop);
         addrIndex++;
       } else {
         // Resets all the control variables
@@ -200,7 +206,7 @@ void loop() {
       if (network.write(p_header, &pingDat, sizeof(pingDat))) {
         Serial.println(F("**********************************"));
         Serial.print("Sent Ping To: "); Serial.println(mesh.addrList[addrIndex].nodeID);
-        if (addrIndex < mesh.addrListTop) {
+        if ((addrIndex + 1) < mesh.addrListTop) {
           addrIndex++;
         } else {
           // Resets all the control variables
@@ -212,6 +218,14 @@ void loop() {
         Serial.println(F("**********************************"));
         Serial.print("Failed Send; Attempted to send to: ");
         Serial.println(mesh.addrList[addrIndex].address);
+        if ((addrIndex + 1) < mesh.addrListTop) {
+          addrIndex++;
+        } else {
+          // Resets all the control variables
+          addrIndex = 0;
+          pingFlag = 0;
+          pingTimer = millis();
+        }
         //      Serial.println(F("********Assigned Addresses********"));
         //      for (int i = 0; i < mesh.addrListTop; i++) {
         //        Serial.print("NodeID: ");

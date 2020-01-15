@@ -26,6 +26,7 @@ uint16_t bread;
 // RF24 Vars
 uint8_t nodeID = 1;    // Set this to a different number for each node in the mesh network
 uint8_t dataFlag = 0;
+uint16_t meshAddr = 0;
 
 // Use these vars to store the header data
 uint32_t P_Dat = 0;
@@ -69,11 +70,13 @@ void setup() {
 
   // Set this node as the master node
   mesh.setNodeID(nodeID);
+  Serial.print("Mesh Network ID: ");
   Serial.println(mesh.getNodeID());
 
   // Connect to the mesh
   Serial.println(F("Connecting to the mesh..."));
   mesh.begin();
+  meshAddr = mesh.getAddress(nodeID);
 }
 
 void loop() {
@@ -97,7 +100,7 @@ void loop() {
     //    Serial.println(header.type);
 
     // Ensure the message is addressed to this node
-    if (header.to_node == nodeID) {
+    if (header.to_node == meshAddr) {
 
       // Switch on the header type, we only want the data if addressed to the master
       switch (header.type) {
@@ -173,12 +176,12 @@ void loop() {
     if (!mesh.write(&Data_Struct, 'D', sizeof(Data_Struct), 0)) {
       Serial.println("Send failed; preparing for second attempt");
       if (mesh.write(&Data_Struct, 'D', sizeof(Data_Struct), 0)) {
-        Serial.print("Sending Data to Master: "); D_Struct_Serial_print(Data_Struct);
+        Serial.println("Sending Data to Master"); D_Struct_Serial_print(Data_Struct);
         Serial.println(F("**********************************\r\n"));
       } else {
         Serial.println("Second attempt failed. Aborting...");
         if (mesh.write(&Data_Struct, 'D', sizeof(Data_Struct), 0)) {
-          Serial.print("Sending Data to Master: "); D_Struct_Serial_print(Data_Struct);
+          Serial.println("Sending Data to Master"); D_Struct_Serial_print(Data_Struct);
           Serial.println(F("**********************************\r\n"));
         } else {
           if (!mesh.checkConnection()) {
@@ -189,7 +192,7 @@ void loop() {
         }
       }
     } else {
-      Serial.print("Sending Data to Master: "); D_Struct_Serial_print(Data_Struct);
+      Serial.println("Sending Data to Master"); D_Struct_Serial_print(Data_Struct);
       Serial.println(F("**********************************\r\n"));
     }
   }
@@ -211,13 +214,11 @@ void loop() {
       Serial.println("Send failed; preparing for second attempt");
       if (mesh.write(&bread, 'P', sizeof(bread), 0)) {
         Serial.print("Sending Bread to Master: "); Serial.println(bread);
-        Serial.print("Message type successfully sent: "); Serial.println("50");
         Serial.println(F("**********************************\r\n"));
       } else {
         Serial.println("Second attempt failed. Aborting...");
         if (mesh.write(&bread, 'P', sizeof(bread), 0)) {
           Serial.print("Sending Bread to Master: "); Serial.println(bread);
-          Serial.print("Message type successfully sent: "); Serial.println("51");
           Serial.println(F("**********************************\r\n"));
         } else {
           if (!mesh.checkConnection()) {
@@ -229,7 +230,6 @@ void loop() {
       }
     } else {
       Serial.print("Sending Bread to Master: "); Serial.println(bread);
-      Serial.print("Message type successfully sent: "); Serial.println("49");
       Serial.println(F("**********************************\r\n"));
     }
   }
