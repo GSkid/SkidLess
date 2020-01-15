@@ -152,11 +152,11 @@ void loop() {
     //Prepare the data to be sent
     RF24NetworkHeader d_header(mesh.addrList[addrIndex].address, 'D'); 
     // addrIndex will be changed to reflect the a selectable option from the UI
-    if (network.write(d_header, &pingDat, sizeof(pingDat))) {
+    if (network.write(d_header, &D_Dat, sizeof(pingDat))) {
       Serial.println(F("**********************************"));
       Serial.print("Sent 'D' Message To: "); Serial.println(mesh.addrList[addrIndex].nodeID);
     } else {
-      if (network.write(d_header, &pingDat, sizeof(pingDat))) {
+      if (network.write(d_header, &D_Dat, sizeof(pingDat))) {
         Serial.println(F("**********************************"));
         Serial.print("Sent 'D' Message To: "); Serial.println(mesh.addrList[addrIndex].nodeID);
       } else {
