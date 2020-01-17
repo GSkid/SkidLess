@@ -24,6 +24,7 @@ uint32_t C_Dat = 0;
 
 // Timers
 uint32_t runningTimer = 0;
+uint32_t delayTimer = 0;
 uint32_t pingTimer = 0;
 uint32_t dTimer = 0;
 
@@ -50,13 +51,18 @@ typedef struct {
   uint16_t baroPressure;
   uint16_t lightLevel;
   uint16_t temp;
-  uint16_t timeStamp;
+  uint32_t timeStamp;
 } D_Struct;
 
 /**** Helper Fxn Prototypes ****/
 void D_Struct_Serial_print(D_Struct);
 void C_Struct_Serial_print(C_Struct);
+uint16_t pullSensor(int);
+void activateSensor(int);
+void de_activateSensor(int);
+int myDelay(uint32_t, uint32_t*);
 
+/**** Void Setup ****/
 void setup() {
   Serial.begin(115200);
   //  printf_begin();
@@ -255,4 +261,31 @@ void D_Struct_Serial_print(D_Struct sct) {
   Serial.print("Ambient Light Level: "); Serial.println(sct.lightLevel);
   Serial.print("Ambient Temperature: "); Serial.println(sct.temp);
   Serial.print("Time Stamp: "); Serial.println(sct.timeStamp);
+}
+
+uint16_t pullSensor(int sensor, int toMax) {
+  return (map(analogRead(sensor), 0, 1023, 0, toMax));
+}
+
+void activateSensor(int activePin) {
+  return (digitalWrite(activePin, 1));
+}
+
+void de_activateSensor(int inactivePin) {
+  return (digitalWrite(inactivePin, 0));
+}
+
+int myDelay(uint32_t delayThresh, uint32_t *prevDelay) {
+  uint32_t capn_crunch = prevDelay;
+  Serial.print("Capn Crunch: "); Serial.println(capn_crunch);
+  if ((millis() - capn_crunch) >= delayThresh) {
+    prevDelay = millis();
+    return 1;
+  } else if ((millis() - capn_crunch) < 0) {
+    if (((4294967296 - capn_crunch) + millis()) >= delayThresh) {
+      prevDelay = millis();
+      return 1;
+    }
+  }
+  return 0;
 }
