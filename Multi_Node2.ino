@@ -25,7 +25,7 @@ uint16_t miso_soup = 0;
 uint16_t bread;
 
 // RF24 Vars
-uint8_t nodeID = 2;    // Set this to a different number for each node in the mesh network
+uint8_t nodeID = 3;    // Set this to a different number for each node in the mesh network
 uint8_t dataFlag = 0;
 uint16_t meshAddr = 0;
 
@@ -129,11 +129,12 @@ void loop() {
           break;
       }
     } else {
-      // For some reason, the mesh addr was not updated properly
+      // Do not read the header data
+      // Instead print the address inidicated by the header type
       mesh.renewAddress();
       meshAddr = mesh.getAddress(nodeID);
       Serial.println("Re-initializing the network ID...");
-      Serial.print("New network ID: "); Serial.println(mesh.getNodeID());
+      Serial.print("New network ID: ");   Serial.println(mesh.getAddress(nodeID));
       Serial.println(F("**********************************\r\n"));
     }
   }
@@ -142,7 +143,6 @@ void loop() {
   /**** Read Sensors ****/
 
   if (D_Dat | P_Dat) {
-    
     // Read all sensors
     Data_Struct.soilMoisture = pullSensor(moistureSensor, 33);
 

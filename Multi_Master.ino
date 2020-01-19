@@ -57,10 +57,7 @@ typedef struct {
 /**** Helper Fxn Prototypes ****/
 void D_Struct_Serial_print(D_Struct);
 void C_Struct_Serial_print(C_Struct);
-uint16_t pullSensor(int);
-void activateSensor(int);
-void de_activateSensor(int);
-int myDelay(uint32_t, uint32_t*);
+int Timer(uint32_t, uint32_t);
 
 /**** Void Setup ****/
 void setup() {
@@ -167,14 +164,9 @@ void loop() {
       Serial.println(F("**********************************"));
       Serial.print("Sent 'D' Message To: "); Serial.println(mesh.addrList[addrIndex].nodeID);
     } else {
-      if (network.write(d_header, &dataDat, sizeof(dataDat))) {
-        Serial.println(F("**********************************"));
-        Serial.print("Sent 'D' Message To: "); Serial.println(mesh.addrList[addrIndex].nodeID);
-      } else {
-        Serial.println(F("**********************************"));
-        Serial.print("Failed Send; Attempted to send to: ");
-        Serial.println(mesh.addrList[addrIndex].address);
-      }
+      Serial.println(F("**********************************"));
+      Serial.print("Failed Send; Attempted to send to: ");
+      Serial.println(mesh.addrList[addrIndex].address);
     }
   }
 
@@ -185,62 +177,41 @@ void loop() {
   /**** Ping Data Nodes ****/
 
   // Tells the master to send out pings every 1 mins
-  if ((millis() - pingTimer) >= 6000) {
+  if (Timer(6000, delayTimer) && !pingFlag) {
+    // Sets the ping flag high
     pingFlag = 1;
+    Serial.println(F("********Assigned Addresses********"));
+    // Prints out all connected nodes and their mesh addresses
+    for (int ii = 0; ii < mesh.addrListTop; ii++) {
+      Serial.print("NodeID: ");
+      Serial.print(mesh.addrList[ii].nodeID);
+      Serial.print(" RF24Network Address: ");
+      Serial.println(mesh.addrList[ii].address, OCT);
+    }
+    Serial.println(F("**********************************\r\n"));
   }
 
   // Sends out a ping message to a new node every 2.5s
-  if ((pingFlag == 1) && ((millis() - runningTimer) >= 2500)) {
-    // Reset the runningTimer
-    runningTimer = millis();
+  if ((pingFlag == 1) && Timer(2500, pingTimer)) {
+    // Reset the pingTimer
+    pingTimer = millis();
 
     // Consecutively send pings to nodes in the network address list to get sensor data
+    Serial.println(F("**********************************"));
     RF24NetworkHeader p_header(mesh.addrList[addrIndex].address, 'P');
     if (network.write(p_header, &pingDat, sizeof(pingDat))) {
-      Serial.println(F("**********************************"));
-      Serial.print("Sent Ping To: "); Serial.println(mesh.addrList[addrIndex].nodeID);
-      if ((addrIndex + 1) < mesh.addrListTop) {
-        Serial.println(mesh.addrListTop);
-        addrIndex++;
-      } else {
-        // Resets all the control variables
-        addrIndex = 0;
-        pingFlag = 0;
-        pingTimer = millis();
-      }
+      Serial.print("Sent Ping To: "); Serial.println(p_header.to_node, OCT);
     } else {
-      if (network.write(p_header, &pingDat, sizeof(pingDat))) {
-        Serial.println(F("**********************************"));
-        Serial.print("Sent Ping To: "); Serial.println(mesh.addrList[addrIndex].nodeID);
-        if ((addrIndex + 1) < mesh.addrListTop) {
-          addrIndex++;
-        } else {
-          // Resets all the control variables
-          addrIndex = 0;
-          pingFlag = 0;
-          pingTimer = millis();
-        }
-      } else {
-        Serial.println(F("**********************************"));
-        Serial.print("Failed Send; Attempted to send to: ");
-        Serial.println(mesh.addrList[addrIndex].address);
-        if ((addrIndex + 1) < mesh.addrListTop) {
-          addrIndex++;
-        } else {
-          // Resets all the control variables
-          addrIndex = 0;
-          pingFlag = 0;
-          pingTimer = millis();
-        }
-        //      Serial.println(F("********Assigned Addresses********"));
-        //      for (int i = 0; i < mesh.addrListTop; i++) {
-        //        Serial.print("NodeID: ");
-        //        Serial.print(mesh.addrList[i].nodeID);
-        //        Serial.print(" RF24Network Address: 0");
-        //        Serial.println(mesh.addrList[i].address, OCT);
-        //      }
-        //      Serial.println(F("**********************************\r\n"));
-      }
+      Serial.println("No ACK Received");
+      Serial.print("Sent Ping To: "); Serial.println(mesh.addrList[addrIndex].address, OCT);
+    }
+    if ((addrIndex + 1) < mesh.addrListTop) {
+      addrIndex++;
+    } else {
+      // Resets all the control variables
+      addrIndex = 0;
+      pingFlag = 0;
+      delayTimer = millis();
     }
   }
 } // Loop
@@ -263,27 +234,13 @@ void D_Struct_Serial_print(D_Struct sct) {
   Serial.print("Time Stamp: "); Serial.println(sct.timeStamp);
 }
 
-uint16_t pullSensor(int sensor, int toMax) {
-  return (map(analogRead(sensor), 0, 1023, 0, toMax));
-}
-
-void activateSensor(int activePin) {
-  return (digitalWrite(activePin, 1));
-}
-
-void de_activateSensor(int inactivePin) {
-  return (digitalWrite(inactivePin, 0));
-}
-
-int myDelay(uint32_t delayThresh, uint32_t *prevDelay) {
-  uint32_t capn_crunch = prevDelay;
-  Serial.print("Capn Crunch: "); Serial.println(capn_crunch);
-  if ((millis() - capn_crunch) >= delayThresh) {
-    prevDelay = millis();
+int Timer(uint32_t delayThresh, uint32_t prevDelay) {
+  // Checks if the current time is at or beyond the set timer
+  if ((millis() - prevDelay) >= delayThresh) {
     return 1;
-  } else if ((millis() - capn_crunch) < 0) {
-    if (((4294967296 - capn_crunch) + millis()) >= delayThresh) {
-      prevDelay = millis();
+  } else if (millis() < prevDelay) {
+    //Checks and responds to overflow of the millis() timer
+    if (((4294967296 - prevDelay) + millis()) >= delayThresh) {
       return 1;
     }
   }
