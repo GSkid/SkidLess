@@ -7,6 +7,16 @@
 #define MOISTURE_PIN A1
 
 
+//FOR THE COFFEE CUP THIS IS THE PINOUT: 
+//Red- Vin
+//Black- GND
+//Yellow- Analog light level
+//Blue- Moisture
+//Green- SDA (tie to pin A4 on nano)
+//Purple- SCL (tie to pin A5 on nano)
+
+
+
 Adafruit_BMP085 bmp;
 float celsius;
 float farenheit;
