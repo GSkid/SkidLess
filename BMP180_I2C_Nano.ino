@@ -3,7 +3,7 @@
 #include  <Wire.h> //configures I2C (we are using nano so this is the pinout: SDA=A4 and SCL=A5)
 #include <Adafruit_BMP085.h> 
 
-#define LIGHT_PIN A0
+#define LIGHT_PIN A0 //These are the only pins to change atm
 #define MOISTURE_PIN A1
 
 
@@ -12,8 +12,11 @@ float celsius;
 float farenheit;
 float analogMoisture;
 float analogLight;
-float lightPercent;
-float moisturePercent;
+float lightVoltage;
+float moistureVoltage;
+float soilResistance;
+float lightResistance;
+
   
 void setup() {
   pinMode(LIGHT_PIN, INPUT);
@@ -60,18 +63,24 @@ void loop() {
     Serial.print(bmp.readAltitude(101500));
     Serial.println(" meters");
 
-    Serial.print("Relative Moisture Level = ");
+    Serial.print("Soil Resistance = ");
     analogMoisture = analogRead(MOISTURE_PIN);
-    moisturePercent =(analogMoisture/1023) *100; // create formula to scale to percentage
-    Serial.print(moisturePercent);
-    Serial.println("%");
+    moistureVoltage = (analogMoisture/1023)*5;
+    soilResistance = ((5 - moistureVoltage) / moistureVoltage) * 10; //10k load
+    Serial.print(soilResistance);
+    Serial.print(" kOhms, ");
+    Serial.print(moistureVoltage);
+    Serial.println(" V analog reading");
 
-    Serial.print("Relative Light Level = ");
+    Serial.print("Photoresistor Resistance = ");
     analogLight = analogRead(LIGHT_PIN);
-    lightPercent = (analogLight/1023)*100;
-    Serial.print(lightPercent);
-    Serial.println("%");
+    lightVoltage = (analogLight/1023)*5;
+    lightResistance = ((5 - lightVoltage) / lightVoltage) * 2.2; //2.2k load
+    Serial.print(lightResistance);
+    Serial.print(" kOhms, ");
+    Serial.print(lightVoltage);
+    Serial.println(" V analog reading");
 
     Serial.println();
-    delay(2000);
+    delay(3000);
 }
