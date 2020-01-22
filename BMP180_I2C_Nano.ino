@@ -8,10 +8,10 @@
 
 
 //FOR THE COFFEE CUP THIS IS THE PINOUT: 
-//Red- Vin
-//Black- GND
-//Yellow- Analog light level
-//Blue- Moisture
+//Red- 5V (Vin)
+//Black- GND 
+//Yellow- A0 (Analog light level)
+//Blue- A1 (Moisture)
 //Green- SDA (tie to pin A4 on nano)
 //Purple- SCL (tie to pin A5 on nano)
 
