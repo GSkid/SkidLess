@@ -1,5 +1,5 @@
 /*
- * File: LCD_Print_Commands.c
+ * File: LCD_Print_Commands.ino
  * Author: Brian Naranjo
  * Date: 1/18/20
  *
@@ -10,9 +10,10 @@
 /*******************************************************************************
  * MODULE #INCLUDES                                                             *
  ******************************************************************************/
-#include "LCD_Print_Commands.h"
+//#include "LCD_Print_Commands.h"
 #include <Arduino.h>
 #include <U8x8lib.h>
+#include "Solenoid_Button_Control.ino"
 
 #ifdef U8X8_HAVE_HW_SPI
 #include <SPI.h>
@@ -43,7 +44,7 @@ Button pressed is considered equivalent to 'water on'
 */
 
 
-//U8X8_SH1106_128X64_NONAME_4W_HW_SPI u8x8(/* cs=*/ 10, /* dc=*/ 9, /* reset=*/ 8);
+U8X8_SH1106_128X64_NONAME_4W_HW_SPI u8x8(/* cs=*/ 10, /* dc=*/ 9, /* reset=*/ 8);
 
 /**
  * @Function print_water_on(void)

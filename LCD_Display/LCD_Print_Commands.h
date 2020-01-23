@@ -40,6 +40,8 @@
 Button pressed is considered equivalent to 'water on'
 */
 
+void LCD_Init(void);
+
 
 /**
  * @Function print_water_on(void)
@@ -50,7 +52,7 @@ Button pressed is considered equivalent to 'water on'
  * @author Brian Naranjo, 1/19/20
  * @editor   */
  
-int print_water_on(void);
+int LCD_print_water_on(U8X8_SH1106_128X64_NONAME_4W_HW_SPI);
 /**
  * @Function print_water_off(void)
  * @param None
@@ -60,4 +62,4 @@ int print_water_on(void);
  * @author Brian Naranjo, 1/19/20
  * @editor   */
 
-int print_water_off(void);
+int LCD_print_water_off(U8X8_SH1106_128X64_NONAME_4W_HW_SPI);
