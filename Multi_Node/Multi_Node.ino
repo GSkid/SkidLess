@@ -74,6 +74,7 @@ void setup() {
   pinMode(pushButton, INPUT);
   pinMode(moistureSensor, INPUT);
 
+        
   // Set this node as the master node
   mesh.setNodeID(nodeID);
   Serial.print("Mesh Network ID: ");
@@ -83,6 +84,7 @@ void setup() {
   Serial.println(F("Connecting to the mesh..."));
   mesh.begin();
   meshAddr = mesh.getAddress(nodeID);
+  radio.setPALevel(RF24_PA_MAX);
 }
 
 void loop() {
