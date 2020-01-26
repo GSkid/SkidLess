@@ -25,7 +25,7 @@ uint16_t miso_soup = 0;
 uint16_t bread;
 
 // RF24 Vars
-uint8_t nodeID = 2;    // Set this to a different number for each node in the mesh network
+uint8_t nodeID = 1;    // Set this to a different number for each node in the mesh network
 uint8_t dataFlag = 0;
 uint16_t meshAddr = 0;
 
@@ -83,6 +83,7 @@ void setup() {
   // Connect to the mesh
   Serial.println(F("Connecting to the mesh..."));
   mesh.begin();
+  network.multicastRelay = 1;
   meshAddr = mesh.getAddress(nodeID);
   radio.setPALevel(RF24_PA_MAX);
 }

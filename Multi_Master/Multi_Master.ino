@@ -74,6 +74,8 @@ void setup() {
 
   // Initialize & connect to the mesh
   mesh.begin();
+  network.multicastRelay = 1;
+  radio.setPALevel(RF24_PA_MAX);
 }
 
 void loop() {
@@ -160,13 +162,23 @@ void loop() {
     //Prepare the data to be sent
     RF24NetworkHeader d_header(mesh.addrList[addrIndex].address, 'D');
     // addrIndex will be changed to reflect the a selectable option from the UI
-    if (network.write(d_header, &dataDat, sizeof(dataDat))) {
+    if (network.multicast(d_header, &dataDat, sizeof(dataDat), 1)) {
       Serial.println(F("**********************************"));
       Serial.print("Sent 'D' Message To: "); Serial.println(mesh.addrList[addrIndex].nodeID);
     } else {
-      Serial.println(F("**********************************"));
-      Serial.print("Failed Send; Attempted to send to: ");
-      Serial.println(mesh.addrList[addrIndex].address);
+      if (network.multicast(d_header, &dataDat, sizeof(dataDat), 2)) {
+        Serial.println(F("**********************************"));
+        Serial.print("Sent 'D' Message To: "); Serial.println(mesh.addrList[addrIndex].nodeID);
+      } else {
+        if (network.multicast(d_header, &dataDat, sizeof(dataDat), 3)) {
+          Serial.println(F("**********************************"));
+          Serial.print("Sent 'D' Message To: "); Serial.println(mesh.addrList[addrIndex].nodeID);
+        } else {
+          Serial.println(F("**********************************"));
+          Serial.print("Failed Send; Attempted to send to: ");
+          Serial.println(mesh.addrList[addrIndex].address);
+        }
+      }
     }
   }
 
