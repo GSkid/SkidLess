@@ -25,7 +25,7 @@ uint16_t miso_soup = 0;
 uint16_t bread;
 
 // RF24 Vars
-uint8_t nodeID = 011;    // This is a child of Multi_Node
+uint8_t nodeID = 3;    // This is a child of Multi_Node
 uint8_t dataFlag = 0;
 uint16_t meshAddr = 0;
 
@@ -85,13 +85,14 @@ void setup() {
   network.multicastRelay = 1;
   meshAddr = mesh.getAddress(nodeID);
   radio.setPALevel(RF24_PA_MAX);
+  Serial.println(F("**********************************\r\n"));
 }
 
 void loop() {
 
   // Keep the network updated
   mesh.update();
-  
+
 
   /**** Network Data Loop ****/
   // Check for incoming data from other nodes
@@ -210,15 +211,17 @@ void loop() {
 
     // Sends the data up through the mesh to the master node to be evaluated
     if (!mesh.write(&bread, 'P', sizeof(bread), 0)) {
-      Serial.println("Send failed; checking network connection.");
-      if (!mesh.checkConnection()) {
-        mesh.renewAddress();
-        meshAddr = mesh.getAddress(nodeID);
-        Serial.println("Re-initializing the network ID...");
-        Serial.print("New network ID: "); Serial.println(mesh.getNodeID());
-      } else {
-        Serial.println("Network connection good.");
-        Serial.println(F("**********************************\r\n"));
+      if (!mesh.write(&bread, 'P', sizeof(bread), 0)) {
+        Serial.println("Send failed; checking network connection.");
+        if (!mesh.checkConnection()) {
+          mesh.renewAddress();
+          meshAddr = mesh.getAddress(nodeID);
+          Serial.println("Re-initializing the network ID...");
+          Serial.print("New network ID: "); Serial.println(mesh.getNodeID());
+        } else {
+          Serial.println("Network connection good.");
+          Serial.println(F("**********************************\r\n"));
+        }
       }
     } else {
       Serial.print("Sending Bread to Master: "); Serial.println(bread);

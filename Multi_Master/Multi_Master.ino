@@ -74,11 +74,6 @@ void setup() {
 
   // Initialize & connect to the mesh
   mesh.begin();
-<<<<<<< HEAD
-=======
-  network.multicastRelay = 1;
->>>>>>> 1662d2e3e518449abaf4dce3c33d239a05a6c1c2
-  radio.setPALevel(RF24_PA_MAX);
 }
 
 void loop() {
@@ -165,23 +160,13 @@ void loop() {
     //Prepare the data to be sent
     RF24NetworkHeader d_header(mesh.addrList[addrIndex].address, 'D');
     // addrIndex will be changed to reflect the a selectable option from the UI
-    if (network.multicast(d_header, &dataDat, sizeof(dataDat), 1)) {
+    if (network.write(d_header, &dataDat, sizeof(dataDat))) {
       Serial.println(F("**********************************"));
       Serial.print("Sent 'D' Message To: "); Serial.println(mesh.addrList[addrIndex].nodeID);
     } else {
-      if (network.multicast(d_header, &dataDat, sizeof(dataDat), 2)) {
-        Serial.println(F("**********************************"));
-        Serial.print("Sent 'D' Message To: "); Serial.println(mesh.addrList[addrIndex].nodeID);
-      } else {
-        if (network.multicast(d_header, &dataDat, sizeof(dataDat), 3)) {
-          Serial.println(F("**********************************"));
-          Serial.print("Sent 'D' Message To: "); Serial.println(mesh.addrList[addrIndex].nodeID);
-        } else {
-          Serial.println(F("**********************************"));
-          Serial.print("Failed Send; Attempted to send to: ");
-          Serial.println(mesh.addrList[addrIndex].address);
-        }
-      }
+      Serial.println(F("**********************************"));
+      Serial.print("Failed Send; Attempted to send to: ");
+      Serial.println(mesh.addrList[addrIndex].address);
     }
   }
 
@@ -192,7 +177,7 @@ void loop() {
   /**** Ping Data Nodes ****/
 
   // Tells the master to send out pings every 1 mins
-  if (Timer(10000, delayTimer) && !pingFlag) {
+  if (Timer(6000, delayTimer) && !pingFlag) {
     // Sets the ping flag high
     pingFlag = 1;
     Serial.println(F("********Assigned Addresses********"));
@@ -211,22 +196,31 @@ void loop() {
     // Reset the pingTimer
     pingTimer = millis();
 
-    // Consecutively send pings to nodes in the network address list to get sensor data
-    Serial.println(F("**********************************"));
-    RF24NetworkHeader p_header(mesh.addrList[addrIndex].address, 'P');
-    if (network.write(p_header, &pingDat, sizeof(pingDat))) {
-      Serial.print("Sent Ping To: "); Serial.println(p_header.to_node, OCT);
-    } else {
-      Serial.println("No ACK Received");
-      Serial.print("Sent Ping To: "); Serial.println(mesh.addrList[addrIndex].address, OCT);
-    }
-    if ((addrIndex + 1) < mesh.addrListTop) {
-      addrIndex++;
-    } else {
+    if (!mesh.addrListTop) {
       // Resets all the control variables
       addrIndex = 0;
       pingFlag = 0;
       delayTimer = millis();
+    }
+
+    else {
+      // Consecutively send pings to nodes in the network address list to get sensor data
+      Serial.println(F("**********************************"));
+      RF24NetworkHeader p_header(mesh.addrList[addrIndex].address, 'P');
+      if (network.write(p_header, &pingDat, sizeof(pingDat))) {
+        Serial.print("Sent Ping To: "); Serial.println(p_header.to_node, OCT);
+      } else {
+        Serial.println("No ACK Received");
+        Serial.print("Sent Ping To: "); Serial.println(mesh.addrList[addrIndex].address, OCT);
+      }
+      if ((addrIndex + 1) < mesh.addrListTop) {
+        addrIndex++;
+      } else {
+        // Resets all the control variables
+        addrIndex = 0;
+        pingFlag = 0;
+        delayTimer = millis();
+      }
     }
   }
 } // Loop
