@@ -74,6 +74,7 @@ void setup() {
 
   // Initialize & connect to the mesh
   mesh.begin();
+  radio.setPALevel(RF24_PA_MAX);
 }
 
 void loop() {
@@ -177,7 +178,7 @@ void loop() {
   /**** Ping Data Nodes ****/
 
   // Tells the master to send out pings every 1 mins
-  if (Timer(6000, delayTimer) && !pingFlag) {
+  if (Timer(10000, delayTimer) && !pingFlag) {
     // Sets the ping flag high
     pingFlag = 1;
     Serial.println(F("********Assigned Addresses********"));
