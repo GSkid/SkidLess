@@ -237,11 +237,12 @@ void C_Struct_Serial_print(C_Struct sct) {
 }
 
 void D_Struct_Serial_print(D_Struct sct) {
-  Serial.print("Soil Moisture Level: "); Serial.println(sct.soilMoisture);
-  Serial.print("Barometric Pressure: "); Serial.println(sct.baroPressure);
-  Serial.print("Ambient Light Level: "); Serial.println(sct.lightLevel);
-  Serial.print("Ambient Temperature: "); Serial.println(sct.temp);
-  Serial.print("Time Stamp: "); Serial.println(sct.timeStamp);
+  Serial.print("Soil Moisture Level (V ): "); Serial.println(sct.soilMoisture);
+  Serial.print("Barometric Pressure (Pa): "); Serial.println(sct.baroPressure);
+  Serial.print("Ambient Light Level (V ): "); Serial.println(sct.lightLevel);
+  Serial.print("Ambient Temperature (C ): "); Serial.println(sct.temp_C);
+  Serial.print("Ambient Temperature (F ): "); Serial.println(sct.temp_F);
+  Serial.print("Time Stamp (ms): "); Serial.println(sct.timeStamp);
 }
 
 int Timer(uint32_t delayThresh, uint32_t prevDelay) {

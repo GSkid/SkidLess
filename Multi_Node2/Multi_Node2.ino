@@ -1,9 +1,11 @@
 // ********** INCLUDES **********
 #include <SPI.h>
 #include <EEPROM.h>
+#include <Wire.h>
 #include "RF24.h"
 #include "RF24Network.h"
 #include "RF24Mesh.h"
+#include "Adafruit_BMP085.h"
 #include <printf.h>
 
 /**** Configure the Radio ****/
@@ -15,7 +17,8 @@ RF24Mesh mesh(radio, network);
 /**** GLOBALS ****/
 #define LED 2
 #define pushButton A0
-#define moistureSensor A1
+#define MOISTURE_PIN A1
+#define LIGHT_PIN A2
 
 // Timers
 uint32_t runningTimer = 0;
@@ -23,10 +26,10 @@ uint32_t runningTimer = 0;
 // Sensor Vars
 uint16_t miso_soup = 0;
 uint16_t bread;
+Adafruit_BMP085 bmp;
 
 // RF24 Vars
-uint8_t nodeID = 3;    // This is a child of Multi_Node
-uint8_t dataFlag = 0;
+uint8_t nodeID = 3;    // Set this to a different number for each node in the mesh network
 uint16_t meshAddr = 0;
 
 // Use these vars to store the header data
@@ -48,7 +51,8 @@ typedef struct {
   uint16_t soilMoisture;
   uint16_t baroPressure;
   uint16_t lightLevel;
-  uint16_t temp;
+  uint16_t temp_C;
+  uint16_t temp_F;
   uint16_t timeStamp;
 } D_Struct;
 
@@ -69,10 +73,15 @@ void setup() {
   Serial.begin(115200);
   //  printf_begin();
 
-  //Set the LED as an output
+  // Set the LED as an output
   pinMode(LED, OUTPUT);
   pinMode(pushButton, INPUT);
-  pinMode(moistureSensor, INPUT);
+  pinMode(MOISTURE_PIN, INPUT);
+  pinMode(LIGHT_PIN, INPUT);
+
+  // Begin the Barometric Pressure Sensor
+  // Pin out: Vin->5V, SCL->A5, SDA->A4
+  bmp.begin();
 
   // Set this node as the master node
   mesh.setNodeID(nodeID);
@@ -132,12 +141,11 @@ void loop() {
           break;
       }
     } else {
-      // Do not read the header data
-      // Instead print the address inidicated by the header type
+      // For some reason, the mesh addr was not updated properly
       mesh.renewAddress();
       meshAddr = mesh.getAddress(nodeID);
       Serial.println("Re-initializing the network ID...");
-      Serial.print("New network ID: ");   Serial.println(mesh.getAddress(nodeID));
+      Serial.print("New network ID: "); Serial.println(mesh.getNodeID());
       Serial.println(F("**********************************\r\n"));
     }
   }
@@ -146,8 +154,14 @@ void loop() {
   /**** Read Sensors ****/
 
   if (D_Dat | P_Dat) {
+
     // Read all sensors
-    Data_Struct.soilMoisture = pullSensor(moistureSensor, 33);
+    Data_Struct.soilMoisture = pullSensor(MOISTURE_PIN, 33);
+    Data_Struct.baroPressure = bmp.readPressure();
+    Data_Struct.lightLevel = pullSensor(LIGHT_PIN, 33);
+    Data_Struct.temp_C = bmp.readTemperature();
+    Data_Struct.temp_F = ((Data_Struct.temp_C * 9) / 5) + 32;
+    Data_Struct.timeStamp = millis();
 
     // Sets a variable to the voltage of the pushbutton and maps it into mV
     miso_soup = pullSensor(pushButton, 33);
@@ -174,9 +188,6 @@ void loop() {
   if (D_Dat) {
     // Reset D_Dat
     D_Dat = 0;
-
-    // Read and store all data types
-    Data_Struct.timeStamp = millis();
 
     // Send the D_Struct to M
     // Sends the data up through the mesh to the master node to be evaluated
@@ -206,7 +217,7 @@ void loop() {
   // Only sends data when it receives a P_Dat signal
   if (P_Dat) {
 
-    // Resets the dataFlag to 0 to indicate the data has been consumed
+    // Resets P_Dat to 0 to indicate the data has been consumed
     P_Dat = 0;
 
     // Sends the data up through the mesh to the master node to be evaluated
@@ -241,11 +252,12 @@ void C_Struct_Serial_print(C_Struct sct) {
 }
 
 void D_Struct_Serial_print(D_Struct sct) {
-  Serial.print("Soil Moisture Level: "); Serial.println(sct.soilMoisture);
-  Serial.print("Barometric Pressure: "); Serial.println(sct.baroPressure);
-  Serial.print("Ambient Light Level: "); Serial.println(sct.lightLevel);
-  Serial.print("Ambient Temperature: "); Serial.println(sct.temp);
-  Serial.print("Time Stamp: "); Serial.println(sct.timeStamp);
+  Serial.print("Soil Moisture Level (V ): "); Serial.println(sct.soilMoisture);
+  Serial.print("Barometric Pressure (Pa): "); Serial.println(sct.baroPressure);
+  Serial.print("Ambient Light Level (V ): "); Serial.println(sct.lightLevel);
+  Serial.print("Ambient Temperature (C ): "); Serial.println(sct.temp_C);
+  Serial.print("Ambient Temperature (F ): "); Serial.println(sct.temp_F);
+  Serial.print("Time Stamp (ms): "); Serial.println(sct.timeStamp);
 }
 
 uint16_t pullSensor(int sensor, int toMax) {
