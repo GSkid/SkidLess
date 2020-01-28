@@ -50,7 +50,8 @@ typedef struct {
   uint16_t soilMoisture;
   uint16_t baroPressure;
   uint16_t lightLevel;
-  uint16_t temp;
+  uint16_t temp_C;
+  uint16_t temp_F;
   uint32_t timeStamp;
 } D_Struct;
 
