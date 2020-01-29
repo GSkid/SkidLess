@@ -13,6 +13,8 @@ RF24 radio(7, 8);
 RF24Network network(radio);
 RF24Mesh mesh(radio, network);
 
+/**** #Defines ****/
+#define time_Thresh ((millis() - D_Struct.timeStamp) >= C_Thresh.time_thresh)
 
 /**** GLOBALS ****/
 #define LED 2
@@ -40,10 +42,11 @@ uint32_t C_Dat = 0;
 // C_Struct stores relevant thresholds
 typedef struct {
   uint16_t sM_thresh;
+  uint16_t sM_thresh_00;
   uint16_t bP_thresh;
   uint16_t lL_thresh;
-  uint16_t t_thresh;
-  uint8_t thresh_configure;
+  uint16_t tC_thresh;
+  uint16_t time_thresh;
 } C_Struct;
 
 // D_Struct stores the relevant sensor data
@@ -67,6 +70,7 @@ uint16_t pullSensor(int);
 void activateSensor(int);
 void de_activateSensor(int);
 int Timer(uint32_t, uint32_t);
+int run_DeepOcean(D_Struct, C_Struct);
 
 
 void setup() {
@@ -244,9 +248,11 @@ void loop() {
 
 void C_Struct_Serial_print(C_Struct sct) {
   Serial.print("Soil Moisture Threshold: "); Serial.println(sct.sM_thresh);
+  Serial.print("Soil Moisture Danger Threshold: "); Serial.println(sct.sM_thresh_00);
   Serial.print("Barometric Pressure Threshold: "); Serial.println(sct.bP_thresh);
   Serial.print("Ambient Light Level Threshold: "); Serial.println(sct.lL_thresh);
-  Serial.print("Ambient Temperature Threshold: "); Serial.println(sct.t_thresh);
+  Serial.print("Ambient Temperature Threshold: "); Serial.println(sct.tC_thresh);
+  Serial.print("Maximum TimeStamp Threshold: "); Serial.println(sct.time_thresh);
 }
 
 void D_Struct_Serial_print(D_Struct sct) {
@@ -258,21 +264,41 @@ void D_Struct_Serial_print(D_Struct sct) {
   Serial.print("Time Stamp (ms): "); Serial.println(sct.timeStamp);
 }
 
+/* @name: pullSensor
+ * @param: sensor - pin you want to read from
+ * @param: toMax - maximum value you want the result mapped to
+ * @return: value of the mapped sensor value
+ */
 uint16_t pullSensor(int sensor, int toMax) {
   // Returns the mapped analog value
   return (map(analogRead(sensor), 0, 900, 0, toMax));
 }
 
+/* @name: activateSensor
+ * @param: activePin - pin you want to turn on
+ * @return: if the pin was turned on successfully
+ */
 void activateSensor(int activePin) {
   // Turns on the argument pin
   return (digitalWrite(activePin, 1));
 }
 
+/* @name: de_activateSensor
+ * @param: inactivePin - pin you want to turn off
+ * @return: if the pin was turned off successfully
+ */
 void de_activateSensor(int inactivePin) {
   // Turns off the arugment pin
   return (digitalWrite(inactivePin, 0));
 }
 
+/* @name: Timer
+ * @param: delayThresh - timer duration
+ * @param: prevDelay - time in millis() when the timer started
+ * @return: digital high/low depending if timer elapsed or not
+ * This is a non-blocking timer that handles uint32_t overflow,
+ * it works off the internal function millis() as reference
+ */
 int Timer(uint32_t delayThresh, uint32_t prevDelay) {
   // Checks if the current time is at or beyond the set timer
   if ((millis() - prevDelay) >= delayThresh) {
@@ -284,4 +310,37 @@ int Timer(uint32_t delayThresh, uint32_t prevDelay) {
     }
   }
   return 0;
+}
+
+
+/* @name: run_DeepOcean
+ * @param: D_Struct - struct that holds sensor data
+ * @param: C_Struct - struct that holds thresholds
+ * @return: HydroHomie - digital high/low telling the system to
+ *                        turn on or off the water
+ */
+int run_DeepOcean(D_Struct D_Struct, C_Struct C_Thresh) {
+  int HydroHomie = 0;
+  
+  // Chcek the soil moisture agains the first threshold
+  if ((D_Struct.soilMoisture < C_Thresh.sM_thresh) && time_Thresh) {
+    // If its light, then don't water unless it has been a long time
+    if (D_Struct.lightLevel <= C_Thresh.lL_thresh || time_Thresh) {
+      HydroHomie = 1;
+    }
+  }
+  // Water immediately if soilMoisture goes below a certain level
+  else if (D_Struct.soilMoisture < C_Thresh.sM_thresh_00) {
+    HydroHomie = 1;
+  }
+
+  // Check temperature to prevent freezing
+  // Also make sure you only water once in a while so water is not 
+  // always on when its cold
+  if ((D_Struct.temp_C <= C_Thresh.tC_thresh) && time_Thresh) {
+    HydroHomie = 1;
+  }
+
+  // In main, make sure you check the result of HydroHomie to reset the timestamp
+  return HydroHomie;
 }

@@ -245,6 +245,14 @@ void D_Struct_Serial_print(D_Struct sct) {
   Serial.print("Time Stamp (ms): "); Serial.println(sct.timeStamp);
 }
 
+
+/* @name: Timer
+ * @param: delayThresh - timer duration
+ * @param: prevDelay - time in millis() when the timer started
+ * @return: digital high/low depending if timer elapsed or not
+ * This is a non-blocking timer that handles uint32_t overflow,
+ * it works off the internal function millis() as reference
+ */
 int Timer(uint32_t delayThresh, uint32_t prevDelay) {
   // Checks if the current time is at or beyond the set timer
   if ((millis() - prevDelay) >= delayThresh) {
