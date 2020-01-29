@@ -91,7 +91,7 @@ void setup() {
   // Connect to the mesh
   Serial.println(F("Connecting to the mesh..."));
   mesh.begin();
-  network.multicastRelay = 1;
+  //  network.multicastRelay = 1;
   meshAddr = mesh.getAddress(nodeID);
   radio.setPALevel(RF24_PA_MAX);
   Serial.println(F("**********************************\r\n"));
@@ -141,7 +141,7 @@ void loop() {
           break;
       }
     } else {
-      // For some reason, the mesh addr was not updated properly
+      //      // For some reason, the mesh addr was not updated properly
       mesh.renewAddress();
       meshAddr = mesh.getAddress(nodeID);
       Serial.println("Re-initializing the network ID...");
@@ -222,17 +222,15 @@ void loop() {
 
     // Sends the data up through the mesh to the master node to be evaluated
     if (!mesh.write(&bread, 'P', sizeof(bread), 0)) {
-      if (!mesh.write(&bread, 'P', sizeof(bread), 0)) {
-        Serial.println("Send failed; checking network connection.");
-        if (!mesh.checkConnection()) {
-          mesh.renewAddress();
-          meshAddr = mesh.getAddress(nodeID);
-          Serial.println("Re-initializing the network ID...");
-          Serial.print("New network ID: "); Serial.println(mesh.getNodeID());
-        } else {
-          Serial.println("Network connection good.");
-          Serial.println(F("**********************************\r\n"));
-        }
+      Serial.println("Send failed; checking network connection.");
+      if (!mesh.checkConnection()) {
+        mesh.renewAddress();
+        meshAddr = mesh.getAddress(nodeID);
+        Serial.println("Re-initializing the network ID...");
+        Serial.print("New network ID: "); Serial.println(mesh.getNodeID());
+      } else {
+        Serial.println("Network connection good.");
+        Serial.println(F("**********************************\r\n"));
       }
     } else {
       Serial.print("Sending Bread to Master: "); Serial.println(bread);
