@@ -15,7 +15,6 @@ RF24Mesh mesh(radio, network);
 
 /**** GLOBALS ****/
 #define CS_SD 10
-#define CS_RF 8
 #define LED 2
 #define pushButton A0
 
@@ -69,7 +68,9 @@ void setup() {
   pinMode(pushButton, INPUT);
 
   // Setup the SD Card
-  if (!SD.begin(4)) Serial.println("SD Setup Failed");
+  if (!SD.begin(CS_SD)) {
+    Serial.println("SD Setup Failed");
+  }
 
   // Set this node as the master node
   mesh.setNodeID(nodeID);
