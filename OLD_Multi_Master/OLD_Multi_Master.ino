@@ -16,6 +16,26 @@ RF24Mesh mesh(radio, network);
 #define LED 2
 #define pushButton A0
 
+// Data Vars
+uint32_t P_Dat = 0;
+uint16_t pFlag = 0;
+uint32_t dataDat = 1;
+uint32_t C_Dat = 0;
+
+// Timers
+uint32_t runningTimer = 0;
+uint32_t delayTimer = 0;
+uint32_t pingTimer = 0;
+uint32_t dTimer = 0;
+
+// Timer Support
+uint8_t pingFlag = 0;
+
+// RF24 Vars
+uint16_t nodeID = 0;    // 0 = master
+uint8_t pingDat = 1;
+uint8_t addrIndex = 0;
+
 // C_Struct stores relevant thresholds
 typedef struct {
   uint16_t sM_thresh;
@@ -34,32 +54,6 @@ typedef struct {
   uint16_t temp_F;
   uint32_t timeStamp;
 } D_Struct;
-
-// P_Struct stores the from_node nodeID and data value
-typedef struct {
-  uint16_t fromNode;
-  uint8_t digitalDat;
-} P_Struct;
-
-// Data Vars
-P_Struct P_Dat;
-D_Struct D_Dat;
-uint8_t pFlag = 0;
-uint8_t dataDat = 1;
-
-// Timers
-uint32_t runningTimer = 0;
-uint32_t delayTimer = 0;
-uint32_t pingTimer = 0;
-uint32_t dTimer = 0;
-
-// Timer Support
-uint8_t pingFlag = 0;
-
-// RF24 Vars
-uint16_t nodeID = 0;    // 0 = master
-uint8_t pingDat = 1;
-uint8_t addrIndex = 0;
 
 /**** Helper Fxn Prototypes ****/
 void D_Struct_Serial_print(D_Struct);
@@ -110,17 +104,19 @@ void loop() {
 
         // Retrieve the ping data from the header and print out the data
         case 'P':
-          // Use this ping struct to store data and resend the sleep ping
           network.read(header, &P_Dat, sizeof(P_Dat));
-          Serial.print("Received 'P' Type Message ");
-          Serial.print("From Node: "); Serial.println(P_Dat.fromNode, OCT);
-          Serial.print("Digital Data Value: "); Serial.println(P_Dat.digitalDat);
+          Serial.print("Received 'P' Type Data: "); Serial.println(P_Dat);
           pFlag = 1;
           break;
-          
+
+        // Retrieve ack message that C thresholds have been changed/configured
+        case 'C':
+          break;
+
         // Retrieve the data struct for D type messages
         case 'D':
-          // Use the data struct to store data messages and print out the result
+          // Use this data struct to store all the incoming data
+          D_Struct D_Dat;
           network.read(header, &D_Dat, sizeof(D_Dat));
           Serial.println("Received 'D' Type Data"); D_Struct_Serial_print(D_Dat);
           Serial.println(F("**********************************\r\n"));
@@ -137,32 +133,20 @@ void loop() {
   }
 
 
-  /**** 'P' Type Evaluation ****/
+  /**** 'P' Type Data Evaluation ****/
 
-  if (pFlag && !network.available()) {
+  if (pFlag) {
     pFlag = 0;
-    /* Based on the data values, turn on or off the LED */
-    if (P_Dat.digitalDat) {
-      Serial.println("Data Transmission -HIGH-; LED Going -ON-\r\n");
+    // Based on the data values, turn on or off the LED
+    if (P_Dat) {
+      Serial.println("Data Transmission -HIGH-; LED Going -ON-");
+      Serial.println(F("**********************************\r\n"));
       digitalWrite(LED, HIGH);
     } else {
-      Serial.println("Data Transmission -LOW-; LED Going -OFF-\r\n");
+      Serial.println("Data Transmission -LOW-; LED Going -OFF-");
+      Serial.println(F("**********************************\r\n"));
       digitalWrite(LED, LOW);
     }
-
-    /**** 'S' and 'C' Type Message Responses ****/
-    
-    Serial.print("Sending Sleep Message Back to: "); Serial.println(P_Dat.fromNode, OCT);
-    // Here we condition on if the node should be sent a configure message instead
-    
-    // Send to the message stored in the fromNode nodeID, message type 'S'
-    RF24NetworkHeader p_header(mesh.getAddress(P_Dat.fromNode), 'S');
-    // Data_Dat is just a 1 telling the node to go to sleep
-    if (network.write(p_header, &dataDat, sizeof(dataDat))) {
-      Serial.println("Sleep Message Sent");
-    }
-      Serial.println("Sleep Message Failed To Send");
-    Serial.println(F("**********************************\r\n"));
   }
 
 
@@ -189,7 +173,57 @@ void loop() {
 
 
   /**** UI Menu Control ****/
-  
+
+
+  /**** Ping Data Nodes ****/
+
+  // Tells the master to send out pings every 1 mins
+  if (Timer(6000, delayTimer) && !pingFlag) {
+    // Sets the ping flag high
+    pingFlag = 1;
+    Serial.println(F("********Assigned Addresses********"));
+    // Prints out all connected nodes and their mesh addresses
+    for (int ii = 0; ii < mesh.addrListTop; ii++) {
+      Serial.print("NodeID: ");
+      Serial.print(mesh.addrList[ii].nodeID);
+      Serial.print(" RF24Network Address: ");
+      Serial.println(mesh.addrList[ii].address, OCT);
+    }
+    Serial.println(F("**********************************\r\n"));
+  }
+
+  // Sends out a ping message to a new node every 2.5s
+  if ((pingFlag == 1) && Timer(2500, pingTimer)) {
+    // Reset the pingTimer
+    pingTimer = millis();
+
+    if (!mesh.addrListTop) {
+      // Resets all the control variables
+      addrIndex = 0;
+      pingFlag = 0;
+      delayTimer = millis();
+    }
+
+    else {
+      // Consecutively send pings to nodes in the network address list to get sensor data
+      Serial.println(F("**********************************"));
+      RF24NetworkHeader p_header(mesh.addrList[addrIndex].address, 'P');
+      if (network.write(p_header, &pingDat, sizeof(pingDat))) {
+        Serial.print("Sent Ping To: "); Serial.println(p_header.to_node, OCT);
+      } else {
+        Serial.println("No ACK Received");
+        Serial.print("Sent Ping To: "); Serial.println(mesh.addrList[addrIndex].address, OCT);
+      }
+      if ((addrIndex + 1) < mesh.addrListTop) {
+        addrIndex++;
+      } else {
+        // Resets all the control variables
+        addrIndex = 0;
+        pingFlag = 0;
+        delayTimer = millis();
+      }
+    }
+  }
 } // Loop
 
 
