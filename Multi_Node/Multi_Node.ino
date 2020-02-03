@@ -325,12 +325,13 @@ int run_DeepOcean(D_Struct D_Struct, C_Struct C_Thresh) {
   // Chcek the soil moisture agains the first threshold
   if ((D_Struct.soilMoisture < C_Thresh.sM_thresh) && time_Thresh) {
     // If its light, then don't water unless it has been a long time
-    if (D_Struct.lightLevel <= C_Thresh.lL_thresh || time_Thresh) {
+    if (D_Struct.lightLevel <= C_Thresh.lL_thresh) {
       HydroHomie = 1;
     }
   }
+  
   // Water immediately if soilMoisture goes below a certain level
-  else if (D_Struct.soilMoisture < C_Thresh.sM_thresh_00) {
+  if (D_Struct.soilMoisture < C_Thresh.sM_thresh_00) {
     HydroHomie = 1;
   }
 

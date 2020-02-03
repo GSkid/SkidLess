@@ -31,7 +31,7 @@ uint16_t bread;
 Adafruit_BMP085 bmp;
 
 // RF24 Vars
-uint8_t nodeID = 3;    // Set this to a different number for each node in the mesh network
+uint8_t nodeID = 4;    // Set this to a different number for each node in the mesh network
 uint16_t meshAddr = 0;
 
 // Use these vars to store the header data
@@ -95,6 +95,7 @@ void setup() {
   // Connect to the mesh
   Serial.println(F("Connecting to the mesh..."));
   mesh.begin();
+  radio.printDetails();
   //  network.multicastRelay = 1;
   meshAddr = mesh.getAddress(nodeID);
   radio.setPALevel(RF24_PA_MAX);
