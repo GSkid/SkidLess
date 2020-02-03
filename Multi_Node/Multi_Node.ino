@@ -23,11 +23,11 @@ RF24Mesh mesh(radio, network);
 #define LIGHT_PIN A2
 
 // Timers
-uint32_t runningTimer = 0;
+uint32_t sleepTimer = 0;
 
 // Sensor Vars
 uint16_t miso_soup = 0;
-uint16_t bread;
+uint16_t bread = 0;
 Adafruit_BMP085 bmp;
 
 // RF24 Vars
@@ -35,8 +35,7 @@ uint8_t nodeID = 2;    // Set this to a different number for each node in the me
 uint16_t meshAddr = 0;
 
 // Use these vars to store the header data
-uint32_t P_Dat = 0;
-uint32_t D_Dat = 0;
+uint32_t S_Dat = 0;
 uint32_t C_Dat = 0;
 
 // C_Struct stores relevant thresholds
@@ -55,8 +54,9 @@ typedef struct {
   uint16_t baroPressure;
   uint16_t lightLevel;
   uint16_t temp_C;
-  uint16_t temp_F;
-  uint16_t timeStamp;
+  uint16_t digitalOut;
+  uint32_t timeStamp;
+  uint16_t nodeID;
 } D_Struct;
 
 // C and D type structs
@@ -122,11 +122,11 @@ void loop() {
       // Switch on the header type, we only want the data if addressed to the master
       switch (header.type) {
 
-        // 'P' Type messages ask the sensor to read and send sensor data after evals
-        case 'P':
-          network.read(header, &P_Dat, sizeof(P_Dat));
+        // 'S' Type messages ask the sensor to read and send sensor data after evals
+        case 'S':
+          network.read(header, &S_Dat, sizeof(S_Dat));
           Serial.println(F("**********************************"));
-          Serial.print("Received 'P' Type Message: "); Serial.println(P_Dat);
+          Serial.print("Received 'S' Type Message: "); Serial.println(S_Dat);
           break;
 
         // 'C' Type messages tell the sensor to calibrate or change its thresholds
@@ -135,14 +135,6 @@ void loop() {
           Serial.println(F("**********************************"));
           Serial.print("Received 'C' Type Message: "); Serial.println(C_Dat);
           Serial.println(F("**********************************\r\n"));
-
-        // 'D' Type messages query the node to send back all sensor data as a D_Struct
-        case 'D':
-          network.read(header, &D_Dat, sizeof(D_Dat));
-          Serial.println(F("**********************************"));
-          Serial.print("Received 'D' Type Message: "); Serial.println(D_Dat);
-        default:
-          break;
       }
     } else {
       // For some reason, the mesh addr was not updated properly
@@ -157,27 +149,50 @@ void loop() {
 
   /**** Read Sensors ****/
 
-  if (D_Dat | P_Dat) {
+  if (Timer(6000, sleepTimer)) {
+    sleepTimer = millis();
 
     // Read all sensors
     Data_Struct.soilMoisture = pullSensor(MOISTURE_PIN, 33);
     Data_Struct.baroPressure = bmp.readPressure();
     Data_Struct.lightLevel = pullSensor(LIGHT_PIN, 33);
     Data_Struct.temp_C = bmp.readTemperature();
-    Data_Struct.temp_F = ((Data_Struct.temp_C * 9) / 5) + 32;
-    Data_Struct.timeStamp = millis();
-
-    // Sets a variable to the voltage of the pushbutton and maps it into mV
     miso_soup = pullSensor(pushButton, 33);
     Serial.print("Mapped Miso Soup: ");
     Serial.println(miso_soup);
-
-    // Sets a high or low variable based on the input of the pushbutton
-    // We get this bread if miso_soup is high, otherwise we let someone else get this bread
     if (miso_soup > 12) {
       bread = 1;
     } else {
       bread = 0;
+    }
+    Data_Struct.digitalOut = bread; // will be replaced by DeepOcean
+    Data_Struct.timeStamp = millis();
+    Data_Struct.nodeID = nodeID;
+
+
+    /**** Data Transmission ****/
+
+    if (mesh.checkConnection()) {
+      // Send the D_Struct to Master
+      // Sends the data up through the mesh to the master node to be evaluated
+      if (!mesh.write(&Data_Struct, 'D', sizeof(Data_Struct), 0)) {
+        Serial.println("Send failed; checking network connection.");
+        if (!mesh.checkConnection()) {
+          mesh.renewAddress();
+          meshAddr = mesh.getAddress(nodeID);
+          Serial.println("Re-initializing the network ID...");
+          Serial.print("New network ID: "); Serial.println(mesh.getNodeID());
+        } else {
+          Serial.println("Network connection good.");
+          Serial.println(F("**********************************\r\n"));
+        }
+      } else {
+        Serial.println("Sending Data to Master"); D_Struct_Serial_print(Data_Struct);
+        Serial.println(F("**********************************\r\n"));
+      }
+    } else {
+      Serial.println("Re-initializing the network ID...");
+      Serial.print("New network ID: "); Serial.println(mesh.getNodeID());
     }
   }
 
@@ -188,59 +203,14 @@ void loop() {
 
   /**** 'D' Type Data Evaluation ****/
 
-  // Based on the 'D' type data, send the data to M
-  if (D_Dat) {
-    // Reset D_Dat
-    D_Dat = 0;
-
-    // Send the D_Struct to M
-    // Sends the data up through the mesh to the master node to be evaluated
-    if (!mesh.write(&Data_Struct, 'D', sizeof(Data_Struct), 0)) {
-      Serial.println("Send failed; checking network connection.");
-      if (!mesh.checkConnection()) {
-        mesh.renewAddress();
-        meshAddr = mesh.getAddress(nodeID);
-        Serial.println("Re-initializing the network ID...");
-        Serial.print("New network ID: "); Serial.println(mesh.getNodeID());
-      } else {
-        Serial.println("Network connection good.");
-        Serial.println(F("**********************************\r\n"));
-      }
-    } else {
-      Serial.println("Sending Data to Master"); D_Struct_Serial_print(Data_Struct);
-      Serial.println(F("**********************************\r\n"));
-    }
+  // Responding to the S or C type message from the master
+  if (S_Dat || C_Dat) {
+    S_Dat = 0; C_Dat = 0;
+    Serial.println("Received Sleep Instructions From Master");
   }
 
   /**** Config Options ****/
 
-
-
-  /**** Sensor Data Transmission ****/
-
-  // Only sends data when it receives a P_Dat signal
-  if (P_Dat) {
-
-    // Resets P_Dat to 0 to indicate the data has been consumed
-    P_Dat = 0;
-
-    // Sends the data up through the mesh to the master node to be evaluated
-    if (!mesh.write(&bread, 'P', sizeof(bread), 0)) {
-      Serial.println("Send failed; checking network connection.");
-      if (!mesh.checkConnection()) {
-        mesh.renewAddress();
-        meshAddr = mesh.getAddress(nodeID);
-        Serial.println("Re-initializing the network ID...");
-        Serial.print("New network ID: "); Serial.println(mesh.getNodeID());
-      } else {
-        Serial.println("Network connection good.");
-        Serial.println(F("**********************************\r\n"));
-      }
-    } else {
-      Serial.print("Sending Bread to Master: "); Serial.println(bread);
-      Serial.println(F("**********************************\r\n"));
-    }
-  }
 } // Loop
 
 
@@ -253,6 +223,7 @@ void C_Struct_Serial_print(C_Struct sct) {
   Serial.print("Ambient Light Level Threshold: "); Serial.println(sct.lL_thresh);
   Serial.print("Ambient Temperature Threshold: "); Serial.println(sct.tC_thresh);
   Serial.print("Maximum TimeStamp Threshold: "); Serial.println(sct.time_thresh);
+  return;
 }
 
 void D_Struct_Serial_print(D_Struct sct) {
@@ -260,45 +231,47 @@ void D_Struct_Serial_print(D_Struct sct) {
   Serial.print("Barometric Pressure (Pa): "); Serial.println(sct.baroPressure);
   Serial.print("Ambient Light Level (V ): "); Serial.println(sct.lightLevel);
   Serial.print("Ambient Temperature (C ): "); Serial.println(sct.temp_C);
-  Serial.print("Ambient Temperature (F ): "); Serial.println(sct.temp_F);
+  Serial.print("Calucated Digital Output: "); Serial.println(sct.digitalOut);
   Serial.print("Time Stamp (ms): "); Serial.println(sct.timeStamp);
+  Serial.print("Node ID: "); Serial.println(sct.nodeID);
+  return;
 }
 
 /* @name: pullSensor
- * @param: sensor - pin you want to read from
- * @param: toMax - maximum value you want the result mapped to
- * @return: value of the mapped sensor value
- */
+   @param: sensor - pin you want to read from
+   @param: toMax - maximum value you want the result mapped to
+   @return: value of the mapped sensor value
+*/
 uint16_t pullSensor(int sensor, int toMax) {
   // Returns the mapped analog value
   return (map(analogRead(sensor), 0, 900, 0, toMax));
 }
 
 /* @name: activateSensor
- * @param: activePin - pin you want to turn on
- * @return: if the pin was turned on successfully
- */
+   @param: activePin - pin you want to turn on
+   @return: if the pin was turned on successfully
+*/
 void activateSensor(int activePin) {
   // Turns on the argument pin
   return (digitalWrite(activePin, 1));
 }
 
 /* @name: de_activateSensor
- * @param: inactivePin - pin you want to turn off
- * @return: if the pin was turned off successfully
- */
+   @param: inactivePin - pin you want to turn off
+   @return: if the pin was turned off successfully
+*/
 void de_activateSensor(int inactivePin) {
   // Turns off the arugment pin
   return (digitalWrite(inactivePin, 0));
 }
 
 /* @name: Timer
- * @param: delayThresh - timer duration
- * @param: prevDelay - time in millis() when the timer started
- * @return: digital high/low depending if timer elapsed or not
- * This is a non-blocking timer that handles uint32_t overflow,
- * it works off the internal function millis() as reference
- */
+   @param: delayThresh - timer duration
+   @param: prevDelay - time in millis() when the timer started
+   @return: digital high/low depending if timer elapsed or not
+   This is a non-blocking timer that handles uint32_t overflow,
+   it works off the internal function millis() as reference
+*/
 int Timer(uint32_t delayThresh, uint32_t prevDelay) {
   // Checks if the current time is at or beyond the set timer
   if ((millis() - prevDelay) >= delayThresh) {
@@ -314,14 +287,14 @@ int Timer(uint32_t delayThresh, uint32_t prevDelay) {
 
 
 /* @name: run_DeepOcean
- * @param: D_Struct - struct that holds sensor data
- * @param: C_Struct - struct that holds thresholds
- * @return: HydroHomie - digital high/low telling the system to
- *                        turn on or off the water
- */
+   @param: D_Struct - struct that holds sensor data
+   @param: C_Struct - struct that holds thresholds
+   @return: HydroHomie - digital high/low telling the system to
+                          turn on or off the water
+*/
 int run_DeepOcean(D_Struct D_Struct, C_Struct C_Thresh) {
   int HydroHomie = 0;
-  
+
   // Chcek the soil moisture agains the first threshold
   if ((D_Struct.soilMoisture < C_Thresh.sM_thresh) && time_Thresh) {
     // If its light, then don't water unless it has been a long time
@@ -329,14 +302,14 @@ int run_DeepOcean(D_Struct D_Struct, C_Struct C_Thresh) {
       HydroHomie = 1;
     }
   }
-  
+
   // Water immediately if soilMoisture goes below a certain level
   if (D_Struct.soilMoisture < C_Thresh.sM_thresh_00) {
     HydroHomie = 1;
   }
 
   // Check temperature to prevent freezing
-  // Also make sure you only water once in a while so water is not 
+  // Also make sure you only water once in a while so water is not
   // always on when its cold
   if ((D_Struct.temp_C <= C_Thresh.tC_thresh) && time_Thresh) {
     HydroHomie = 1;

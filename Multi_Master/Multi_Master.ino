@@ -1,6 +1,7 @@
 // ********** INCLUDES **********
 #include <SPI.h>
 #include <EEPROM.h>
+#include <SD.h>
 #include "RF24.h"
 #include "RF24Network.h"
 #include "RF24Mesh.h"
@@ -13,6 +14,8 @@ RF24Mesh mesh(radio, network);
 
 
 /**** GLOBALS ****/
+#define CS_SD 10
+#define CS_RF 8
 #define LED 2
 #define pushButton A0
 
@@ -31,26 +34,18 @@ typedef struct {
   uint16_t baroPressure;
   uint16_t lightLevel;
   uint16_t temp_C;
-  uint16_t temp_F;
+  uint16_t digitalOut;
   uint32_t timeStamp;
+  uint16_t nodeID;
 } D_Struct;
 
-// P_Struct stores the from_node nodeID and data value
-typedef struct {
-  uint16_t fromNode;
-  uint8_t digitalDat;
-} P_Struct;
-
 // Data Vars
-P_Struct P_Dat;
 D_Struct D_Dat;
 uint8_t pFlag = 0;
+uint8_t dFlag = 0;
 uint8_t dataDat = 1;
 
 // Timers
-uint32_t runningTimer = 0;
-uint32_t delayTimer = 0;
-uint32_t pingTimer = 0;
 uint32_t dTimer = 0;
 
 // Timer Support
@@ -58,10 +53,9 @@ uint8_t pingFlag = 0;
 
 // RF24 Vars
 uint16_t nodeID = 0;    // 0 = master
-uint8_t pingDat = 1;
-uint8_t addrIndex = 0;
 
 /**** Helper Fxn Prototypes ****/
+void D_Struct_DataLogger(D_Struct, File);
 void D_Struct_Serial_print(D_Struct);
 void C_Struct_Serial_print(C_Struct);
 int Timer(uint32_t, uint32_t);
@@ -73,6 +67,9 @@ void setup() {
   //Set the LED as an output
   pinMode(LED, OUTPUT);
   pinMode(pushButton, INPUT);
+
+  // Setup the SD Card
+  if (!SD.begin(4)) Serial.println("SD Setup Failed");
 
   // Set this node as the master node
   mesh.setNodeID(nodeID);
@@ -108,20 +105,11 @@ void loop() {
       // Switch on the header type to sort out different message types
       switch (header.type) {
 
-        // Retrieve the ping data from the header and print out the data
-        case 'P':
-          // Use this ping struct to store data and resend the sleep ping
-          network.read(header, &P_Dat, sizeof(P_Dat));
-          Serial.print("Received 'P' Type Message ");
-          Serial.print("From Node: "); Serial.println(P_Dat.fromNode, OCT);
-          Serial.print("Digital Data Value: "); Serial.println(P_Dat.digitalDat);
-          pFlag = 1;
-          break;
-          
         // Retrieve the data struct for D type messages
         case 'D':
           // Use the data struct to store data messages and print out the result
           network.read(header, &D_Dat, sizeof(D_Dat));
+          dFlag = 1;
           Serial.println("Received 'D' Type Data"); D_Struct_Serial_print(D_Dat);
           Serial.println(F("**********************************\r\n"));
           break;
@@ -142,7 +130,7 @@ void loop() {
   if (pFlag && !network.available()) {
     pFlag = 0;
     /* Based on the data values, turn on or off the LED */
-    if (P_Dat.digitalDat) {
+    if (D_Dat.digitalOut) {
       Serial.println("Data Transmission -HIGH-; LED Going -ON-\r\n");
       digitalWrite(LED, HIGH);
     } else {
@@ -150,18 +138,32 @@ void loop() {
       digitalWrite(LED, LOW);
     }
 
+
+    /**** Write Data Values to SD Card ****/
+
+    File dataLog = SD.open("datalog.txt", FILE_WRITE);
+    if (dataLog) {
+      Serial.println("Writing D_Struct To SD Card");
+      D_Struct_Serial_print(D_Dat);
+      D_Struct_DataLogger(D_Dat, dataLog);
+      dataLog.close();
+    } else {
+      Serial.println("Error Writing To SD Card");
+    }
+
+
     /**** 'S' and 'C' Type Message Responses ****/
-    
-    Serial.print("Sending Sleep Message Back to: "); Serial.println(P_Dat.fromNode, OCT);
+
+    Serial.print("Sending Sleep Message Back to: "); Serial.println(D_Dat.nodeID, OCT);
     // Here we condition on if the node should be sent a configure message instead
-    
+
     // Send to the message stored in the fromNode nodeID, message type 'S'
-    RF24NetworkHeader p_header(mesh.getAddress(P_Dat.fromNode), 'S');
+    RF24NetworkHeader p_header(mesh.getAddress(D_Dat.nodeID), 'S');
     // Data_Dat is just a 1 telling the node to go to sleep
     if (network.write(p_header, &dataDat, sizeof(dataDat))) {
       Serial.println("Sleep Message Sent");
     }
-      Serial.println("Sleep Message Failed To Send");
+    Serial.println("Sleep Message Failed To Send");
     Serial.println(F("**********************************\r\n"));
   }
 
@@ -175,31 +177,45 @@ void loop() {
     dTimer = millis();
 
     //Prepare the data to be sent
-    RF24NetworkHeader d_header(mesh.addrList[addrIndex].address, 'D');
+    RF24NetworkHeader d_header(mesh.addrList[1].address, 'D');
     // addrIndex will be changed to reflect the a selectable option from the UI
     if (network.write(d_header, &dataDat, sizeof(dataDat))) {
       Serial.println(F("**********************************"));
-      Serial.print("Sent 'D' Message To: "); Serial.println(mesh.addrList[addrIndex].nodeID);
+      Serial.print("Sent 'D' Message To: "); Serial.println(mesh.addrList[1].nodeID);
     } else {
       Serial.println(F("**********************************"));
       Serial.print("Failed Send; Attempted to send to: ");
-      Serial.println(mesh.addrList[addrIndex].address);
+      Serial.println(mesh.addrList[1].address);
     }
   }
 
 
   /**** UI Menu Control ****/
-  
+
 } // Loop
 
 
 /****  HELPER FXNS ****/
+
+void D_Struct_DataLogger(D_Struct sct, File dataFile) {
+  String dataString = "";
+  dataString += sct.soilMoisture; dataString += ",";
+  dataString += sct.baroPressure; dataString += ",";
+  dataString += sct.lightLevel; dataString += ",";
+  dataString += sct.temp_C; dataString += ",";
+  dataString += sct.digitalOut; dataString += ",";
+  dataString += sct.timeStamp; dataString += ",";
+  dataString += sct.nodeID;
+  dataFile.println(dataString);
+  return;
+}
 
 void C_Struct_Serial_print(C_Struct sct) {
   Serial.print("Soil Moisture Threshold: "); Serial.println(sct.sM_thresh);
   Serial.print("Barometric Pressure Threshold: "); Serial.println(sct.bP_thresh);
   Serial.print("Ambient Light Level Threshold: "); Serial.println(sct.lL_thresh);
   Serial.print("Ambient Temperature Threshold: "); Serial.println(sct.t_thresh);
+  return;
 }
 
 void D_Struct_Serial_print(D_Struct sct) {
@@ -207,8 +223,10 @@ void D_Struct_Serial_print(D_Struct sct) {
   Serial.print("Barometric Pressure (Pa): "); Serial.println(sct.baroPressure);
   Serial.print("Ambient Light Level (V ): "); Serial.println(sct.lightLevel);
   Serial.print("Ambient Temperature (C ): "); Serial.println(sct.temp_C);
-  Serial.print("Ambient Temperature (F ): "); Serial.println(sct.temp_F);
+  Serial.print("Calucated Digital Output: "); Serial.println(sct.digitalOut);
   Serial.print("Time Stamp (ms): "); Serial.println(sct.timeStamp);
+  Serial.print("Node ID: "); Serial.println(sct.nodeID);
+  return;
 }
 
 
