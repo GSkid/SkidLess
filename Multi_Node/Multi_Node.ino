@@ -125,16 +125,15 @@ void loop() {
         // 'S' Type messages ask the sensor to read and send sensor data after evals
         case 'S':
           network.read(header, &S_Dat, sizeof(S_Dat));
-          Serial.println(F("**********************************"));
+          Serial.print(F("\r\n"));
           Serial.print("Received 'S' Type Message: "); Serial.println(S_Dat);
           break;
 
         // 'C' Type messages tell the sensor to calibrate or change its thresholds
         case 'C':
           network.read(header, &C_Dat, sizeof(C_Dat));
-          Serial.println(F("**********************************"));
+          Serial.print(F("\r\n"));
           Serial.print("Received 'C' Type Message: "); Serial.println(C_Dat);
-          Serial.println(F("**********************************\r\n"));
       }
     } else {
       // For some reason, the mesh addr was not updated properly
@@ -158,8 +157,6 @@ void loop() {
     Data_Struct.lightLevel = pullSensor(LIGHT_PIN, 33);
     Data_Struct.temp_C = bmp.readTemperature();
     miso_soup = pullSensor(pushButton, 33);
-    Serial.print("Mapped Miso Soup: ");
-    Serial.println(miso_soup);
     if (miso_soup > 12) {
       bread = 1;
     } else {
@@ -187,8 +184,8 @@ void loop() {
           Serial.println(F("**********************************\r\n"));
         }
       } else {
+        Serial.println(F("**********************************"));
         Serial.println("Sending Data to Master"); D_Struct_Serial_print(Data_Struct);
-        Serial.println(F("**********************************\r\n"));
       }
     } else {
       Serial.println("Re-initializing the network ID...");
@@ -207,6 +204,7 @@ void loop() {
   if (S_Dat || C_Dat) {
     S_Dat = 0; C_Dat = 0;
     Serial.println("Received Sleep Instructions From Master");
+    Serial.println(F("**********************************\r\n"));
   }
 
   /**** Config Options ****/

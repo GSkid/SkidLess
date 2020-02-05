@@ -1,7 +1,7 @@
 // ********** INCLUDES **********
 #include <SPI.h>
 #include <EEPROM.h>
-#include <SD.h>
+//#include <SD.h>
 #include "RF24.h"
 #include "RF24Network.h"
 #include "RF24Mesh.h"
@@ -14,7 +14,7 @@ RF24Mesh mesh(radio, network);
 
 
 /**** GLOBALS ****/
-#define CS_SD 10
+//#define CS_SD 10
 #define LED 2
 #define pushButton A0
 
@@ -40,7 +40,6 @@ typedef struct {
 
 // Data Vars
 D_Struct D_Dat;
-uint8_t pFlag = 0;
 uint8_t dFlag = 0;
 uint8_t dataDat = 1;
 
@@ -54,7 +53,7 @@ uint8_t pingFlag = 0;
 uint16_t nodeID = 0;    // 0 = master
 
 /**** Helper Fxn Prototypes ****/
-void D_Struct_DataLogger(D_Struct, File);
+//void D_Struct_DataLogger(D_Struct, File);
 void D_Struct_Serial_print(D_Struct);
 void C_Struct_Serial_print(C_Struct);
 int Timer(uint32_t, uint32_t);
@@ -68,9 +67,9 @@ void setup() {
   pinMode(pushButton, INPUT);
 
   // Setup the SD Card
-  if (!SD.begin(CS_SD)) {
-    Serial.println("SD Setup Failed");
-  }
+  //  if (!SD.begin(4)) {
+  //    Serial.println("SD Setup Failed");
+  //  }
 
   // Set this node as the master node
   mesh.setNodeID(nodeID);
@@ -109,10 +108,12 @@ void loop() {
         // Retrieve the data struct for D type messages
         case 'D':
           // Use the data struct to store data messages and print out the result
-          network.read(header, &D_Dat, sizeof(D_Dat));
+          while (network.available() ) {
+            network.read(header, &D_Dat, sizeof(D_Dat));
+          }
           dFlag = 1;
+          Serial.println(F("**********************************"));
           Serial.println("Received 'D' Type Data"); D_Struct_Serial_print(D_Dat);
-          Serial.println(F("**********************************\r\n"));
           break;
 
         // Do not read the header data, instead print the address inidicated by the header type
@@ -128,29 +129,29 @@ void loop() {
 
   /**** 'P' Type Evaluation ****/
 
-  if (pFlag && !network.available()) {
-    pFlag = 0;
+  if (dFlag) {
+    dFlag = 0;
     /* Based on the data values, turn on or off the LED */
     if (D_Dat.digitalOut) {
-      Serial.println("Data Transmission -HIGH-; LED Going -ON-\r\n");
+      Serial.println("...Data Transmission -HIGH-; LED Going -ON-\r\n");
       digitalWrite(LED, HIGH);
     } else {
-      Serial.println("Data Transmission -LOW-; LED Going -OFF-\r\n");
+      Serial.println("...Data Transmission -LOW-; LED Going -OFF-\r\n");
       digitalWrite(LED, LOW);
     }
 
 
     /**** Write Data Values to SD Card ****/
 
-    File dataLog = SD.open("datalog.txt", FILE_WRITE);
-    if (dataLog) {
-      Serial.println("Writing D_Struct To SD Card");
-      D_Struct_Serial_print(D_Dat);
-      D_Struct_DataLogger(D_Dat, dataLog);
-      dataLog.close();
-    } else {
-      Serial.println("Error Writing To SD Card");
-    }
+    //    File dataLog = SD.open("datalog.txt", FILE_WRITE);
+    //    if (dataLog) {
+    //      Serial.println("Writing D_Struct To SD Card");
+    //      D_Struct_Serial_print(D_Dat);
+    //      D_Struct_DataLogger(D_Dat, dataLog);
+    //      dataLog.close();
+    //    } else {
+    //      Serial.println("Error Writing To SD Card");
+    //    }
 
 
     /**** 'S' and 'C' Type Message Responses ****/
@@ -163,9 +164,10 @@ void loop() {
     // Data_Dat is just a 1 telling the node to go to sleep
     if (network.write(p_header, &dataDat, sizeof(dataDat))) {
       Serial.println("Sleep Message Sent");
+    } else {
+      Serial.println("Sleep Message Failed To Send");
     }
-    Serial.println("Sleep Message Failed To Send");
-    Serial.println(F("**********************************\r\n"));
+      Serial.println(F("**********************************\r\n"));
   }
 
 
@@ -198,18 +200,18 @@ void loop() {
 
 /****  HELPER FXNS ****/
 
-void D_Struct_DataLogger(D_Struct sct, File dataFile) {
-  String dataString = "";
-  dataString += sct.soilMoisture; dataString += ",";
-  dataString += sct.baroPressure; dataString += ",";
-  dataString += sct.lightLevel; dataString += ",";
-  dataString += sct.temp_C; dataString += ",";
-  dataString += sct.digitalOut; dataString += ",";
-  dataString += sct.timeStamp; dataString += ",";
-  dataString += sct.nodeID;
-  dataFile.println(dataString);
-  return;
-}
+//void D_Struct_DataLogger(D_Struct sct, File dataFile) {
+//  String dataString = "";
+//  dataString += sct.soilMoisture; dataString += ",";
+//  dataString += sct.baroPressure; dataString += ",";
+//  dataString += sct.lightLevel; dataString += ",";
+//  dataString += sct.temp_C; dataString += ",";
+//  dataString += sct.digitalOut; dataString += ",";
+//  dataString += sct.timeStamp; dataString += ",";
+//  dataString += sct.nodeID;
+//  dataFile.println(dataString);
+//  return;
+//}
 
 void C_Struct_Serial_print(C_Struct sct) {
   Serial.print("Soil Moisture Threshold: "); Serial.println(sct.sM_thresh);
