@@ -14,7 +14,7 @@ RF24Mesh mesh(radio, network);
 
 
 /**** GLOBALS ****/
-//#define CS_SD 10
+//#define SD_CS 10
 #define LED 2
 #define pushButton A0
 
@@ -67,8 +67,10 @@ void setup() {
   pinMode(pushButton, INPUT);
 
   // Setup the SD Card
-  //  if (!SD.begin(4)) {
+  //  if (!SD.begin(10)) {
   //    Serial.println("SD Setup Failed");
+  //  } else {
+  //    Serial.println("SD Setup Success");
   //  }
 
   // Set this node as the master node
@@ -143,7 +145,13 @@ void loop() {
 
     /**** Write Data Values to SD Card ****/
 
-    //    File dataLog = SD.open("datalog.txt", FILE_WRITE);
+    //    if (!SD.begin(10)) {
+    //      Serial.println("SD Setup Failed");
+    //    } else {
+    //      Serial.println("SD Setup Success");
+    //    }
+    //    File dataLog;
+    //    dataLog = SD.open("DLOG.TXT", FILE_WRITE);
     //    if (dataLog) {
     //      Serial.println("Writing D_Struct To SD Card");
     //      D_Struct_Serial_print(D_Dat);
@@ -152,6 +160,7 @@ void loop() {
     //    } else {
     //      Serial.println("Error Writing To SD Card");
     //    }
+    //    SD.end();
 
 
     /**** 'S' and 'C' Type Message Responses ****/
@@ -167,7 +176,7 @@ void loop() {
     } else {
       Serial.println("Sleep Message Failed To Send");
     }
-      Serial.println(F("**********************************\r\n"));
+    Serial.println(F("**********************************\r\n"));
   }
 
 

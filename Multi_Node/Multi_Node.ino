@@ -14,29 +14,13 @@ RF24Network network(radio);
 RF24Mesh mesh(radio, network);
 
 /**** #Defines ****/
-#define time_Thresh ((millis() - D_Struct.timeStamp) >= C_Thresh.time_thresh)
+#define time_Thresh Timer(C_Thresh.time_thresh, D_Struct.timeStamp)
 
 /**** GLOBALS ****/
 #define LED 2
 #define pushButton A0
 #define MOISTURE_PIN A1
 #define LIGHT_PIN A2
-
-// Timers
-uint32_t sleepTimer = 0;
-
-// Sensor Vars
-uint16_t miso_soup = 0;
-uint16_t bread = 0;
-Adafruit_BMP085 bmp;
-
-// RF24 Vars
-uint8_t nodeID = 2;    // Set this to a different number for each node in the mesh network
-uint16_t meshAddr = 0;
-
-// Use these vars to store the header data
-uint32_t S_Dat = 0;
-uint32_t C_Dat = 0;
 
 // C_Struct stores relevant thresholds
 typedef struct {
@@ -59,6 +43,22 @@ typedef struct {
   uint16_t nodeID;
 } D_Struct;
 
+// Timers
+uint32_t sleepTimer = 0;
+
+// Sensor Vars
+uint16_t miso_soup = 0;
+uint16_t bread = 0;
+Adafruit_BMP085 bmp;
+
+// RF24 Vars
+uint8_t nodeID = 2;    // Set this to a different number for each node in the mesh network
+uint16_t meshAddr = 0;
+
+// Use these vars to store the header data
+uint32_t S_Dat = 0;
+uint32_t C_Dat = 0;
+
 // C and D type structs
 C_Struct Thresholds;
 D_Struct Data_Struct;
@@ -66,6 +66,7 @@ D_Struct Data_Struct;
 /**** Function Prototypes ****/
 void D_Struct_Serial_print(D_Struct);
 void C_Struct_Serial_print(C_Struct);
+void initC_Struct(C_Struct*);
 uint16_t pullSensor(int);
 void activateSensor(int);
 void de_activateSensor(int);
@@ -99,6 +100,10 @@ void setup() {
   meshAddr = mesh.getAddress(nodeID);
   radio.setPALevel(RF24_PA_MAX);
   Serial.println(F("**********************************\r\n"));
+
+  // initialize the thresholds
+  initC_Struct(&Thresholds);
+  C_Struct_Serial_print(Thresholds);
 }
 
 void loop() {
@@ -156,14 +161,16 @@ void loop() {
     Data_Struct.baroPressure = bmp.readPressure();
     Data_Struct.lightLevel = pullSensor(LIGHT_PIN, 33);
     Data_Struct.temp_C = bmp.readTemperature();
-    miso_soup = pullSensor(pushButton, 33);
-    if (miso_soup > 12) {
-      bread = 1;
-    } else {
-      bread = 0;
+    //    miso_soup = pullSensor(pushButton, 33);
+    //    if (miso_soup > 12) {
+    //      bread = 1;
+    //    } else {
+    //      bread = 0;
+    //    }
+    Data_Struct.digitalOut = run_DeepOcean(Data_Struct, Thresholds); // will be replaced by DeepOcean
+    if (Data_Struct.digitalOut) {
+      Data_Struct.timeStamp = millis();
     }
-    Data_Struct.digitalOut = bread; // will be replaced by DeepOcean
-    Data_Struct.timeStamp = millis();
     Data_Struct.nodeID = nodeID;
 
 
@@ -230,8 +237,18 @@ void D_Struct_Serial_print(D_Struct sct) {
   Serial.print("Ambient Light Level (V ): "); Serial.println(sct.lightLevel);
   Serial.print("Ambient Temperature (C ): "); Serial.println(sct.temp_C);
   Serial.print("Calucated Digital Output: "); Serial.println(sct.digitalOut);
-  Serial.print("Time Stamp (ms): "); Serial.println(sct.timeStamp);
+  Serial.print("Previous Time Stamp (ms): "); Serial.println(sct.timeStamp);
   Serial.print("Node ID: "); Serial.println(sct.nodeID);
+  return;
+}
+
+void initC_Struct(C_Struct* sct) {
+  sct->sM_thresh = 21;
+  sct->sM_thresh_00 = 12;
+  sct->bP_thresh = 20000;
+  sct->lL_thresh = 4;
+  sct->tC_thresh = 2;
+  sct->time_thresh = 30000;
   return;
 }
 
