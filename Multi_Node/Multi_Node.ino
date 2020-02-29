@@ -45,6 +45,7 @@ typedef struct {
 
 // Timers
 uint32_t sleepTimer = 0;
+uint32_t messageTimer = 0;
 
 // Sensor Vars
 uint16_t miso_soup = 0;
@@ -54,6 +55,7 @@ Adafruit_BMP085 bmp;
 // RF24 Vars
 uint8_t nodeID = 2;    // Set this to a different number for each node in the mesh network
 uint16_t meshAddr = 0;
+uint8_t message_Flag = 0;
 
 // Use these vars to store the header data
 uint32_t S_Dat = 0;
@@ -104,6 +106,7 @@ void setup() {
   // initialize the thresholds
   initC_Struct(&Thresholds);
   C_Struct_Serial_print(Thresholds);
+  Serial.print("\n");
 }
 
 void loop() {
@@ -142,10 +145,13 @@ void loop() {
       }
     } else {
       // For some reason, the mesh addr was not updated properly
-      mesh.renewAddress();
+      if (!mesh.checkConnection()) {
+        Serial.println("Re-initializing the network ID...");
+        mesh.renewAddress();
+        Serial.print("New ");
+      }
       meshAddr = mesh.getAddress(nodeID);
-      Serial.println("Re-initializing the network ID...");
-      Serial.print("New network ID: "); Serial.println(mesh.getNodeID());
+      Serial.print("Network ID: "); Serial.println(mesh.getNodeID());
       Serial.println(F("**********************************\r\n"));
     }
   }
@@ -181,10 +187,12 @@ void loop() {
       // Sends the data up through the mesh to the master node to be evaluated
       if (!mesh.write(&Data_Struct, 'D', sizeof(Data_Struct), 0)) {
         Serial.println("Send failed; checking network connection.");
+        // Check if still connected
         if (!mesh.checkConnection()) {
+          // Reconnect to the network if disconnected and no send
+          Serial.println("Re-initializing the network ID...");
           mesh.renewAddress();
           meshAddr = mesh.getAddress(nodeID);
-          Serial.println("Re-initializing the network ID...");
           Serial.print("New network ID: "); Serial.println(mesh.getNodeID());
         } else {
           Serial.println("Network connection good.");
@@ -193,11 +201,27 @@ void loop() {
       } else {
         Serial.println(F("**********************************"));
         Serial.println("Sending Data to Master"); D_Struct_Serial_print(Data_Struct);
+        // Set the flag to check for a failed message response
+        message_Flag = 1; messageTimer = millis();
       }
     } else {
+      // Reconnect to the mesh if disconnected
       Serial.println("Re-initializing the network ID...");
+      mesh.renewAddress();
+      meshAddr = mesh.getAddress(nodeID);
       Serial.print("New network ID: "); Serial.println(mesh.getNodeID());
     }
+  }
+
+  /**** No Message Response ****/
+  if (message_Flag && Timer(messageTimer, 1000)) {
+    // Reset the no message response flag
+    message_Flag = 0;
+    // Reconnect to the network
+    Serial.println("Re-initializing the network ID...");
+    mesh.renewAddress();
+    meshAddr = mesh.getAddress(nodeID);
+    Serial.print("New network ID: "); Serial.println(mesh.getNodeID());
   }
 
   /**** 'C' Type Data Evaluation ****/
@@ -209,7 +233,11 @@ void loop() {
 
   // Responding to the S or C type message from the master
   if (S_Dat || C_Dat) {
+    // Turn off the message response flag
+    message_Flag = 0;
+    // Reset the data variables
     S_Dat = 0; C_Dat = 0;
+    // Go to sleep
     Serial.println("Received Sleep Instructions From Master");
     Serial.println(F("**********************************\r\n"));
   }
