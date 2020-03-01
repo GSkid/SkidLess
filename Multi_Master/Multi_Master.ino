@@ -61,7 +61,7 @@ int Timer(uint32_t, uint32_t);
 /**** Void Setup ****/
 void setup() {
   Serial.begin(115200);
-  printf_begin();
+  //  printf_begin();
   //Set the LED as an output
   pinMode(LED, OUTPUT);
   pinMode(pushButton, INPUT);
@@ -80,9 +80,6 @@ void setup() {
 
   // Initialize & connect to the mesh
   mesh.begin();
-  radio.printDetails();
-  Serial.print("Is Chip Connected: ");
-  Serial.println(radio.isChipConnected());
 }
 
 void loop() {
