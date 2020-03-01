@@ -1,0 +1,264 @@
+Mesh Network ID: 0
+Mesh Created Using This Node As Master
+**********************************
+
+**********************************
+Received 'D' Type Data
+Soil Moisture Level (V ): 26
+Barometric Pressure (Pa): 234
+Ambient Light Level (V ): 21
+Ambient Temperature (C ): 0
+Calucated Digital Output: 0
+Time Stamp (ms): 0
+Node ID: 2
+...Data Transmission -LOW-; LED Going -OFF-
+
+Sending Sleep Message Back to: 2
+Sleep Message Sent
+**********************************
+
+**********************************
+Received 'D' Type Data
+Soil Moisture Level (V ): 13
+Barometric Pressure (Pa): 234
+Ambient Light Level (V ): 13
+Ambient Temperature (C ): 0
+Calucated Digital Output: 0
+Time Stamp (ms): 0
+Node ID: 2
+...Data Transmission -LOW-; LED Going -OFF-
+
+Sending Sleep Message Back to: 2
+Sleep Message Sent
+**********************************
+
+**********************************
+Received 'D' Type Data
+Soil Moisture Level (V ): 12
+Barometric Pressure (Pa): 234
+Ambient Light Level (V ): 11
+Ambient Temperature (C ): 0
+Calucated Digital Output: 0
+Time Stamp (ms): 0
+Node ID: 2
+...Data Transmission -LOW-; LED Going -OFF-
+
+Sending Sleep Message Back to: 2
+Sleep Message Sent
+**********************************
+
+**********************************
+Received 'D' Type Data
+Soil Moisture Level (V ): 12
+Barometric Pressure (Pa): 234
+Ambient Light Level (V ): 11
+Ambient Temperature (C ): 0
+Calucated Digital Output: 0
+Time Stamp (ms): 0
+Node ID: 2
+...Data Transmission -LOW-; LED Going -OFF-
+
+Sending Sleep Message Back to: 2
+Sleep Message Sent
+**********************************
+
+**********************************
+Received 'D' Type Data
+Soil Moisture Level (V ): 12
+Barometric Pressure (Pa): 234
+Ambient Light Level (V ): 11
+Ambient Temperature (C ): 0
+Calucated Digital Output: 1
+Time Stamp (ms): 30038
+Node ID: 2
+...Data Transmission -HIGH-; LED Going -ON-
+
+Sending Sleep Message Back to: 2
+Sleep Message Sent
+**********************************
+
+**********************************
+Received 'D' Type Data
+Soil Moisture Level (V ): 12
+Barometric Pressure (Pa): 234
+Ambient Light Level (V ): 11
+Ambient Temperature (C ): 0
+Calucated Digital Output: 0
+Time Stamp (ms): 30038
+Node ID: 2
+...Data Transmission -LOW-; LED Going -OFF-
+
+Sending Sleep Message Back to: 2
+Sleep Message Sent
+**********************************
+
+**********************************
+Received 'D' Type Data
+Soil Moisture Level (V ): 12
+Barometric Pressure (Pa): 234
+Ambient Light Level (V ): 11
+Ambient Temperature (C ): 0
+Calucated Digital Output: 0
+Time Stamp (ms): 102038
+Node ID: 2
+...Data Transmission -LOW-; LED Going -OFF-
+
+Sending Sleep Message Back to: 2
+Sleep Message Failed To Send
+**********************************
+
+**********************************
+Received 'D' Type Data
+Soil Moisture Level (V ): 11
+Barometric Pressure (Pa): 234
+Ambient Light Level (V ): 11
+Ambient Temperature (C ): 0
+Calucated Digital Output: 1
+Time Stamp (ms): 114038
+Node ID: 2
+...Data Transmission -HIGH-; LED Going -ON-
+
+Sending Sleep Message Back to: 2
+Sleep Message Sent
+**********************************
+
+**********************************
+Received 'D' Type Data
+Soil Moisture Level (V ): 12
+Barometric Pressure (Pa): 234
+Ambient Light Level (V ): 11
+Ambient Temperature (C ): 0
+Calucated Digital Output: 0
+Time Stamp (ms): 114038
+Node ID: 2
+...Data Transmission -LOW-; LED Going -OFF-
+
+Sending Sleep Message Back to: 2
+Sleep Message Failed To Send
+**********************************
+
+**********************************
+Received 'D' Type Data
+Soil Moisture Level (V ): 11
+Barometric Pressure (Pa): 234
+Ambient Light Level (V ): 11
+Ambient Temperature (C ): 0
+Calucated Digital Output: 1
+Time Stamp (ms): 126038
+Node ID: 2
+...Data Transmission -HIGH-; LED Going -ON-
+
+Sending Sleep Message Back to: 2
+Sleep Message Sent
+**********************************
+
+**********************************
+Received 'D' Type Data
+Soil Moisture Level (V ): 12
+Barometric Pressure (Pa): 234
+Ambient Light Level (V ): 11
+Ambient Temperature (C ): 0
+Calucated Digital Output: 1
+Time Stamp (ms): 258038
+Node ID: 2
+...Data Transmission -HIGH-; LED Going -ON-
+
+Sending Sleep Message Back to: 2
+Sleep Message Sent
+**********************************
+
+**********************************
+Received 'D' Type Data
+Soil Moisture Level (V ): 12
+Barometric Pressure (Pa): 234
+Ambient Light Level (V ): 11
+Ambient Temperature (C ): 0
+Calucated Digital Output: 0
+Time Stamp (ms): 258038
+Node ID: 2
+...Data Transmission -LOW-; LED Going -OFF-
+
+Sending Sleep Message Back to: 2
+Sleep Message Sent
+**********************************
+
+**********************************
+Received 'D' Type Data
+Soil Moisture Level (V ): 12
+Barometric Pressure (Pa): 234
+Ambient Light Level (V ): 11
+Ambient Temperature (C ): 0
+Calucated Digital Output: 0
+Time Stamp (ms): 258038
+Node ID: 2
+...Data Transmission -LOW-; LED Going -OFF-
+
+Sending Sleep Message Back to: 2
+Sleep Message Failed To Send
+**********************************
+
+**********************************
+Received 'D' Type Data
+Soil Moisture Level (V ): 12
+Barometric Pressure (Pa): 234
+Ambient Light Level (V ): 11
+Ambient Temperature (C ): 0
+Calucated Digital Output: 0
+Time Stamp (ms): 258038
+Node ID: 2
+...Data Transmission -LOW-; LED Going -OFF-
+
+Sending Sleep Message Back to: 2
+Sleep Message Failed To Send
+**********************************
+
+**********************************
+Received 'D' Type Data
+Soil Moisture Level (V ): 12
+Barometric Pressure (Pa): 234
+Ambient Light Level (V ): 11
+Ambient Temperature (C ): 0
+Calucated Digital Output: 0
+Time Stamp (ms): 342173
+Node ID: 2
+...Data Transmission -LOW-; LED Going -OFF-
+
+Sending Sleep Message Back to: 2
+Sleep Message Sent
+**********************************
+
+**********************************
+Received 'D' Type Data
+Soil Moisture Level (V ): 12
+Barometric Pressure (Pa): 234
+Ambient Light Level (V ): 11
+Ambient Temperature (C ): 0
+Calucated Digital Output: 0
+Time Stamp (ms): 342173
+Node ID: 2
+...Data Transmission -LOW-; LED Going -OFF-
+
+Sending Sleep Message Back to: 2
+Sleep Message Failed To Send
+**********************************
+
+**********************************
+Received 'D' Type Data
+Soil Moisture Level (V ): 12
+Barometric Pressure (Pa): 234
+Ambient Light Level (V ): 11
+Ambient Temperature (C ): 0
+Calucated Digital Output: 0
+Time Stamp (ms): 342173
+Node ID: 2
+...Data Transmission -LOW-; LED Going -OFF-
+
+Sending Sleep Message Back to: 2
+Sleep Message Sent
+**********************************
+
+
+____________________________________
+Range: ~100ft
+Very dependent on being visible
+Fluctuated a lot and wasn't consistent

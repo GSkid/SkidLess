@@ -113,7 +113,7 @@ Soil Moisture Level (V ): 5
 Barometric Pressure (Pa): 234
 Ambient Light Level (V ): 7
 Ambient Temperature (C ): 0
-Calucated Digital Output: 0
+Calculated Digital Output: 0
 Time Stamp (ms): 18038
 Node ID: 3
 ...Data Transmission -LOW-; LED Going -OFF-

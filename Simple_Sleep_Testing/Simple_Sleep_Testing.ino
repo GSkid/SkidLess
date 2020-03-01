@@ -10,7 +10,7 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
 
-  set_sleep_mode (SLEEP_MODE_PWR_DOWN);
+  set_sleep_mode (SLEEP_MODE_IDLE);
   sleep_enable();
 
   sleep_cpu();

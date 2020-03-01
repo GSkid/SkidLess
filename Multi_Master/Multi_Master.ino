@@ -14,7 +14,7 @@ RF24Mesh mesh(radio, network);
 
 
 /**** GLOBALS ****/
-//#define CS_SD 10
+//#define SD_CS 10
 #define LED 2
 #define pushButton A0
 
@@ -33,9 +33,9 @@ typedef struct {
   uint16_t baroPressure;
   uint16_t lightLevel;
   uint16_t temp_C;
-  uint16_t digitalOut;
+  uint8_t digitalOut;
   uint32_t timeStamp;
-  uint16_t nodeID;
+  uint8_t nodeID;
 } D_Struct;
 
 // Data Vars
@@ -67,8 +67,10 @@ void setup() {
   pinMode(pushButton, INPUT);
 
   // Setup the SD Card
-  //  if (!SD.begin(4)) {
+  //  if (!SD.begin(10)) {
   //    Serial.println("SD Setup Failed");
+  //  } else {
+  //    Serial.println("SD Setup Success");
   //  }
 
   // Set this node as the master node
@@ -96,6 +98,7 @@ void loop() {
 
   // Check for incoming data from other nodes
   if (network.available()) {
+    bool RPD = 0;
 
     // Create a header var to store incoming network header
     RF24NetworkHeader header;
@@ -112,10 +115,13 @@ void loop() {
         case 'D':
           // Use the data struct to store data messages and print out the result
           while (network.available() ) {
+            //Serial.println( radio.testRPD() ? "Strong Signal > 64dBm" : "Weak Signal < 64dBm");
+            RPD = radio.testRPD();
             network.read(header, &D_Dat, sizeof(D_Dat));
           }
           dFlag = 1;
           Serial.println(F("**********************************"));
+          Serial.println( RPD ? "Strong Signal > 64dBm" : "Weak Signal < 64dBm");
           Serial.println("Received 'D' Type Data"); D_Struct_Serial_print(D_Dat);
           break;
 
@@ -146,7 +152,13 @@ void loop() {
 
     /**** Write Data Values to SD Card ****/
 
-    //    File dataLog = SD.open("datalog.txt", FILE_WRITE);
+    //    if (!SD.begin(10)) {
+    //      Serial.println("SD Setup Failed");
+    //    } else {
+    //      Serial.println("SD Setup Success");
+    //    }
+    //    File dataLog;
+    //    dataLog = SD.open("DLOG.TXT", FILE_WRITE);
     //    if (dataLog) {
     //      Serial.println("Writing D_Struct To SD Card");
     //      D_Struct_Serial_print(D_Dat);
@@ -155,6 +167,7 @@ void loop() {
     //    } else {
     //      Serial.println("Error Writing To SD Card");
     //    }
+    //    SD.end();
 
 
     /**** 'S' and 'C' Type Message Responses ****/
@@ -170,7 +183,7 @@ void loop() {
     } else {
       Serial.println("Sleep Message Failed To Send");
     }
-      Serial.println(F("**********************************\r\n"));
+    Serial.println(F("**********************************\r\n"));
   }
 
 
@@ -230,8 +243,9 @@ void D_Struct_Serial_print(D_Struct sct) {
   Serial.print("Ambient Light Level (V ): "); Serial.println(sct.lightLevel);
   Serial.print("Ambient Temperature (C ): "); Serial.println(sct.temp_C);
   Serial.print("Calucated Digital Output: "); Serial.println(sct.digitalOut);
-  Serial.print("Time Stamp (ms): "); Serial.println(sct.timeStamp);
+  Serial.print("Watering Time Stamp (ms): "); Serial.println(sct.timeStamp);
   Serial.print("Node ID: "); Serial.println(sct.nodeID);
+  Serial.print("Master Time Stamp (ms): "); Serial.println(millis());
   return;
 }
 
