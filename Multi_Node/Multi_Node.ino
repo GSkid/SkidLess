@@ -75,7 +75,7 @@ int run_DeepOcean(D_Struct, C_Struct);
 
 void setup() {
   Serial.begin(115200);
-  //  printf_begin();
+  printf_begin();
 
   // Set the LED as an output
   pinMode(LED, OUTPUT);
@@ -85,7 +85,7 @@ void setup() {
 
   // Begin the Barometric Pressure Sensor
   // Pin out: Vin->5V, SCL->A5, SDA->A4
-  bmp.begin();
+  //bmp.begin();
 
   // Set this node as the master node
   mesh.setNodeID(nodeID);
@@ -93,8 +93,11 @@ void setup() {
   Serial.println(mesh.getNodeID());
 
   // Connect to the mesh
+ 
   Serial.println(F("Connecting to the mesh..."));
   mesh.begin();
+  radio.printDetails();                   // Dump the configuration of the rf unit for debugging
+  Serial.println(radio.isChipConnected());
   //  network.multicastRelay = 1;
   meshAddr = mesh.getAddress(nodeID);
   radio.setPALevel(RF24_PA_MAX);
