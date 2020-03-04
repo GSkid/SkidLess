@@ -161,6 +161,7 @@ static int enterButtonInput = 4;
 static int backButtonInput = 5;
 static int downButtonInput = 3;
 static int upButtonInput = 6;
+static int curHose = 0;
 
 
 //Button Variables
@@ -189,6 +190,10 @@ typedef enum {
   OPTIONS_SLEEP,
   OPTIONS_RESET,
   SLEEP,
+  ADD_SENSOR,
+  REMOVE_SENSOR,
+  POWER_STATE,
+  WATER_SETTINGS,
 } UI_States;
 
 static UI_States currentPage = WELCOME_PAGE;
@@ -428,73 +433,250 @@ void loop() {
       } else if (ENTER_PRESSED) {
         u8x8.clearDisplay();
         if (arrowState == 0) {
+          arrowState = 0;
           currentPage = HOSE_VIEW;
-          u8x8.drawString(3, 7, "View Hoses");
+          curHose = 1;
+          LCD_HoseConfig(arrowState, curHose);
 
         } else if (arrowState == 1) {
-          currentPage = HOSE_EDIT;
-          u8x8.drawString(3, 7, "Edit Hoses");
+          arrowState = 0;
+          currentPage = HOSE_VIEW;
+          curHose = 2;
+          LCD_HoseConfig(arrowState, curHose);
 
         } else if (arrowState == 2) {
-          u8x8.drawString(1, 7, "Manual On/Off");
-          currentPage = HOSE_MANUAL;
+          arrowState = 0;
+          curHose = 3;
+          LCD_HoseConfig(arrowState, curHose);
+          currentPage = HOSE_VIEW;
         } else {
-          u8x8.drawString(3, 7, "View Hoses");
+          arrowState = 0;
+          curHose = 4;
+          LCD_HoseConfig(arrowState, curHose);
           currentPage = HOSE_VIEW;
         }
-        arrowState = 0;
+        LCD_PrintArrow(LCD_x, LCD_y);
 
       }
       break;
 
     case HOSE_VIEW:
-      if (ENTER_PRESSED) {
-        currentPage = WELCOME_PAGE;
-        arrowState = 0;
+      if (DOWN_PRESSED) {
+        LCD_ToggleArrow(DOWN);
         u8x8.clearDisplay();
-        LCD_Welcome();
+        LCD_HoseConfig(arrowState, curHose); //Update Home with arrow
+        LCD_PrintArrow(LCD_x, LCD_y);
 
-      } else if (BACK_PRESSED) {
+      } else if (UP_PRESSED) {
+        LCD_ToggleArrow(UP);
+        u8x8.clearDisplay();
+        LCD_HoseConfig(arrowState, curHose); //Update Home with arrow
+        LCD_PrintArrow(LCD_x, LCD_y);
+
+      }  else if (BACK_PRESSED) {
         currentPage = HOSE_SETUP;
         arrowState = 0;
         u8x8.clearDisplay();
         LCD_HoseSetup(arrowState); //Start Home Page with cursor at first line
         LCD_PrintArrow(LCD_x, LCD_y);
 
-      }
-
-      break;
-
-    case HOSE_EDIT:
-      if (ENTER_PRESSED) {
-        currentPage = WELCOME_PAGE;
-        arrowState = 0;
+      } else if (ENTER_PRESSED) {
         u8x8.clearDisplay();
-        LCD_Welcome();
+        if (arrowState == 0) {
+          arrowState = 0;
+          currentPage = ADD_SENSOR;
+          LCD_AddSensor(arrowState, curHose);
 
-      } else if (BACK_PRESSED) {
-        currentPage = HOSE_SETUP;
-        arrowState = 0;
-        u8x8.clearDisplay();
-        LCD_HoseSetup(arrowState); //Start Home Page with cursor at first line
+        } else if (arrowState == 1) {
+          arrowState = 0;
+          currentPage = REMOVE_SENSOR;
+          LCD_RemoveSensor(arrowState, curHose);
+
+        } else if (arrowState == 2) {
+          arrowState = 0;
+          LCD_PowerState(arrowState, curHose);
+          currentPage = POWER_STATE;
+        } else {
+          arrowState = 0;
+          LCD_WaterSettings(arrowState, curHose);
+          currentPage = WATER_SETTINGS;
+        }
         LCD_PrintArrow(LCD_x, LCD_y);
 
       }
 
       break;
 
-    case HOSE_MANUAL:
-      if (ENTER_PRESSED) {
-        currentPage = WELCOME_PAGE;
-        arrowState = 0;
+    case ADD_SENSOR:
+      if (DOWN_PRESSED) {
+        LCD_ToggleArrow(DOWN);
         u8x8.clearDisplay();
-        LCD_Welcome();
+        LCD_AddSensor(arrowState, curHose); //Update Home with arrow
+        LCD_PrintArrow(LCD_x, LCD_y);
 
-      } else if (BACK_PRESSED) {
-        currentPage = HOSE_SETUP;
+      } else if (UP_PRESSED) {
+        LCD_ToggleArrow(UP);
+        u8x8.clearDisplay();
+        LCD_AddSensor(arrowState, curHose); //Update Home with arrow
+        LCD_PrintArrow(LCD_x, LCD_y);
+
+      }  else if (BACK_PRESSED) {
+        currentPage = HOSE_VIEW;
         arrowState = 0;
         u8x8.clearDisplay();
-        LCD_HoseSetup(arrowState); //Start Home Page with cursor at first line
+        LCD_HoseConfig(arrowState, curHose); //Start Home Page with cursor at first line
+        LCD_PrintArrow(LCD_x, LCD_y);
+
+      } else if (ENTER_PRESSED) {
+        u8x8.clearDisplay();
+        if (arrowState == 0) {
+//          currentPage = mesh_AddSensor(
+          //          u8x8.drawString(3, 7, "View Hoses");
+
+        } else if (arrowState == 1) {
+//          currentPage = REMOVE_SENSOR;
+          //          u8x8.drawString(3, 7, "Edit Hoses");
+
+        } else if (arrowState == 2) {
+          //          u8x8.drawString(1, 7, "Manual On/Off");
+//          currentPage = POWER_STATE;
+        } else {
+          //          u8x8.drawString(3, 7, "View Hoses");
+//          currentPage = WATER_SETTINGS;
+        }
+        arrowState = 0;
+        LCD_PrintArrow(LCD_x, LCD_y);
+
+      }
+
+      break;
+
+    case REMOVE_SENSOR:
+      if (DOWN_PRESSED) {
+        LCD_ToggleArrow(DOWN);
+        u8x8.clearDisplay();
+        LCD_RemoveSensor(arrowState, curHose); //Update Home with arrow
+        LCD_PrintArrow(LCD_x, LCD_y);
+
+      } else if (UP_PRESSED) {
+        LCD_ToggleArrow(UP);
+        u8x8.clearDisplay();
+        LCD_RemoveSensor(arrowState, curHose); //Update Home with arrow
+        LCD_PrintArrow(LCD_x, LCD_y);
+
+      }  else if (BACK_PRESSED) {
+        currentPage = HOSE_VIEW;
+        arrowState = 0;
+        u8x8.clearDisplay();
+        LCD_HoseConfig(arrowState, curHose); //Start Home Page with cursor at first line
+        LCD_PrintArrow(LCD_x, LCD_y);
+
+      } else if (ENTER_PRESSED) {
+        u8x8.clearDisplay();
+        if (arrowState == 0) {
+//          currentPage = mesh_AddSensor(
+          //          u8x8.drawString(3, 7, "View Hoses");
+
+        } else if (arrowState == 1) {
+//          currentPage = REMOVE_SENSOR;
+          //          u8x8.drawString(3, 7, "Edit Hoses");
+
+        } else if (arrowState == 2) {
+          //          u8x8.drawString(1, 7, "Manual On/Off");
+//          currentPage = POWER_STATE;
+        } else {
+          //          u8x8.drawString(3, 7, "View Hoses");
+//          currentPage = WATER_SETTINGS;
+        }
+        arrowState = 0;
+        LCD_PrintArrow(LCD_x, LCD_y);
+
+      }
+
+      break;
+
+      case POWER_STATE:
+      if (DOWN_PRESSED) {
+        LCD_ToggleArrow(DOWN);
+        u8x8.clearDisplay();
+        LCD_PowerState(arrowState, curHose); //Update Home with arrow
+        LCD_PrintArrow(LCD_x, LCD_y);
+
+      } else if (UP_PRESSED) {
+        LCD_ToggleArrow(UP);
+        u8x8.clearDisplay();
+        LCD_PowerState(arrowState, curHose); //Update Home with arrow
+        LCD_PrintArrow(LCD_x, LCD_y);
+
+      }  else if (BACK_PRESSED) {
+        currentPage = HOSE_VIEW;
+        arrowState = 0;
+        u8x8.clearDisplay();
+        LCD_HoseConfig(arrowState, curHose); //Start Home Page with cursor at first line
+        LCD_PrintArrow(LCD_x, LCD_y);
+
+      } else if (ENTER_PRESSED) {
+        u8x8.clearDisplay();
+        if (arrowState == 0) {
+//          currentPage = mesh_AddSensor(
+          //          u8x8.drawString(3, 7, "View Hoses");
+
+        } else if (arrowState == 1) {
+//          currentPage = REMOVE_SENSOR;
+          //          u8x8.drawString(3, 7, "Edit Hoses");
+
+        } else if (arrowState == 2) {
+          //          u8x8.drawString(1, 7, "Manual On/Off");
+//          currentPage = POWER_STATE;
+        } else {
+          //          u8x8.drawString(3, 7, "View Hoses");
+//          currentPage = WATER_SETTINGS;
+        }
+        arrowState = 0;
+        LCD_PrintArrow(LCD_x, LCD_y);
+
+      }
+
+      break;
+
+      case WATER_SETTINGS:
+      if (DOWN_PRESSED) {
+        LCD_ToggleArrow(DOWN);
+        u8x8.clearDisplay();
+        LCD_WaterSettings(arrowState, curHose); //Update Home with arrow
+        LCD_PrintArrow(LCD_x, LCD_y);
+
+      } else if (UP_PRESSED) {
+        LCD_ToggleArrow(UP);
+        u8x8.clearDisplay();
+        LCD_WaterSettings(arrowState, curHose); //Update Home with arrow
+        LCD_PrintArrow(LCD_x, LCD_y);
+
+      }  else if (BACK_PRESSED) {
+        currentPage = HOSE_VIEW;
+        arrowState = 0;
+        u8x8.clearDisplay();
+        LCD_HoseConfig(arrowState, curHose); //Start Home Page with cursor at first line
+        LCD_PrintArrow(LCD_x, LCD_y);
+
+      } else if (ENTER_PRESSED) {
+        u8x8.clearDisplay();
+        if (arrowState == 0) {
+//          currentPage = mesh_AddSensor(
+          //          u8x8.drawString(3, 7, "View Hoses");
+
+        } else if (arrowState == 1) {
+//          currentPage = REMOVE_SENSOR;
+          //          u8x8.drawString(3, 7, "Edit Hoses");
+
+        } else if (arrowState == 2) {
+          //          u8x8.drawString(1, 7, "Manual On/Off");
+//          currentPage = POWER_STATE;
+        } else {
+          //          u8x8.drawString(3, 7, "View Hoses");
+//          currentPage = WATER_SETTINGS;
+        }
+        arrowState = 0;
         LCD_PrintArrow(LCD_x, LCD_y);
 
       }
@@ -844,23 +1026,228 @@ void LCD_SensorData(int state) {
    @editor   */
 
 void LCD_HoseSetup(int state) {
-  u8x8.drawString(2, 0, "Hose Setup");
-  u8x8.drawString(0, 2, "View Hoses");
-  u8x8.drawString(0, 3, "Edit Hoses");
-  u8x8.drawString(0, 4, "Manual On/Off");
+  u8x8.drawString(2, 0, "Current Hoses");
+  u8x8.drawString(0, 2, "Hose 1");
+  u8x8.drawString(0, 3, "Hose 2");
+  u8x8.drawString(0, 4, "Hose 3");
+  u8x8.drawString(0, 5, "Hose 4");
+
+  //determines what row to print arrow on
+  if (state == 0) {
+    LCD_x = 7;
+    LCD_y = 2;
+  } else if (state == 1) {
+    LCD_x = 7;
+    LCD_y = 3;
+  } else if (state == 2) {
+    LCD_x = 7;
+    LCD_y = 4;
+  } else {
+    LCD_x = 7;
+    LCD_y = 5;
+  }
+}
+
+/**
+   @Function LCD_HoseConfig(int state, int hose)
+   @param int state, Used to determine position of arrow
+   @param int hose, Used to identify which hose the user is editing
+   @return None
+   @brief This function prints Hose Config Page on LCD
+   @note
+   @author Brian Naranjo, 1/25/20
+   @editor   */
+
+void LCD_HoseConfig(int state, int hose) {
+  if (hose == 1) {
+    u8x8.drawString(2, 0, "Hose 1");
+  } else if (hose == 2) {
+    u8x8.drawString(2, 0, "Hose 2");
+  } else if (hose == 3) {
+    u8x8.drawString(2, 0, "Hose 3");
+  } else if (hose == 4) {
+    u8x8.drawString(2, 0, "Hose 4");
+  }
+  u8x8.drawString(0, 2, "Add Sensor");
+  u8x8.drawString(0, 3, "Remove Sensor");
+  u8x8.drawString(0, 4, "On/Off/Auto");
+  u8x8.drawString(0, 5, "Water Settings");
 
   //determines what row to print arrow on
   if (state == 0) {
     LCD_x = 11;
     LCD_y = 2;
   } else if (state == 1) {
-    LCD_x = 11;
+    LCD_x = 14;
     LCD_y = 3;
   } else if (state == 2) {
-    LCD_x = 14;
+    LCD_x = 12;
     LCD_y = 4;
   } else {
-    LCD_x = 11;
+    LCD_x = 15;
+    LCD_y = 5;
+  }
+}
+
+/**
+   @Function LCD_HoseConfig(int state, int hose)
+   @param int state, Used to determine position of arrow
+   @param int hose, Used to identify which hose the user is editing
+   @return None
+   @brief This function prints Hose Config Page on LCD
+   @note
+   @author Brian Naranjo, 1/25/20
+   @editor   */
+
+void LCD_AddSensor(int state, int hose) {
+  if (hose == 1) {
+    u8x8.drawString(2, 0, "Hose 1 - Add Sensor");
+  } else if (hose == 2) {
+    u8x8.drawString(2, 0, "Hose 2 - Add Sensor");
+  } else if (hose == 3) {
+    u8x8.drawString(2, 0, "Hose 3 - Add Sensor");
+  } else if (hose == 4) {
+    u8x8.drawString(2, 0, "Hose 4 - Add Sensor");
+  }
+  u8x8.drawString(0, 2, "Sensor 1");
+  u8x8.drawString(0, 3, "Sensor 2");
+  u8x8.drawString(0, 4, "Sensor 4");
+  u8x8.drawString(0, 5, "Sensor 6");
+
+  //determines what row to print arrow on
+  if (state == 0) {
+    LCD_x = 9;
+    LCD_y = 2;
+  } else if (state == 1) {
+    LCD_x = 9;
+    LCD_y = 3;
+  } else if (state == 2) {
+    LCD_x = 9;
+    LCD_y = 4;
+  } else {
+    LCD_x = 9;
+    LCD_y = 5;
+  }
+}
+
+/**
+   @Function LCD_HoseConfig(int state, int hose)
+   @param int state, Used to determine position of arrow
+   @param int hose, Used to identify which hose the user is editing
+   @return None
+   @brief This function prints Hose Config Page on LCD
+   @note
+   @author Brian Naranjo, 1/25/20
+   @editor   */
+
+void LCD_RemoveSensor(int state, int hose) {
+  if (hose == 1) {
+    u8x8.drawString(2, 0, "Hose 1 - Remove Sensor");
+  } else if (hose == 2) {
+    u8x8.drawString(2, 0, "Hose 2 - Remove Sensor");
+  } else if (hose == 3) {
+    u8x8.drawString(2, 0, "Hose 3 - Remove Sensor");
+  } else if (hose == 4) {
+    u8x8.drawString(2, 0, "Hose 4 - Remove Sensor");
+  }
+  u8x8.drawString(0, 2, "Sensor 1");
+  u8x8.drawString(0, 3, "Sensor 2");
+  u8x8.drawString(0, 4, "Sensor 4");
+  u8x8.drawString(0, 5, "Sensor 6");
+
+  //determines what row to print arrow on
+  if (state == 0) {
+    LCD_x = 9;
+    LCD_y = 2;
+  } else if (state == 1) {
+    LCD_x = 9;
+    LCD_y = 3;
+  } else if (state == 2) {
+    LCD_x = 9;
+    LCD_y = 4;
+  } else {
+    LCD_x = 9;
+    LCD_y = 5;
+  }
+}
+
+/**
+   @Function LCD_HoseConfig(int state, int hose)
+   @param int state, Used to determine position of arrow
+   @param int hose, Used to identify which hose the user is editing
+   @return None
+   @brief This function prints Hose Config Page on LCD
+   @note
+   @author Brian Naranjo, 1/25/20
+   @editor   */
+
+void LCD_PowerState(int state, int hose) {
+  if (hose == 1) {
+    u8x8.drawString(2, 0, "Hose 1 - Power State");
+  } else if (hose == 2) {
+    u8x8.drawString(2, 0, "Hose 2 - Power State");
+  } else if (hose == 3) {
+    u8x8.drawString(2, 0, "Hose 3 - Power State");
+  } else if (hose == 4) {
+    u8x8.drawString(2, 0, "Hose 4 - Power State");
+  }
+  u8x8.drawString(0, 2, "Auto");
+  u8x8.drawString(0, 3, "On");
+  u8x8.drawString(0, 4, "Off");
+
+  //determines what row to print arrow on
+  if (state == 0) {
+    LCD_x = 5;
+    LCD_y = 2;
+  } else if (state == 1) {
+    LCD_x = 3;
+    LCD_y = 3;
+  } else if (state == 2) {
+    LCD_x = 4;
+    LCD_y = 4;
+  } else {
+    LCD_x = 5;
+    LCD_y = 2;
+  }
+}
+
+/**
+   @Function LCD_HoseConfig(int state, int hose)
+   @param int state, Used to determine position of arrow
+   @param int hose, Used to identify which hose the user is editing
+   @return None
+   @brief This function prints Hose Config Page on LCD
+   @note
+   @author Brian Naranjo, 1/25/20
+   @editor   */
+
+void LCD_WaterSettings(int state, int hose) {
+  if (hose == 1) {
+    u8x8.drawString(2, 0, "Hose 1 - Water Settings");
+  } else if (hose == 2) {
+    u8x8.drawString(2, 0, "Hose 2 - Water Settings");
+  } else if (hose == 3) {
+    u8x8.drawString(2, 0, "Hose 3 - Water Settings");
+  } else if (hose == 4) {
+    u8x8.drawString(2, 0, "Hose 4 - Water Settings");
+  }
+  u8x8.drawString(0, 2, "Low");
+  u8x8.drawString(0, 3, "Med-Low");
+  u8x8.drawString(0, 4, "Med-High");
+  u8x8.drawString(0, 4, "High");
+
+  //determines what row to print arrow on
+  if (state == 0) {
+    LCD_x = 4;
+    LCD_y = 2;
+  } else if (state == 1) {
+    LCD_x = 8;
+    LCD_y = 3;
+  } else if (state == 2) {
+    LCD_x = 9;
+    LCD_y = 4;
+  } else {
+    LCD_x = 4;
     LCD_y = 2;
   }
 }
