@@ -145,7 +145,7 @@ void loop() {
     sleepTimer = millis();
 
     // Read all sensors
-    Data_Struct.soilMoisture = pullSensor(MOISTURE_PIN, 33);
+    Data_Struct.soilMoisture = ;
     Data_Struct.baroPressure = bmp.readPressure();
     Data_Struct.lightLevel = pullSensor(LIGHT_PIN, 33);
     Data_Struct.temp_C = bmp.readTemperature();
@@ -234,9 +234,9 @@ void C_Struct_Serial_print(C_Struct sct) {
 }
 
 void D_Struct_Serial_print(D_Struct sct) {
-  Serial.print("Soil Moisture Level (V ): "); Serial.println(sct.soilMoisture);
+  Serial.print("Soil Moisture Level (dV): "); Serial.println(sct.soilMoisture);
   Serial.print("Barometric Pressure (Pa): "); Serial.println(sct.baroPressure);
-  Serial.print("Ambient Light Level (V ): "); Serial.println(sct.lightLevel);
+  Serial.print("Ambient Light Level (dV): "); Serial.println(sct.lightLevel);
   Serial.print("Ambient Temperature (C ): "); Serial.println(sct.temp_C);
   Serial.print("Calucated Digital Output: "); Serial.println(sct.digitalOut);
   Serial.print("Previous Time Stamp (ms): "); Serial.println(sct.timeStamp);
