@@ -145,7 +145,7 @@ void loop() {
     sleepTimer = millis();
 
     // Read all sensors
-    Data_Struct.soilMoisture = ;
+    Data_Struct.soilMoisture = pullSensor(MOISTURE_PIN, 33);
     Data_Struct.baroPressure = bmp.readPressure();
     Data_Struct.lightLevel = pullSensor(LIGHT_PIN, 33);
     Data_Struct.temp_C = bmp.readTemperature();
