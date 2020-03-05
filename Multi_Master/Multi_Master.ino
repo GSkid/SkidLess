@@ -235,9 +235,9 @@ void C_Struct_Serial_print(C_Struct sct) {
 }
 
 void D_Struct_Serial_print(D_Struct sct) {
-  Serial.print("Soil Moisture Level (V ): "); Serial.println(sct.soilMoisture);
+  Serial.print("Soil Moisture Level (dV): "); Serial.println(sct.soilMoisture);
   Serial.print("Barometric Pressure (Pa): "); Serial.println(sct.baroPressure);
-  Serial.print("Ambient Light Level (V ): "); Serial.println(sct.lightLevel);
+  Serial.print("Ambient Light Level (dV): "); Serial.println(sct.lightLevel);
   Serial.print("Ambient Temperature (C ): "); Serial.println(sct.temp_C);
   Serial.print("Calucated Digital Output: "); Serial.println(sct.digitalOut);
   Serial.print("Watering Time Stamp (ms): "); Serial.println(sct.timeStamp);
