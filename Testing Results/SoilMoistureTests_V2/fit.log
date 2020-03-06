@@ -1,0 +1,3618 @@
+
+
+*******************************************************************************
+Fri Mar 06 12:00:23 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u (log($1)):(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m, alpha, c))
+	model_SM(x, m, alpha, c) = m * x**alpha + b
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m             alpha         c            
+   0 1.9735088830e+03   0.00e+00  2.69e-07    3.000000e+00  -3.000000e+00   1.000000e+00
+BREAK: Singular matrix in Invert_RtR
+
+*******************************************************************************
+Fri Mar 06 12:02:30 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m, alpha, c))
+	model_SM(x, m, alpha, c) = m * x**alpha + b
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m             alpha         c            
+   0 1.9735088556e+03   0.00e+00  2.63e-08    3.000000e+00  -3.000000e+00   1.001000e+00
+BREAK: Singular matrix in Invert_RtR
+
+*******************************************************************************
+Fri Mar 06 12:03:30 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m, alpha, c))
+	model_SM(x, m, alpha, c) = m*(x**alpha)+b
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m            
+   0 1.9735088556e+03   0.00e+00  1.06e-08    3.000000e+00
+   7 1.9663964032e+03  -3.98e-02  1.06e-15   -7.199578e+07
+
+After 7 iterations the fit converged.
+final sum of squares of residuals : 1966.4
+rel. change during last iteration : -3.98311e-07
+
+degrees of freedom    (FIT_NDF)                        : 19
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 10.1732
+variance of residuals (reduced chisquare) = WSSR/ndf   : 103.495
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m               = -7.19958e+07     +/- 8.169e+07    (113.5%)
+
+
+*******************************************************************************
+Fri Mar 06 12:04:05 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m, alpha, c))
+	model_SM(x, m, alpha, c) = m*(x**alpha)+b
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m            
+   0 1.9735088556e+03   0.00e+00  1.06e-08    3.000000e+00
+   7 1.9663964032e+03  -3.98e-02  1.06e-15   -7.199578e+07
+
+After 7 iterations the fit converged.
+final sum of squares of residuals : 1966.4
+rel. change during last iteration : -3.98311e-07
+
+degrees of freedom    (FIT_NDF)                        : 19
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 10.1732
+variance of residuals (reduced chisquare) = WSSR/ndf   : 103.495
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m               = -7.19958e+07     +/- 8.169e+07    (113.5%)
+
+
+*******************************************************************************
+Fri Mar 06 12:04:34 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m, alpha, c))
+	model_SM(x, m, alpha, c) = m*(x**alpha)+b
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m            
+   0 1.9735088556e+03   0.00e+00  1.06e-08    3.000000e+00
+   7 1.9663964032e+03  -3.98e-02  1.06e-15   -7.199578e+07
+
+After 7 iterations the fit converged.
+final sum of squares of residuals : 1966.4
+rel. change during last iteration : -3.98311e-07
+
+degrees of freedom    (FIT_NDF)                        : 19
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 10.1732
+variance of residuals (reduced chisquare) = WSSR/ndf   : 103.495
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m               = -7.19958e+07     +/- 8.169e+07    (113.5%)
+
+
+*******************************************************************************
+Fri Mar 06 12:05:00 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m, alpha, c))
+	model_SM(x, m, alpha, c) = m*(x**alpha)+b
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m            
+   0 1.9735088556e+03   0.00e+00  1.06e-08    3.000000e+00
+   7 1.9663964032e+03  -3.98e-02  1.06e-15   -7.199578e+07
+
+After 7 iterations the fit converged.
+final sum of squares of residuals : 1966.4
+rel. change during last iteration : -3.98311e-07
+
+degrees of freedom    (FIT_NDF)                        : 19
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 10.1732
+variance of residuals (reduced chisquare) = WSSR/ndf   : 103.495
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m               = -7.19958e+07     +/- 8.169e+07    (113.5%)
+
+
+*******************************************************************************
+Fri Mar 06 12:05:19 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m, alpha, c))
+	model_SM(x, m, alpha, c) = m*(x**alpha)+b
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m            
+   0 1.9735088556e+03   0.00e+00  1.06e-08    3.000000e+00
+   7 1.9663964032e+03  -3.98e-02  1.06e-15   -7.199578e+07
+
+After 7 iterations the fit converged.
+final sum of squares of residuals : 1966.4
+rel. change during last iteration : -3.98311e-07
+
+degrees of freedom    (FIT_NDF)                        : 19
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 10.1732
+variance of residuals (reduced chisquare) = WSSR/ndf   : 103.495
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m               = -7.19958e+07     +/- 8.169e+07    (113.5%)
+
+
+*******************************************************************************
+Fri Mar 06 12:05:42 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m, alpha, c))
+	model_SM(x, m, alpha, c) = m*(x**alpha)+b
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m            
+   0 1.9735088556e+03   0.00e+00  1.06e-08    3.000000e+00
+   7 1.9663964032e+03  -3.98e-02  1.06e-15   -7.199578e+07
+
+After 7 iterations the fit converged.
+final sum of squares of residuals : 1966.4
+rel. change during last iteration : -3.98311e-07
+
+degrees of freedom    (FIT_NDF)                        : 19
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 10.1732
+variance of residuals (reduced chisquare) = WSSR/ndf   : 103.495
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m               = -7.19958e+07     +/- 8.169e+07    (113.5%)
+
+
+*******************************************************************************
+Fri Mar 06 12:06:06 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m, alpha, c))
+	model_SM(x, m, alpha, c) = m*(x**alpha)+b
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m             alpha        
+   0 1.9735088556e+03   0.00e+00  3.22e-08    3.000000e+00  -3.000000e+00
+BREAK: Singular matrix in Invert_RtR
+
+*******************************************************************************
+Fri Mar 06 12:06:31 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: abs(log(model_SM(x, m, alpha, c)))
+	model_SM(x, m, alpha, c) = m*(x**alpha)+b
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m             alpha        
+   0 1.9735088556e+03   0.00e+00  3.22e-08    3.000000e+00  -3.000000e+00
+BREAK: Singular matrix in Invert_RtR
+
+*******************************************************************************
+Fri Mar 06 12:08:25 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: model_SM(x, m, alpha, c)
+	model_SM(x, m, alpha, c) = m*(x**alpha)+b
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m             alpha        
+   0 1.9999828553e+13   0.00e+00  3.22e-02    3.000000e+00  -3.000000e+00
+BREAK: Singular matrix in Invert_RtR
+
+*******************************************************************************
+Fri Mar 06 12:11:12 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: model_SM(x, m, alpha, c)
+	model_SM(x, m, alpha, c) = m*(x**alpha)+c
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m             alpha         c            
+   0 3.7336988261e+02   0.00e+00  5.79e-01    3.000000e+00  -3.000000e+00   1.002001e+00
+ 266 1.0033287560e+00  -5.81e-04  5.79e-06    4.457599e+01  -9.069054e-02  -2.763295e+01
+
+After 266 iterations the fit converged.
+final sum of squares of residuals : 1.00333
+rel. change during last iteration : -5.81467e-09
+
+degrees of freedom    (FIT_NDF)                        : 17
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.242939
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.0590193
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m               = 44.576           +/- 12.05        (27.04%)
+alpha           = -0.0906905       +/- 0.0347       (38.26%)
+c               = -27.633          +/- 12.66        (45.8%)
+
+correlation matrix of the fit parameters:
+                m      alpha  c      
+m               1.000 
+alpha           0.997  1.000 
+c              -1.000 -0.999  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:11:34 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m, alpha, c))
+	model_SM(x, m, alpha, c) = m*(x**alpha)+c
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m             alpha         c            
+   0 1.7725436432e+02   0.00e+00  5.77e-01    3.000000e+00  -3.000000e+00  -2.763295e+01
+BREAK: Singular matrix in Invert_RtR
+
+*******************************************************************************
+Fri Mar 06 12:11:59 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u (log($1)):(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m, alpha, c))
+	model_SM(x, m, alpha, c) = m*(x**alpha)+c
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m             alpha         c            
+   0 1.5869598279e+02   0.00e+00  5.78e-01    3.000000e+00  -3.000000e+00  -7.296376e+01
+   4 1.5840678856e+02  -1.15e-02  5.78e-05   -6.649074e+01  -4.121720e+01  -7.289087e+01
+
+After 4 iterations the fit converged.
+final sum of squares of residuals : 158.407
+rel. change during last iteration : -1.14769e-07
+
+degrees of freedom    (FIT_NDF)                        : 17
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 3.05255
+variance of residuals (reduced chisquare) = WSSR/ndf   : 9.31805
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m               = -66.4907         +/- 1.047e+15    (1.574e+15%)
+alpha           = -41.2172         +/- 4.851e+13    (1.177e+14%)
+c               = -72.8909         +/- 52.47        (71.99%)
+
+correlation matrix of the fit parameters:
+                m      alpha  c      
+m               1.000 
+alpha           1.000  1.000 
+c               0.229  0.229  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:14:47 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u (log($1)):(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m, alpha, c))
+	model_SM(x, m, alpha, c) = m*(x**alpha)+c
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m             alpha         c            
+   0 1.5869632442e+02   0.00e+00  5.78e-01    3.000000e+00  -3.000000e+00  -7.289087e+01
+   4 1.5840678723e+02  -1.23e-02  5.78e-05   -6.646230e+01  -4.100953e+01  -7.289087e+01
+
+After 4 iterations the fit converged.
+final sum of squares of residuals : 158.407
+rel. change during last iteration : -1.22871e-07
+
+degrees of freedom    (FIT_NDF)                        : 17
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 3.05255
+variance of residuals (reduced chisquare) = WSSR/ndf   : 9.31805
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m               = -66.4623         +/- 1.561e+15    (2.349e+15%)
+alpha           = -41.0095         +/- 7.24e+13     (1.766e+14%)
+c               = -72.8909         +/- 52.47        (71.99%)
+
+correlation matrix of the fit parameters:
+                m      alpha  c      
+m               1.000 
+alpha           1.000  1.000 
+c               0.229  0.229  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:15:04 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(abs(model_SM(x, m, alpha, c)))
+	model_SM(x, m, alpha, c) = m*(x**alpha)+c
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m             alpha         c            
+   0 1.5841720431e+02   0.00e+00  5.77e-01    3.000000e+00  -3.000000e+00  -7.289087e+01
+BREAK: Singular matrix in Invert_RtR
+
+*******************************************************************************
+Fri Mar 06 12:15:44 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(abs(model_SM(x, m, alpha, c)))
+	model_SM(x, m, alpha, c) = m*(x**alpha)+c
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m             alpha         c            
+   0 1.5841721239e+02   0.00e+00  5.77e-01    3.000000e+00  -3.000000e+00  -7.296376e+01
+BREAK: Singular matrix in Invert_RtR
+
+*******************************************************************************
+Fri Mar 06 12:17:47 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample2.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 21
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(abs(model_SM(x, m, alpha, c)))
+	model_SM(x, m, alpha, c) = m*(x**alpha)+c
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m             alpha         c            
+   0 1.1283569727e+02   0.00e+00  5.77e-01    3.000000e+00  -3.000000e+00  -7.296376e+01
+   3 1.1163453843e+02  -3.89e-03  5.77e-04    1.589529e+00  -1.016554e+01  -9.263329e+01
+
+After 3 iterations the fit converged.
+final sum of squares of residuals : 111.635
+rel. change during last iteration : -3.88827e-08
+
+degrees of freedom    (FIT_NDF)                        : 18
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 2.49037
+variance of residuals (reduced chisquare) = WSSR/ndf   : 6.20192
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m               = 1.58953          +/- 3.632e+12    (2.285e+14%)
+alpha           = -10.1655         +/- 1.432e+12    (1.409e+13%)
+c               = -92.6333         +/- 53.78        (58.06%)
+
+correlation matrix of the fit parameters:
+                m      alpha  c      
+m               1.000 
+alpha          -1.000  1.000 
+c               0.281 -0.281  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:18:09 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample2.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 21
+        residuals are weighted equally (unit weight)
+
+function used for fitting: model_SM(x, m, alpha, c)
+	model_SM(x, m, alpha, c) = m*(x**alpha)+c
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m             alpha         c            
+   0 1.9835443009e+05   0.00e+00  5.35e+01    3.000000e+00  -3.000000e+00  -9.263329e+01
+ 371 6.0294647917e-01  -2.59e-01  5.35e-05    3.307549e+01  -1.255169e-01  -1.652588e+01
+
+After 371 iterations the fit converged.
+final sum of squares of residuals : 0.602946
+rel. change during last iteration : -2.5923e-06
+
+degrees of freedom    (FIT_NDF)                        : 18
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.183022
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.033497
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m               = 33.0755          +/- 5.651        (17.09%)
+alpha           = -0.125517        +/- 0.03596      (28.65%)
+c               = -16.5259         +/- 6.278        (37.99%)
+
+correlation matrix of the fit parameters:
+                m      alpha  c      
+m               1.000 
+alpha           0.995  1.000 
+c              -0.999 -0.998  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:18:40 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample2.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 21
+        residuals are weighted equally (unit weight)
+
+function used for fitting: model_SM(x, m, alpha, c)
+	model_SM(x, m, alpha, c) = m*(x**alpha)+c
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m             alpha         c            
+   0 9.4191231463e+03   0.00e+00  9.54e+00    3.000000e+00  -3.000000e+00  -1.652588e+01
+1047 6.0294647917e-01  -5.31e-07  9.54e-03    3.307549e+01  -1.255169e-01  -1.652587e+01
+
+After 1047 iterations the fit converged.
+final sum of squares of residuals : 0.602946
+rel. change during last iteration : -5.3091e-12
+
+degrees of freedom    (FIT_NDF)                        : 18
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.183022
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.033497
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m               = 33.0755          +/- 5.651        (17.09%)
+alpha           = -0.125517        +/- 0.03596      (28.65%)
+c               = -16.5259         +/- 6.278        (37.99%)
+
+correlation matrix of the fit parameters:
+                m      alpha  c      
+m               1.000 
+alpha           0.995  1.000 
+c              -0.999 -0.998  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:20:40 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample2.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 21
+        residuals are weighted equally (unit weight)
+
+function used for fitting: model_SM(x, m, alpha, c)
+	model_SM(x, m, alpha, c) = m*(x**alpha)+c
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m             alpha         c            
+   0 9.4191223398e+03   0.00e+00  9.54e+00    3.000000e+00  -3.000000e+00  -1.652587e+01
+1047 6.0294647917e-01  -5.32e-07  9.54e-03    3.307549e+01  -1.255169e-01  -1.652587e+01
+
+After 1047 iterations the fit converged.
+final sum of squares of residuals : 0.602946
+rel. change during last iteration : -5.31721e-12
+
+degrees of freedom    (FIT_NDF)                        : 18
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.183022
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.033497
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m               = 33.0755          +/- 5.651        (17.09%)
+alpha           = -0.125517        +/- 0.03596      (28.65%)
+c               = -16.5259         +/- 6.278        (37.99%)
+
+correlation matrix of the fit parameters:
+                m      alpha  c      
+m               1.000 
+alpha           0.995  1.000 
+c              -0.999 -0.998  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:22:15 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample2.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 21
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m, alpha, c))
+	model_SM(x, m, alpha, c) = m*(x**alpha)+c
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m             alpha         c            
+   0 1.7405681262e+02   0.00e+00  5.77e-01    3.000000e+00  -3.000000e+00  -1.652587e+01
+BREAK: Singular matrix in Invert_RtR
+
+*******************************************************************************
+Fri Mar 06 12:22:24 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample2.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 21
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m, alpha, c))
+	model_SM(x, m, alpha, c) = m*(x**alpha)+c
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m            
+   0 1.1163815141e+02   0.00e+00  5.75e-05    3.000000e+00
+   5 4.3685004153e+01  -3.42e-01  5.75e-10   -2.476209e+06
+
+After 5 iterations the fit converged.
+final sum of squares of residuals : 43.685
+rel. change during last iteration : -3.41665e-06
+
+degrees of freedom    (FIT_NDF)                        : 20
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 1.47792
+variance of residuals (reduced chisquare) = WSSR/ndf   : 2.18425
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m               = -2.47621e+06     +/- 1.574e+06    (63.55%)
+
+
+*******************************************************************************
+Fri Mar 06 12:22:43 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample2.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 21
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m, alpha, c))
+	model_SM(x, m, alpha, c) = m*(x**alpha)+c
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m             alpha         c            
+   0 1.9227965144e+03   0.00e+00  5.77e-01    3.000000e+00  -3.000000e+00   1.000000e+06
+
+Current data point
+=========================
+#               = 14 out of 21
+x               = 111.01         
+z               = 3.16125        
+
+Current set of parameters
+=========================
+m               = 111.01         
+alpha           = 174.427        
+c               = -449.95        
+
+BREAK: Undefined value during function evaluation
+
+*******************************************************************************
+Fri Mar 06 12:23:05 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample2.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 21
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(abs(model_SM(x, m, alpha, c)))
+	model_SM(x, m, alpha, c) = m*(x**alpha)+c
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m             alpha         c            
+   0 1.9227965144e+03   0.00e+00  5.77e-01    3.000000e+00  -3.000000e+00   1.000000e+06
+
+Current data point
+=========================
+#               = 14 out of 21
+x               = 111.01         
+z               = 3.16125        
+
+Current set of parameters
+=========================
+m               = 111.01         
+alpha           = 174.427        
+c               = -449.95        
+
+BREAK: Function evaluation yields NaN ("not a number")
+
+*******************************************************************************
+Fri Mar 06 12:24:38 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(abs(model_SM(x, m, alpha, c)))
+	model_SM(x, m, alpha, c) = m*(x**alpha)+c
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m             alpha         c            
+   0 1.9735088556e+03   0.00e+00  5.77e-01    3.000000e+00  -3.000000e+00   1.000000e+06
+BREAK: Singular matrix in Invert_RtR
+
+*******************************************************************************
+Fri Mar 06 12:26:13 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(abs(model_SM(x, m, alpha, c)))
+	model_SM(x, m, alpha, c) = m*(x**alpha) + c
+fitted parameters initialized with current variable values
+
+Warning: Initial value of parameter 'c' is zero.
+iter      chisq       delta/lim  lambda   m             alpha         c            
+   0 4.1242093413e+03   0.00e+00  6.67e+00    3.000000e+00  -3.000000e+00   1.000000e-30
+BREAK: Singular matrix in Invert_RtR
+
+*******************************************************************************
+Fri Mar 06 12:26:28 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(abs(model_SM(x, m, alpha, c)))
+	model_SM(x, m, alpha, c) = m*(x**alpha) + c
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m             alpha         c            
+   0 5.2510558773e+02   0.00e+00  5.76e-01    3.000000e+00  -3.000000e+00   1.000000e+00
+  79 7.7853259314e+01  -1.63e-01  5.76e+01    5.710623e+02  -4.488461e-01  -6.335216e+01
+
+After 79 iterations the fit converged.
+final sum of squares of residuals : 77.8533
+rel. change during last iteration : -1.63041e-06
+
+degrees of freedom    (FIT_NDF)                        : 17
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 2.14
+variance of residuals (reduced chisquare) = WSSR/ndf   : 4.5796
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m               = 571.062          +/- 237.4        (41.56%)
+alpha           = -0.448846        +/- 0.1096       (24.41%)
+c               = -63.3522         +/- 49.53        (78.18%)
+
+correlation matrix of the fit parameters:
+                m      alpha  c      
+m               1.000 
+alpha           0.316  1.000 
+c              -0.756 -0.859  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:26:59 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(abs(model_SM(x, m, alpha, c)))
+	model_SM(x, m, alpha, c) = m*(x**alpha) + c
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m             alpha         c            
+   0 5.2510558773e+02   0.00e+00  5.76e-01    3.000000e+00  -3.000000e+00   1.000000e+00
+  79 7.7853259314e+01  -1.63e-01  5.76e+01    5.710623e+02  -4.488461e-01  -6.335216e+01
+
+After 79 iterations the fit converged.
+final sum of squares of residuals : 77.8533
+rel. change during last iteration : -1.63041e-06
+
+degrees of freedom    (FIT_NDF)                        : 17
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 2.14
+variance of residuals (reduced chisquare) = WSSR/ndf   : 4.5796
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m               = 571.062          +/- 237.4        (41.56%)
+alpha           = -0.448846        +/- 0.1096       (24.41%)
+c               = -63.3522         +/- 49.53        (78.18%)
+
+correlation matrix of the fit parameters:
+                m      alpha  c      
+m               1.000 
+alpha           0.316  1.000 
+c              -0.756 -0.859  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:27:51 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(abs(model_SM(x, m, alpha, c)))
+	model_SM(x, m, alpha, c) = m*(x**alpha) + c
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m             alpha         c            
+   0 5.2510558773e+02   0.00e+00  5.76e-01    3.000000e+00  -3.000000e+00   1.000000e+00
+  79 7.7853259314e+01  -1.63e-01  5.76e+01    5.710623e+02  -4.488461e-01  -6.335216e+01
+
+After 79 iterations the fit converged.
+final sum of squares of residuals : 77.8533
+rel. change during last iteration : -1.63041e-06
+
+degrees of freedom    (FIT_NDF)                        : 17
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 2.14
+variance of residuals (reduced chisquare) = WSSR/ndf   : 4.5796
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m               = 571.062          +/- 237.4        (41.56%)
+alpha           = -0.448846        +/- 0.1096       (24.41%)
+c               = -63.3522         +/- 49.53        (78.18%)
+
+correlation matrix of the fit parameters:
+                m      alpha  c      
+m               1.000 
+alpha           0.316  1.000 
+c              -0.756 -0.859  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:28:03 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(abs(model_SM(x, m, alpha, c)))
+	model_SM(x, m, alpha, c) = m*(x**alpha) + c
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m             alpha         c            
+   0 5.2510558773e+02   0.00e+00  5.76e-01    3.000000e+00  -3.000000e+00   1.000000e+00
+  79 7.7853259314e+01  -1.63e-01  5.76e+01    5.710623e+02  -4.488461e-01  -6.335216e+01
+
+After 79 iterations the fit converged.
+final sum of squares of residuals : 77.8533
+rel. change during last iteration : -1.63041e-06
+
+degrees of freedom    (FIT_NDF)                        : 17
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 2.14
+variance of residuals (reduced chisquare) = WSSR/ndf   : 4.5796
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m               = 571.062          +/- 237.4        (41.56%)
+alpha           = -0.448846        +/- 0.1096       (24.41%)
+c               = -63.3522         +/- 49.53        (78.18%)
+
+correlation matrix of the fit parameters:
+                m      alpha  c      
+m               1.000 
+alpha           0.316  1.000 
+c              -0.756 -0.859  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:28:27 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: model_SM(x, m, alpha, c)
+	model_SM(x, m, alpha, c) = m*(x**alpha) + c
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m             alpha         c            
+   0 3.7363282956e+02   0.00e+00  5.78e-01    3.000000e+00  -3.000000e+00   1.000000e+00
+ 267 1.0033287560e+00  -5.79e-04  5.78e-06    4.457599e+01  -9.069054e-02  -2.763295e+01
+
+After 267 iterations the fit converged.
+final sum of squares of residuals : 1.00333
+rel. change during last iteration : -5.79014e-09
+
+degrees of freedom    (FIT_NDF)                        : 17
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.242939
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.0590193
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m               = 44.576           +/- 12.05        (27.04%)
+alpha           = -0.0906905       +/- 0.0347       (38.26%)
+c               = -27.633          +/- 12.66        (45.8%)
+
+correlation matrix of the fit parameters:
+                m      alpha  c      
+m               1.000 
+alpha           0.997  1.000 
+c              -1.000 -0.999  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:29:15 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: model_SM(x, m, alpha)
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m             alpha         c            
+   0 5.2508061879e+02   0.00e+00  2.63e-02    3.000000e+00  -3.000000e+00   1.000000e+00
+
+Current data point
+=========================
+#               = 6 out of 20
+x               = -100.114       
+z               = 5.48064        
+
+Current set of parameters
+=========================
+m               = -100.114       
+alpha           = 226.28         
+c               = 1              
+
+BREAK: Function evaluation yields NaN ("not a number")
+
+*******************************************************************************
+Fri Mar 06 12:29:25 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: model_SM(x, m, alpha)
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m             alpha        
+   0 5.2508061879e+02   0.00e+00  3.22e-02    3.000000e+00  -3.000000e+00
+
+Current data point
+=========================
+#               = 7 out of 20
+x               = -51.2006       
+z               = 4.94164        
+
+Current set of parameters
+=========================
+m               = -51.2006       
+alpha           = 212.979        
+
+BREAK: Function evaluation yields NaN ("not a number")
+
+*******************************************************************************
+Fri Mar 06 12:30:41 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m, alpha))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m             alpha        
+   0 4.1242093413e+03   0.00e+00  8.17e+00    3.000000e+00  -3.000000e+00
+  96 1.4065924708e+00  -2.25e-06  8.17e-12    5.029958e+06  -2.993211e+00
+
+After 96 iterations the fit converged.
+final sum of squares of residuals : 1.40659
+rel. change during last iteration : -2.24958e-11
+
+degrees of freedom    (FIT_NDF)                        : 18
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.279543
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.078144
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m               = 5.02996e+06      +/- 1.29e+06     (25.64%)
+alpha           = -2.99321         +/- 0.06678      (2.231%)
+
+correlation matrix of the fit parameters:
+                m      alpha  
+m               1.000 
+alpha          -0.970  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:31:03 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m, alpha))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m             alpha        
+   0 4.1242093413e+03   0.00e+00  8.17e+00    3.000000e+00  -3.000000e+00
+  96 1.4065924708e+00  -2.25e-06  8.17e-12    5.029958e+06  -2.993211e+00
+
+After 96 iterations the fit converged.
+final sum of squares of residuals : 1.40659
+rel. change during last iteration : -2.24958e-11
+
+degrees of freedom    (FIT_NDF)                        : 18
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.279543
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.078144
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m               = 5.02996e+06      +/- 1.29e+06     (25.64%)
+alpha           = -2.99321         +/- 0.06678      (2.231%)
+
+correlation matrix of the fit parameters:
+                m      alpha  
+m               1.000 
+alpha          -0.970  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:32:29 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m, alpha))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m             alpha        
+   0 4.1242093413e+03   0.00e+00  8.17e+00    3.000000e+00  -3.000000e+00
+  96 1.4065924708e+00  -2.25e-06  8.17e-12    5.029958e+06  -2.993211e+00
+
+After 96 iterations the fit converged.
+final sum of squares of residuals : 1.40659
+rel. change during last iteration : -2.24958e-11
+
+degrees of freedom    (FIT_NDF)                        : 18
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.279543
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.078144
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m               = 5.02996e+06      +/- 1.29e+06     (25.64%)
+alpha           = -2.99321         +/- 0.06678      (2.231%)
+
+correlation matrix of the fit parameters:
+                m      alpha  
+m               1.000 
+alpha          -0.970  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:32:47 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m, alpha))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m             alpha        
+   0 4.1242093413e+03   0.00e+00  8.17e+00    3.000000e+00  -3.000000e+00
+  96 1.4065924708e+00  -2.25e-06  8.17e-12    5.029958e+06  -2.993211e+00
+
+After 96 iterations the fit converged.
+final sum of squares of residuals : 1.40659
+rel. change during last iteration : -2.24958e-11
+
+degrees of freedom    (FIT_NDF)                        : 18
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.279543
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.078144
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m               = 5.02996e+06      +/- 1.29e+06     (25.64%)
+alpha           = -2.99321         +/- 0.06678      (2.231%)
+
+correlation matrix of the fit parameters:
+                m      alpha  
+m               1.000 
+alpha          -0.970  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:33:26 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m, alpha))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m             alpha        
+   0 2.2808300655e+03   0.00e+00  5.47e+00    3.000000e+00  -2.000000e+00
+  91 1.4065924708e+00  -4.00e-04  5.47e-12    5.029959e+06  -2.993211e+00
+
+After 91 iterations the fit converged.
+final sum of squares of residuals : 1.40659
+rel. change during last iteration : -4.00327e-09
+
+degrees of freedom    (FIT_NDF)                        : 18
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.279543
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.078144
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m               = 5.02996e+06      +/- 1.29e+06     (25.64%)
+alpha           = -2.99321         +/- 0.06678      (2.231%)
+
+correlation matrix of the fit parameters:
+                m      alpha  
+m               1.000 
+alpha          -0.970  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:33:48 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m, alpha))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m             alpha        
+   0 2.2808300655e+03   0.00e+00  5.47e+00    3.000000e+00  -2.000000e+00
+  91 1.4065924708e+00  -4.00e-04  5.47e-12    5.029959e+06  -2.993211e+00
+
+After 91 iterations the fit converged.
+final sum of squares of residuals : 1.40659
+rel. change during last iteration : -4.00327e-09
+
+degrees of freedom    (FIT_NDF)                        : 18
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.279543
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.078144
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m               = 5.02996e+06      +/- 1.29e+06     (25.64%)
+alpha           = -2.99321         +/- 0.06678      (2.231%)
+
+correlation matrix of the fit parameters:
+                m      alpha  
+m               1.000 
+alpha          -0.970  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:34:57 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m, alpha))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m             alpha        
+   0 2.2808300655e+03   0.00e+00  5.47e+00    3.000000e+00  -2.000000e+00
+  91 1.4065924708e+00  -4.00e-04  5.47e-12    5.029959e+06  -2.993211e+00
+
+After 91 iterations the fit converged.
+final sum of squares of residuals : 1.40659
+rel. change during last iteration : -4.00327e-09
+
+degrees of freedom    (FIT_NDF)                        : 18
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.279543
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.078144
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m               = 5.02996e+06      +/- 1.29e+06     (25.64%)
+alpha           = -2.99321         +/- 0.06678      (2.231%)
+
+correlation matrix of the fit parameters:
+                m      alpha  
+m               1.000 
+alpha          -0.970  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:35:31 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m, alpha))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m             alpha        
+   0 2.2808300655e+03   0.00e+00  5.47e+00    3.000000e+00  -2.000000e+00
+  91 1.4065924708e+00  -4.00e-04  5.47e-12    5.029959e+06  -2.993211e+00
+
+After 91 iterations the fit converged.
+final sum of squares of residuals : 1.40659
+rel. change during last iteration : -4.00327e-09
+
+degrees of freedom    (FIT_NDF)                        : 18
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.279543
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.078144
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m               = 5.02996e+06      +/- 1.29e+06     (25.64%)
+alpha           = -2.99321         +/- 0.06678      (2.231%)
+
+correlation matrix of the fit parameters:
+                m      alpha  
+m               1.000 
+alpha          -0.970  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:35:38 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m, alpha))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m             alpha        
+   0 2.2808300655e+03   0.00e+00  5.47e+00    3.000000e+00  -2.000000e+00
+  91 1.4065924708e+00  -4.00e-04  5.47e-12    5.029959e+06  -2.993211e+00
+
+After 91 iterations the fit converged.
+final sum of squares of residuals : 1.40659
+rel. change during last iteration : -4.00327e-09
+
+degrees of freedom    (FIT_NDF)                        : 18
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.279543
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.078144
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m               = 5.02996e+06      +/- 1.29e+06     (25.64%)
+alpha           = -2.99321         +/- 0.06678      (2.231%)
+
+correlation matrix of the fit parameters:
+                m      alpha  
+m               1.000 
+alpha          -0.970  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:35:56 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m, alpha))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m             alpha        
+   0 2.2808300655e+03   0.00e+00  5.47e+00    3.000000e+00  -2.000000e+00
+  91 1.4065924708e+00  -4.00e-04  5.47e-12    5.029959e+06  -2.993211e+00
+
+After 91 iterations the fit converged.
+final sum of squares of residuals : 1.40659
+rel. change during last iteration : -4.00327e-09
+
+degrees of freedom    (FIT_NDF)                        : 18
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.279543
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.078144
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m               = 5.02996e+06      +/- 1.29e+06     (25.64%)
+alpha           = -2.99321         +/- 0.06678      (2.231%)
+
+correlation matrix of the fit parameters:
+                m      alpha  
+m               1.000 
+alpha          -0.970  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:39:04 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m1, alpha1))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m1            alpha1       
+   0 2.2808300655e+03   0.00e+00  5.47e+00    3.000000e+00  -2.000000e+00
+  91 1.4065924708e+00  -4.00e-04  5.47e-12    5.029959e+06  -2.993211e+00
+
+After 91 iterations the fit converged.
+final sum of squares of residuals : 1.40659
+rel. change during last iteration : -4.00327e-09
+
+degrees of freedom    (FIT_NDF)                        : 18
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.279543
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.078144
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m1              = 5.02996e+06      +/- 1.29e+06     (25.64%)
+alpha1          = -2.99321         +/- 0.06678      (2.231%)
+
+correlation matrix of the fit parameters:
+                m1     alpha1 
+m1              1.000 
+alpha1         -0.970  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:39:04 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample2.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 21
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m2, alpha2))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m2            alpha2       
+   0 2.4211657968e+03   0.00e+00  5.33e+00    3.000000e+00  -2.000000e+00
+ 100 1.0124697078e+00  -1.96e-01  5.33e-11    2.024067e+06  -2.742330e+00
+
+After 100 iterations the fit converged.
+final sum of squares of residuals : 1.01247
+rel. change during last iteration : -1.95538e-06
+
+degrees of freedom    (FIT_NDF)                        : 19
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.230842
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.0532879
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m2              = 2.02407e+06      +/- 4.557e+05    (22.51%)
+alpha2          = -2.74233         +/- 0.06019      (2.195%)
+
+correlation matrix of the fit parameters:
+                m2     alpha2 
+m2              1.000 
+alpha2         -0.975  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:39:15 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m1, alpha1))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m1            alpha1       
+   0 2.2808300655e+03   0.00e+00  5.47e+00    3.000000e+00  -2.000000e+00
+  91 1.4065924708e+00  -4.00e-04  5.47e-12    5.029959e+06  -2.993211e+00
+
+After 91 iterations the fit converged.
+final sum of squares of residuals : 1.40659
+rel. change during last iteration : -4.00327e-09
+
+degrees of freedom    (FIT_NDF)                        : 18
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.279543
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.078144
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m1              = 5.02996e+06      +/- 1.29e+06     (25.64%)
+alpha1          = -2.99321         +/- 0.06678      (2.231%)
+
+correlation matrix of the fit parameters:
+                m1     alpha1 
+m1              1.000 
+alpha1         -0.970  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:39:16 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample2.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 21
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m2, alpha2))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m2            alpha2       
+   0 2.4211657968e+03   0.00e+00  5.33e+00    3.000000e+00  -2.000000e+00
+ 100 1.0124697078e+00  -1.96e-01  5.33e-11    2.024067e+06  -2.742330e+00
+
+After 100 iterations the fit converged.
+final sum of squares of residuals : 1.01247
+rel. change during last iteration : -1.95538e-06
+
+degrees of freedom    (FIT_NDF)                        : 19
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.230842
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.0532879
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m2              = 2.02407e+06      +/- 4.557e+05    (22.51%)
+alpha2          = -2.74233         +/- 0.06019      (2.195%)
+
+correlation matrix of the fit parameters:
+                m2     alpha2 
+m2              1.000 
+alpha2         -0.975  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:41:18 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m1, alpha1))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m1            alpha1       
+   0 2.2808300655e+03   0.00e+00  5.47e+00    3.000000e+00  -2.000000e+00
+  91 1.4065924708e+00  -4.00e-04  5.47e-12    5.029959e+06  -2.993211e+00
+
+After 91 iterations the fit converged.
+final sum of squares of residuals : 1.40659
+rel. change during last iteration : -4.00327e-09
+
+degrees of freedom    (FIT_NDF)                        : 18
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.279543
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.078144
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m1              = 5.02996e+06      +/- 1.29e+06     (25.64%)
+alpha1          = -2.99321         +/- 0.06678      (2.231%)
+
+correlation matrix of the fit parameters:
+                m1     alpha1 
+m1              1.000 
+alpha1         -0.970  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:41:18 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample2.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 21
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m2, alpha2))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m2            alpha2       
+   0 1.9386196279e+00   0.00e+00  7.94e+00    5.029959e+06  -2.993211e+00
+  26 1.0124697078e+00  -3.69e-06  7.94e-04    2.024067e+06  -2.742330e+00
+
+After 26 iterations the fit converged.
+final sum of squares of residuals : 1.01247
+rel. change during last iteration : -3.69344e-11
+
+degrees of freedom    (FIT_NDF)                        : 19
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.230842
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.0532879
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m2              = 2.02407e+06      +/- 4.557e+05    (22.51%)
+alpha2          = -2.74233         +/- 0.06019      (2.195%)
+
+correlation matrix of the fit parameters:
+                m2     alpha2 
+m2              1.000 
+alpha2         -0.975  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:41:18 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample2.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 21
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m3, alpha3))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m2            alpha2       
+   0 1.0124697078e+00   0.00e+00  0.00e+00    2.024067e+06  -2.742330e+00
+BREAK: Singular matrix in Givens()
+
+*******************************************************************************
+Fri Mar 06 12:41:35 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m1, alpha1))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m1            alpha1       
+   0 2.2808300655e+03   0.00e+00  5.47e+00    3.000000e+00  -2.000000e+00
+  91 1.4065924708e+00  -4.00e-04  5.47e-12    5.029959e+06  -2.993211e+00
+
+After 91 iterations the fit converged.
+final sum of squares of residuals : 1.40659
+rel. change during last iteration : -4.00327e-09
+
+degrees of freedom    (FIT_NDF)                        : 18
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.279543
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.078144
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m1              = 5.02996e+06      +/- 1.29e+06     (25.64%)
+alpha1          = -2.99321         +/- 0.06678      (2.231%)
+
+correlation matrix of the fit parameters:
+                m1     alpha1 
+m1              1.000 
+alpha1         -0.970  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:41:35 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample2.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 21
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m2, alpha2))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m2            alpha2       
+   0 1.9386196279e+00   0.00e+00  7.94e+00    5.029959e+06  -2.993211e+00
+  26 1.0124697078e+00  -3.69e-06  7.94e-04    2.024067e+06  -2.742330e+00
+
+After 26 iterations the fit converged.
+final sum of squares of residuals : 1.01247
+rel. change during last iteration : -3.69344e-11
+
+degrees of freedom    (FIT_NDF)                        : 19
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.230842
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.0532879
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m2              = 2.02407e+06      +/- 4.557e+05    (22.51%)
+alpha2          = -2.74233         +/- 0.06019      (2.195%)
+
+correlation matrix of the fit parameters:
+                m2     alpha2 
+m2              1.000 
+alpha2         -0.975  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:41:36 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample2.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 21
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m3, alpha3))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m3            alpha3       
+   0 1.0124697078e+00   0.00e+00  7.28e+00    2.024067e+06  -2.742330e+00
+   1 1.0124697078e+00  -4.39e-11  7.28e+01    2.024067e+06  -2.742330e+00
+
+After 1 iterations the fit converged.
+final sum of squares of residuals : 1.01247
+rel. change during last iteration : -4.3862e-16
+
+degrees of freedom    (FIT_NDF)                        : 19
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.230842
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.0532879
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m3              = 2.02407e+06      +/- 4.557e+05    (22.51%)
+alpha3          = -2.74233         +/- 0.06019      (2.195%)
+
+correlation matrix of the fit parameters:
+                m3     alpha3 
+m3              1.000 
+alpha3         -0.975  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:44:06 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m1, alpha1))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m1            alpha1       
+   0 2.2808300655e+03   0.00e+00  5.47e+00    3.000000e+00  -2.000000e+00
+  91 1.4065924708e+00  -4.00e-04  5.47e-12    5.029959e+06  -2.993211e+00
+
+After 91 iterations the fit converged.
+final sum of squares of residuals : 1.40659
+rel. change during last iteration : -4.00327e-09
+
+degrees of freedom    (FIT_NDF)                        : 18
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.279543
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.078144
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m1              = 5.02996e+06      +/- 1.29e+06     (25.64%)
+alpha1          = -2.99321         +/- 0.06678      (2.231%)
+
+correlation matrix of the fit parameters:
+                m1     alpha1 
+m1              1.000 
+alpha1         -0.970  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:44:07 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample2.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 21
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m2, alpha2))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m2            alpha2       
+   0 1.9386196279e+00   0.00e+00  7.94e+00    5.029959e+06  -2.993211e+00
+  26 1.0124697078e+00  -3.69e-06  7.94e-04    2.024067e+06  -2.742330e+00
+
+After 26 iterations the fit converged.
+final sum of squares of residuals : 1.01247
+rel. change during last iteration : -3.69344e-11
+
+degrees of freedom    (FIT_NDF)                        : 19
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.230842
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.0532879
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m2              = 2.02407e+06      +/- 4.557e+05    (22.51%)
+alpha2          = -2.74233         +/- 0.06019      (2.195%)
+
+correlation matrix of the fit parameters:
+                m2     alpha2 
+m2              1.000 
+alpha2         -0.975  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:44:07 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample2.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 21
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m3, alpha3))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m3            alpha3       
+   0 1.0124697078e+00   0.00e+00  7.28e+00    2.024067e+06  -2.742330e+00
+   1 1.0124697078e+00  -4.39e-11  7.28e+01    2.024067e+06  -2.742330e+00
+
+After 1 iterations the fit converged.
+final sum of squares of residuals : 1.01247
+rel. change during last iteration : -4.3862e-16
+
+degrees of freedom    (FIT_NDF)                        : 19
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.230842
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.0532879
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m3              = 2.02407e+06      +/- 4.557e+05    (22.51%)
+alpha3          = -2.74233         +/- 0.06019      (2.195%)
+
+correlation matrix of the fit parameters:
+                m3     alpha3 
+m3              1.000 
+alpha3         -0.975  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:44:27 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m1, alpha1))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m1            alpha1       
+   0 2.2808300655e+03   0.00e+00  5.47e+00    3.000000e+00  -2.000000e+00
+  91 1.4065924708e+00  -4.00e-04  5.47e-12    5.029959e+06  -2.993211e+00
+
+After 91 iterations the fit converged.
+final sum of squares of residuals : 1.40659
+rel. change during last iteration : -4.00327e-09
+
+degrees of freedom    (FIT_NDF)                        : 18
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.279543
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.078144
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m1              = 5.02996e+06      +/- 1.29e+06     (25.64%)
+alpha1          = -2.99321         +/- 0.06678      (2.231%)
+
+correlation matrix of the fit parameters:
+                m1     alpha1 
+m1              1.000 
+alpha1         -0.970  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:44:28 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample2.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 21
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m2, alpha2))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m2            alpha2       
+   0 1.9386196279e+00   0.00e+00  7.94e+00    5.029959e+06  -2.993211e+00
+  26 1.0124697078e+00  -3.69e-06  7.94e-04    2.024067e+06  -2.742330e+00
+
+After 26 iterations the fit converged.
+final sum of squares of residuals : 1.01247
+rel. change during last iteration : -3.69344e-11
+
+degrees of freedom    (FIT_NDF)                        : 19
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.230842
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.0532879
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m2              = 2.02407e+06      +/- 4.557e+05    (22.51%)
+alpha2          = -2.74233         +/- 0.06019      (2.195%)
+
+correlation matrix of the fit parameters:
+                m2     alpha2 
+m2              1.000 
+alpha2         -0.975  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:44:28 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample2.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 21
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m3, alpha3))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m3            alpha3       
+   0 1.0124697078e+00   0.00e+00  7.28e+00    2.024067e+06  -2.742330e+00
+   1 1.0124697078e+00  -4.39e-11  7.28e+01    2.024067e+06  -2.742330e+00
+
+After 1 iterations the fit converged.
+final sum of squares of residuals : 1.01247
+rel. change during last iteration : -4.3862e-16
+
+degrees of freedom    (FIT_NDF)                        : 19
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.230842
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.0532879
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m3              = 2.02407e+06      +/- 4.557e+05    (22.51%)
+alpha3          = -2.74233         +/- 0.06019      (2.195%)
+
+correlation matrix of the fit parameters:
+                m3     alpha3 
+m3              1.000 
+alpha3         -0.975  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:45:14 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m1, alpha1))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m1            alpha1       
+   0 2.2808300655e+03   0.00e+00  5.47e+00    3.000000e+00  -2.000000e+00
+  91 1.4065924708e+00  -4.00e-04  5.47e-12    5.029959e+06  -2.993211e+00
+
+After 91 iterations the fit converged.
+final sum of squares of residuals : 1.40659
+rel. change during last iteration : -4.00327e-09
+
+degrees of freedom    (FIT_NDF)                        : 18
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.279543
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.078144
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m1              = 5.02996e+06      +/- 1.29e+06     (25.64%)
+alpha1          = -2.99321         +/- 0.06678      (2.231%)
+
+correlation matrix of the fit parameters:
+                m1     alpha1 
+m1              1.000 
+alpha1         -0.970  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:45:15 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample2.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 21
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m2, alpha2))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m2            alpha2       
+   0 1.9386196279e+00   0.00e+00  7.94e+00    5.029959e+06  -2.993211e+00
+  26 1.0124697078e+00  -3.69e-06  7.94e-04    2.024067e+06  -2.742330e+00
+
+After 26 iterations the fit converged.
+final sum of squares of residuals : 1.01247
+rel. change during last iteration : -3.69344e-11
+
+degrees of freedom    (FIT_NDF)                        : 19
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.230842
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.0532879
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m2              = 2.02407e+06      +/- 4.557e+05    (22.51%)
+alpha2          = -2.74233         +/- 0.06019      (2.195%)
+
+correlation matrix of the fit parameters:
+                m2     alpha2 
+m2              1.000 
+alpha2         -0.975  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:45:15 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample2.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 21
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m3, alpha3))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m3            alpha3       
+   0 1.0124697078e+00   0.00e+00  7.28e+00    2.024067e+06  -2.742330e+00
+   1 1.0124697078e+00  -4.39e-11  7.28e+01    2.024067e+06  -2.742330e+00
+
+After 1 iterations the fit converged.
+final sum of squares of residuals : 1.01247
+rel. change during last iteration : -4.3862e-16
+
+degrees of freedom    (FIT_NDF)                        : 19
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.230842
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.0532879
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m3              = 2.02407e+06      +/- 4.557e+05    (22.51%)
+alpha3          = -2.74233         +/- 0.06019      (2.195%)
+
+correlation matrix of the fit parameters:
+                m3     alpha3 
+m3              1.000 
+alpha3         -0.975  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:46:21 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m1, alpha1))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m1            alpha1       
+   0 2.2808300655e+03   0.00e+00  5.47e+00    3.000000e+00  -2.000000e+00
+  91 1.4065924708e+00  -4.00e-04  5.47e-12    5.029959e+06  -2.993211e+00
+
+After 91 iterations the fit converged.
+final sum of squares of residuals : 1.40659
+rel. change during last iteration : -4.00327e-09
+
+degrees of freedom    (FIT_NDF)                        : 18
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.279543
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.078144
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m1              = 5.02996e+06      +/- 1.29e+06     (25.64%)
+alpha1          = -2.99321         +/- 0.06678      (2.231%)
+
+correlation matrix of the fit parameters:
+                m1     alpha1 
+m1              1.000 
+alpha1         -0.970  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:46:21 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample2.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 21
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m2, alpha2))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m2            alpha2       
+   0 1.9386196279e+00   0.00e+00  7.94e+00    5.029959e+06  -2.993211e+00
+  26 1.0124697078e+00  -3.69e-06  7.94e-04    2.024067e+06  -2.742330e+00
+
+After 26 iterations the fit converged.
+final sum of squares of residuals : 1.01247
+rel. change during last iteration : -3.69344e-11
+
+degrees of freedom    (FIT_NDF)                        : 19
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.230842
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.0532879
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m2              = 2.02407e+06      +/- 4.557e+05    (22.51%)
+alpha2          = -2.74233         +/- 0.06019      (2.195%)
+
+correlation matrix of the fit parameters:
+                m2     alpha2 
+m2              1.000 
+alpha2         -0.975  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:46:21 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample2.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 21
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m3, alpha3))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m3            alpha3       
+   0 3.2906796876e+02   0.00e+00  7.96e+00    1.000000e+05  -3.000000e+00
+  24 1.0124697078e+00  -3.30e-05  7.96e-07    2.024067e+06  -2.742330e+00
+
+After 24 iterations the fit converged.
+final sum of squares of residuals : 1.01247
+rel. change during last iteration : -3.29582e-10
+
+degrees of freedom    (FIT_NDF)                        : 19
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.230842
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.0532879
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m3              = 2.02407e+06      +/- 4.557e+05    (22.51%)
+alpha3          = -2.74233         +/- 0.06019      (2.195%)
+
+correlation matrix of the fit parameters:
+                m3     alpha3 
+m3              1.000 
+alpha3         -0.975  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:47:11 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m1, alpha1))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m1            alpha1       
+   0 2.2808300655e+03   0.00e+00  5.47e+00    3.000000e+00  -2.000000e+00
+  91 1.4065924708e+00  -4.00e-04  5.47e-12    5.029959e+06  -2.993211e+00
+
+After 91 iterations the fit converged.
+final sum of squares of residuals : 1.40659
+rel. change during last iteration : -4.00327e-09
+
+degrees of freedom    (FIT_NDF)                        : 18
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.279543
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.078144
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m1              = 5.02996e+06      +/- 1.29e+06     (25.64%)
+alpha1          = -2.99321         +/- 0.06678      (2.231%)
+
+correlation matrix of the fit parameters:
+                m1     alpha1 
+m1              1.000 
+alpha1         -0.970  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:47:11 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample2.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 21
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m2, alpha2))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m2            alpha2       
+   0 1.9386196279e+00   0.00e+00  7.94e+00    5.029959e+06  -2.993211e+00
+  26 1.0124697078e+00  -3.69e-06  7.94e-04    2.024067e+06  -2.742330e+00
+
+After 26 iterations the fit converged.
+final sum of squares of residuals : 1.01247
+rel. change during last iteration : -3.69344e-11
+
+degrees of freedom    (FIT_NDF)                        : 19
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.230842
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.0532879
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m2              = 2.02407e+06      +/- 4.557e+05    (22.51%)
+alpha2          = -2.74233         +/- 0.06019      (2.195%)
+
+correlation matrix of the fit parameters:
+                m2     alpha2 
+m2              1.000 
+alpha2         -0.975  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:47:11 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample3.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 22
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m3, alpha3))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m3            alpha3       
+   0 2.0596377543e+00   0.00e+00  7.04e+00    2.024067e+06  -2.742330e+00
+   4 1.4520445270e+00  -4.09e-02  7.04e-04    1.252474e+06  -2.599991e+00
+
+After 4 iterations the fit converged.
+final sum of squares of residuals : 1.45204
+rel. change during last iteration : -4.08884e-07
+
+degrees of freedom    (FIT_NDF)                        : 20
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.269448
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.0726022
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m3              = 1.25247e+06      +/- 2.229e+05    (17.8%)
+alpha3          = -2.59999         +/- 0.04924      (1.894%)
+
+correlation matrix of the fit parameters:
+                m3     alpha3 
+m3              1.000 
+alpha3         -0.946  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:48:23 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m1, alpha1))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m1            alpha1       
+   0 2.2808300655e+03   0.00e+00  5.47e+00    3.000000e+00  -2.000000e+00
+  91 1.4065924708e+00  -4.00e-04  5.47e-12    5.029959e+06  -2.993211e+00
+
+After 91 iterations the fit converged.
+final sum of squares of residuals : 1.40659
+rel. change during last iteration : -4.00327e-09
+
+degrees of freedom    (FIT_NDF)                        : 18
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.279543
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.078144
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m1              = 5.02996e+06      +/- 1.29e+06     (25.64%)
+alpha1          = -2.99321         +/- 0.06678      (2.231%)
+
+correlation matrix of the fit parameters:
+                m1     alpha1 
+m1              1.000 
+alpha1         -0.970  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:48:23 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample2.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 21
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m2, alpha2))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m2            alpha2       
+   0 1.9386196279e+00   0.00e+00  7.94e+00    5.029959e+06  -2.993211e+00
+  26 1.0124697078e+00  -3.69e-06  7.94e-04    2.024067e+06  -2.742330e+00
+
+After 26 iterations the fit converged.
+final sum of squares of residuals : 1.01247
+rel. change during last iteration : -3.69344e-11
+
+degrees of freedom    (FIT_NDF)                        : 19
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.230842
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.0532879
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m2              = 2.02407e+06      +/- 4.557e+05    (22.51%)
+alpha2          = -2.74233         +/- 0.06019      (2.195%)
+
+correlation matrix of the fit parameters:
+                m2     alpha2 
+m2              1.000 
+alpha2         -0.975  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:48:23 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample3.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 22
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m3, alpha3))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m3            alpha3       
+   0 2.0596377543e+00   0.00e+00  7.04e+00    2.024067e+06  -2.742330e+00
+   4 1.4520445270e+00  -4.09e-02  7.04e-04    1.252474e+06  -2.599991e+00
+
+After 4 iterations the fit converged.
+final sum of squares of residuals : 1.45204
+rel. change during last iteration : -4.08884e-07
+
+degrees of freedom    (FIT_NDF)                        : 20
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.269448
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.0726022
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m3              = 1.25247e+06      +/- 2.229e+05    (17.8%)
+alpha3          = -2.59999         +/- 0.04924      (1.894%)
+
+correlation matrix of the fit parameters:
+                m3     alpha3 
+m3              1.000 
+alpha3         -0.946  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:48:44 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m1, alpha1))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m1            alpha1       
+   0 2.2808300655e+03   0.00e+00  5.47e+00    3.000000e+00  -2.000000e+00
+  91 1.4065924708e+00  -4.00e-04  5.47e-12    5.029959e+06  -2.993211e+00
+
+After 91 iterations the fit converged.
+final sum of squares of residuals : 1.40659
+rel. change during last iteration : -4.00327e-09
+
+degrees of freedom    (FIT_NDF)                        : 18
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.279543
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.078144
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m1              = 5.02996e+06      +/- 1.29e+06     (25.64%)
+alpha1          = -2.99321         +/- 0.06678      (2.231%)
+
+correlation matrix of the fit parameters:
+                m1     alpha1 
+m1              1.000 
+alpha1         -0.970  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:48:44 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample2.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 21
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m2, alpha2))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m2            alpha2       
+   0 1.9386196279e+00   0.00e+00  7.94e+00    5.029959e+06  -2.993211e+00
+  26 1.0124697078e+00  -3.69e-06  7.94e-04    2.024067e+06  -2.742330e+00
+
+After 26 iterations the fit converged.
+final sum of squares of residuals : 1.01247
+rel. change during last iteration : -3.69344e-11
+
+degrees of freedom    (FIT_NDF)                        : 19
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.230842
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.0532879
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m2              = 2.02407e+06      +/- 4.557e+05    (22.51%)
+alpha2          = -2.74233         +/- 0.06019      (2.195%)
+
+correlation matrix of the fit parameters:
+                m2     alpha2 
+m2              1.000 
+alpha2         -0.975  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:48:44 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample3.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 22
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m3, alpha3))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m3            alpha3       
+   0 2.0596377543e+00   0.00e+00  7.04e+00    2.024067e+06  -2.742330e+00
+   4 1.4520445270e+00  -4.09e-02  7.04e-04    1.252474e+06  -2.599991e+00
+
+After 4 iterations the fit converged.
+final sum of squares of residuals : 1.45204
+rel. change during last iteration : -4.08884e-07
+
+degrees of freedom    (FIT_NDF)                        : 20
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.269448
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.0726022
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m3              = 1.25247e+06      +/- 2.229e+05    (17.8%)
+alpha3          = -2.59999         +/- 0.04924      (1.894%)
+
+correlation matrix of the fit parameters:
+                m3     alpha3 
+m3              1.000 
+alpha3         -0.946  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:49:15 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m1, alpha1))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m1            alpha1       
+   0 2.2808300655e+03   0.00e+00  5.47e+00    3.000000e+00  -2.000000e+00
+  91 1.4065924708e+00  -4.00e-04  5.47e-12    5.029959e+06  -2.993211e+00
+
+After 91 iterations the fit converged.
+final sum of squares of residuals : 1.40659
+rel. change during last iteration : -4.00327e-09
+
+degrees of freedom    (FIT_NDF)                        : 18
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.279543
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.078144
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m1              = 5.02996e+06      +/- 1.29e+06     (25.64%)
+alpha1          = -2.99321         +/- 0.06678      (2.231%)
+
+correlation matrix of the fit parameters:
+                m1     alpha1 
+m1              1.000 
+alpha1         -0.970  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:49:15 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample2.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 21
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m2, alpha2))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m2            alpha2       
+   0 1.9386196279e+00   0.00e+00  7.94e+00    5.029959e+06  -2.993211e+00
+  26 1.0124697078e+00  -3.69e-06  7.94e-04    2.024067e+06  -2.742330e+00
+
+After 26 iterations the fit converged.
+final sum of squares of residuals : 1.01247
+rel. change during last iteration : -3.69344e-11
+
+degrees of freedom    (FIT_NDF)                        : 19
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.230842
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.0532879
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m2              = 2.02407e+06      +/- 4.557e+05    (22.51%)
+alpha2          = -2.74233         +/- 0.06019      (2.195%)
+
+correlation matrix of the fit parameters:
+                m2     alpha2 
+m2              1.000 
+alpha2         -0.975  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:49:15 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample3.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 22
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m3, alpha3))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m3            alpha3       
+   0 2.0596377543e+00   0.00e+00  7.04e+00    2.024067e+06  -2.742330e+00
+   4 1.4520445270e+00  -4.09e-02  7.04e-04    1.252474e+06  -2.599991e+00
+
+After 4 iterations the fit converged.
+final sum of squares of residuals : 1.45204
+rel. change during last iteration : -4.08884e-07
+
+degrees of freedom    (FIT_NDF)                        : 20
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.269448
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.0726022
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m3              = 1.25247e+06      +/- 2.229e+05    (17.8%)
+alpha3          = -2.59999         +/- 0.04924      (1.894%)
+
+correlation matrix of the fit parameters:
+                m3     alpha3 
+m3              1.000 
+alpha3         -0.946  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:49:33 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m1, alpha1))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m1            alpha1       
+   0 2.2808300655e+03   0.00e+00  5.47e+00    3.000000e+00  -2.000000e+00
+  91 1.4065924708e+00  -4.00e-04  5.47e-12    5.029959e+06  -2.993211e+00
+
+After 91 iterations the fit converged.
+final sum of squares of residuals : 1.40659
+rel. change during last iteration : -4.00327e-09
+
+degrees of freedom    (FIT_NDF)                        : 18
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.279543
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.078144
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m1              = 5.02996e+06      +/- 1.29e+06     (25.64%)
+alpha1          = -2.99321         +/- 0.06678      (2.231%)
+
+correlation matrix of the fit parameters:
+                m1     alpha1 
+m1              1.000 
+alpha1         -0.970  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:49:34 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample2.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 21
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m2, alpha2))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m2            alpha2       
+   0 1.9386196279e+00   0.00e+00  7.94e+00    5.029959e+06  -2.993211e+00
+  26 1.0124697078e+00  -3.69e-06  7.94e-04    2.024067e+06  -2.742330e+00
+
+After 26 iterations the fit converged.
+final sum of squares of residuals : 1.01247
+rel. change during last iteration : -3.69344e-11
+
+degrees of freedom    (FIT_NDF)                        : 19
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.230842
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.0532879
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m2              = 2.02407e+06      +/- 4.557e+05    (22.51%)
+alpha2          = -2.74233         +/- 0.06019      (2.195%)
+
+correlation matrix of the fit parameters:
+                m2     alpha2 
+m2              1.000 
+alpha2         -0.975  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:49:34 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample3.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 22
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m3, alpha3))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m3            alpha3       
+   0 2.0596377543e+00   0.00e+00  7.04e+00    2.024067e+06  -2.742330e+00
+   4 1.4520445270e+00  -4.09e-02  7.04e-04    1.252474e+06  -2.599991e+00
+
+After 4 iterations the fit converged.
+final sum of squares of residuals : 1.45204
+rel. change during last iteration : -4.08884e-07
+
+degrees of freedom    (FIT_NDF)                        : 20
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.269448
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.0726022
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m3              = 1.25247e+06      +/- 2.229e+05    (17.8%)
+alpha3          = -2.59999         +/- 0.04924      (1.894%)
+
+correlation matrix of the fit parameters:
+                m3     alpha3 
+m3              1.000 
+alpha3         -0.946  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:49:52 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m1, alpha1))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m1            alpha1       
+   0 2.2808300655e+03   0.00e+00  5.47e+00    3.000000e+00  -2.000000e+00
+  91 1.4065924708e+00  -4.00e-04  5.47e-12    5.029959e+06  -2.993211e+00
+
+After 91 iterations the fit converged.
+final sum of squares of residuals : 1.40659
+rel. change during last iteration : -4.00327e-09
+
+degrees of freedom    (FIT_NDF)                        : 18
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.279543
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.078144
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m1              = 5.02996e+06      +/- 1.29e+06     (25.64%)
+alpha1          = -2.99321         +/- 0.06678      (2.231%)
+
+correlation matrix of the fit parameters:
+                m1     alpha1 
+m1              1.000 
+alpha1         -0.970  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:49:52 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample2.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 21
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m2, alpha2))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m2            alpha2       
+   0 1.9386196279e+00   0.00e+00  7.94e+00    5.029959e+06  -2.993211e+00
+  26 1.0124697078e+00  -3.69e-06  7.94e-04    2.024067e+06  -2.742330e+00
+
+After 26 iterations the fit converged.
+final sum of squares of residuals : 1.01247
+rel. change during last iteration : -3.69344e-11
+
+degrees of freedom    (FIT_NDF)                        : 19
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.230842
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.0532879
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m2              = 2.02407e+06      +/- 4.557e+05    (22.51%)
+alpha2          = -2.74233         +/- 0.06019      (2.195%)
+
+correlation matrix of the fit parameters:
+                m2     alpha2 
+m2              1.000 
+alpha2         -0.975  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:49:53 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample3.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 22
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m3, alpha3))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m3            alpha3       
+   0 2.0596377543e+00   0.00e+00  7.04e+00    2.024067e+06  -2.742330e+00
+   4 1.4520445270e+00  -4.09e-02  7.04e-04    1.252474e+06  -2.599991e+00
+
+After 4 iterations the fit converged.
+final sum of squares of residuals : 1.45204
+rel. change during last iteration : -4.08884e-07
+
+degrees of freedom    (FIT_NDF)                        : 20
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.269448
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.0726022
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m3              = 1.25247e+06      +/- 2.229e+05    (17.8%)
+alpha3          = -2.59999         +/- 0.04924      (1.894%)
+
+correlation matrix of the fit parameters:
+                m3     alpha3 
+m3              1.000 
+alpha3         -0.946  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:50:01 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m1, alpha1))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m1            alpha1       
+   0 2.2808300655e+03   0.00e+00  5.47e+00    3.000000e+00  -2.000000e+00
+  91 1.4065924708e+00  -4.00e-04  5.47e-12    5.029959e+06  -2.993211e+00
+
+After 91 iterations the fit converged.
+final sum of squares of residuals : 1.40659
+rel. change during last iteration : -4.00327e-09
+
+degrees of freedom    (FIT_NDF)                        : 18
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.279543
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.078144
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m1              = 5.02996e+06      +/- 1.29e+06     (25.64%)
+alpha1          = -2.99321         +/- 0.06678      (2.231%)
+
+correlation matrix of the fit parameters:
+                m1     alpha1 
+m1              1.000 
+alpha1         -0.970  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:50:01 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample2.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 21
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m2, alpha2))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m2            alpha2       
+   0 1.9386196279e+00   0.00e+00  7.94e+00    5.029959e+06  -2.993211e+00
+  26 1.0124697078e+00  -3.69e-06  7.94e-04    2.024067e+06  -2.742330e+00
+
+After 26 iterations the fit converged.
+final sum of squares of residuals : 1.01247
+rel. change during last iteration : -3.69344e-11
+
+degrees of freedom    (FIT_NDF)                        : 19
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.230842
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.0532879
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m2              = 2.02407e+06      +/- 4.557e+05    (22.51%)
+alpha2          = -2.74233         +/- 0.06019      (2.195%)
+
+correlation matrix of the fit parameters:
+                m2     alpha2 
+m2              1.000 
+alpha2         -0.975  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:50:01 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample3.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 22
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m3, alpha3))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m3            alpha3       
+   0 2.0596377543e+00   0.00e+00  7.04e+00    2.024067e+06  -2.742330e+00
+   4 1.4520445270e+00  -4.09e-02  7.04e-04    1.252474e+06  -2.599991e+00
+
+After 4 iterations the fit converged.
+final sum of squares of residuals : 1.45204
+rel. change during last iteration : -4.08884e-07
+
+degrees of freedom    (FIT_NDF)                        : 20
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.269448
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.0726022
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m3              = 1.25247e+06      +/- 2.229e+05    (17.8%)
+alpha3          = -2.59999         +/- 0.04924      (1.894%)
+
+correlation matrix of the fit parameters:
+                m3     alpha3 
+m3              1.000 
+alpha3         -0.946  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:50:17 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m1, alpha1))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m1            alpha1       
+   0 2.2808300655e+03   0.00e+00  5.47e+00    3.000000e+00  -2.000000e+00
+  91 1.4065924708e+00  -4.00e-04  5.47e-12    5.029959e+06  -2.993211e+00
+
+After 91 iterations the fit converged.
+final sum of squares of residuals : 1.40659
+rel. change during last iteration : -4.00327e-09
+
+degrees of freedom    (FIT_NDF)                        : 18
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.279543
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.078144
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m1              = 5.02996e+06      +/- 1.29e+06     (25.64%)
+alpha1          = -2.99321         +/- 0.06678      (2.231%)
+
+correlation matrix of the fit parameters:
+                m1     alpha1 
+m1              1.000 
+alpha1         -0.970  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:50:18 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample2.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 21
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m2, alpha2))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m2            alpha2       
+   0 1.9386196279e+00   0.00e+00  7.94e+00    5.029959e+06  -2.993211e+00
+  26 1.0124697078e+00  -3.69e-06  7.94e-04    2.024067e+06  -2.742330e+00
+
+After 26 iterations the fit converged.
+final sum of squares of residuals : 1.01247
+rel. change during last iteration : -3.69344e-11
+
+degrees of freedom    (FIT_NDF)                        : 19
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.230842
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.0532879
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m2              = 2.02407e+06      +/- 4.557e+05    (22.51%)
+alpha2          = -2.74233         +/- 0.06019      (2.195%)
+
+correlation matrix of the fit parameters:
+                m2     alpha2 
+m2              1.000 
+alpha2         -0.975  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:50:18 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample3.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 22
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m3, alpha3))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m3            alpha3       
+   0 2.0596377543e+00   0.00e+00  7.04e+00    2.024067e+06  -2.742330e+00
+   4 1.4520445270e+00  -4.09e-02  7.04e-04    1.252474e+06  -2.599991e+00
+
+After 4 iterations the fit converged.
+final sum of squares of residuals : 1.45204
+rel. change during last iteration : -4.08884e-07
+
+degrees of freedom    (FIT_NDF)                        : 20
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.269448
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.0726022
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m3              = 1.25247e+06      +/- 2.229e+05    (17.8%)
+alpha3          = -2.59999         +/- 0.04924      (1.894%)
+
+correlation matrix of the fit parameters:
+                m3     alpha3 
+m3              1.000 
+alpha3         -0.946  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:50:23 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m1, alpha1))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m1            alpha1       
+   0 2.2808300655e+03   0.00e+00  5.47e+00    3.000000e+00  -2.000000e+00
+  91 1.4065924708e+00  -4.00e-04  5.47e-12    5.029959e+06  -2.993211e+00
+
+After 91 iterations the fit converged.
+final sum of squares of residuals : 1.40659
+rel. change during last iteration : -4.00327e-09
+
+degrees of freedom    (FIT_NDF)                        : 18
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.279543
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.078144
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m1              = 5.02996e+06      +/- 1.29e+06     (25.64%)
+alpha1          = -2.99321         +/- 0.06678      (2.231%)
+
+correlation matrix of the fit parameters:
+                m1     alpha1 
+m1              1.000 
+alpha1         -0.970  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:50:23 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample2.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 21
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m2, alpha2))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m2            alpha2       
+   0 1.9386196279e+00   0.00e+00  7.94e+00    5.029959e+06  -2.993211e+00
+  26 1.0124697078e+00  -3.69e-06  7.94e-04    2.024067e+06  -2.742330e+00
+
+After 26 iterations the fit converged.
+final sum of squares of residuals : 1.01247
+rel. change during last iteration : -3.69344e-11
+
+degrees of freedom    (FIT_NDF)                        : 19
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.230842
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.0532879
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m2              = 2.02407e+06      +/- 4.557e+05    (22.51%)
+alpha2          = -2.74233         +/- 0.06019      (2.195%)
+
+correlation matrix of the fit parameters:
+                m2     alpha2 
+m2              1.000 
+alpha2         -0.975  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:50:23 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample3.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 22
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m3, alpha3))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m3            alpha3       
+   0 2.0596377543e+00   0.00e+00  7.04e+00    2.024067e+06  -2.742330e+00
+   4 1.4520445270e+00  -4.09e-02  7.04e-04    1.252474e+06  -2.599991e+00
+
+After 4 iterations the fit converged.
+final sum of squares of residuals : 1.45204
+rel. change during last iteration : -4.08884e-07
+
+degrees of freedom    (FIT_NDF)                        : 20
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.269448
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.0726022
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m3              = 1.25247e+06      +/- 2.229e+05    (17.8%)
+alpha3          = -2.59999         +/- 0.04924      (1.894%)
+
+correlation matrix of the fit parameters:
+                m3     alpha3 
+m3              1.000 
+alpha3         -0.946  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:51:59 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m1, alpha1))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m1            alpha1       
+   0 2.2808300655e+03   0.00e+00  5.47e+00    3.000000e+00  -2.000000e+00
+  91 1.4065924708e+00  -4.00e-04  5.47e-12    5.029959e+06  -2.993211e+00
+
+After 91 iterations the fit converged.
+final sum of squares of residuals : 1.40659
+rel. change during last iteration : -4.00327e-09
+
+degrees of freedom    (FIT_NDF)                        : 18
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.279543
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.078144
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m1              = 5.02996e+06      +/- 1.29e+06     (25.64%)
+alpha1          = -2.99321         +/- 0.06678      (2.231%)
+
+correlation matrix of the fit parameters:
+                m1     alpha1 
+m1              1.000 
+alpha1         -0.970  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:52:00 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample2.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 21
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m2, alpha2))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m2            alpha2       
+   0 1.9386196279e+00   0.00e+00  7.94e+00    5.029959e+06  -2.993211e+00
+  26 1.0124697078e+00  -3.69e-06  7.94e-04    2.024067e+06  -2.742330e+00
+
+After 26 iterations the fit converged.
+final sum of squares of residuals : 1.01247
+rel. change during last iteration : -3.69344e-11
+
+degrees of freedom    (FIT_NDF)                        : 19
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.230842
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.0532879
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m2              = 2.02407e+06      +/- 4.557e+05    (22.51%)
+alpha2          = -2.74233         +/- 0.06019      (2.195%)
+
+correlation matrix of the fit parameters:
+                m2     alpha2 
+m2              1.000 
+alpha2         -0.975  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:52:00 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample3.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 22
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m3, alpha3))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m3            alpha3       
+   0 2.0596377543e+00   0.00e+00  7.04e+00    2.024067e+06  -2.742330e+00
+   4 1.4520445270e+00  -4.09e-02  7.04e-04    1.252474e+06  -2.599991e+00
+
+After 4 iterations the fit converged.
+final sum of squares of residuals : 1.45204
+rel. change during last iteration : -4.08884e-07
+
+degrees of freedom    (FIT_NDF)                        : 20
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.269448
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.0726022
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m3              = 1.25247e+06      +/- 2.229e+05    (17.8%)
+alpha3          = -2.59999         +/- 0.04924      (1.894%)
+
+correlation matrix of the fit parameters:
+                m3     alpha3 
+m3              1.000 
+alpha3         -0.946  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:52:08 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m1, alpha1))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m1            alpha1       
+   0 2.2808300655e+03   0.00e+00  5.47e+00    3.000000e+00  -2.000000e+00
+  91 1.4065924708e+00  -4.00e-04  5.47e-12    5.029959e+06  -2.993211e+00
+
+After 91 iterations the fit converged.
+final sum of squares of residuals : 1.40659
+rel. change during last iteration : -4.00327e-09
+
+degrees of freedom    (FIT_NDF)                        : 18
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.279543
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.078144
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m1              = 5.02996e+06      +/- 1.29e+06     (25.64%)
+alpha1          = -2.99321         +/- 0.06678      (2.231%)
+
+correlation matrix of the fit parameters:
+                m1     alpha1 
+m1              1.000 
+alpha1         -0.970  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:52:08 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample2.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 21
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m2, alpha2))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m2            alpha2       
+   0 1.9386196279e+00   0.00e+00  7.94e+00    5.029959e+06  -2.993211e+00
+  26 1.0124697078e+00  -3.69e-06  7.94e-04    2.024067e+06  -2.742330e+00
+
+After 26 iterations the fit converged.
+final sum of squares of residuals : 1.01247
+rel. change during last iteration : -3.69344e-11
+
+degrees of freedom    (FIT_NDF)                        : 19
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.230842
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.0532879
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m2              = 2.02407e+06      +/- 4.557e+05    (22.51%)
+alpha2          = -2.74233         +/- 0.06019      (2.195%)
+
+correlation matrix of the fit parameters:
+                m2     alpha2 
+m2              1.000 
+alpha2         -0.975  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:52:08 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample3.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 22
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m3, alpha3))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m3            alpha3       
+   0 2.0596377543e+00   0.00e+00  7.04e+00    2.024067e+06  -2.742330e+00
+   4 1.4520445270e+00  -4.09e-02  7.04e-04    1.252474e+06  -2.599991e+00
+
+After 4 iterations the fit converged.
+final sum of squares of residuals : 1.45204
+rel. change during last iteration : -4.08884e-07
+
+degrees of freedom    (FIT_NDF)                        : 20
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.269448
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.0726022
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m3              = 1.25247e+06      +/- 2.229e+05    (17.8%)
+alpha3          = -2.59999         +/- 0.04924      (1.894%)
+
+correlation matrix of the fit parameters:
+                m3     alpha3 
+m3              1.000 
+alpha3         -0.946  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:52:15 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m1, alpha1))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m1            alpha1       
+   0 2.2808300655e+03   0.00e+00  5.47e+00    3.000000e+00  -2.000000e+00
+  91 1.4065924708e+00  -4.00e-04  5.47e-12    5.029959e+06  -2.993211e+00
+
+After 91 iterations the fit converged.
+final sum of squares of residuals : 1.40659
+rel. change during last iteration : -4.00327e-09
+
+degrees of freedom    (FIT_NDF)                        : 18
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.279543
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.078144
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m1              = 5.02996e+06      +/- 1.29e+06     (25.64%)
+alpha1          = -2.99321         +/- 0.06678      (2.231%)
+
+correlation matrix of the fit parameters:
+                m1     alpha1 
+m1              1.000 
+alpha1         -0.970  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:52:15 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample2.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 21
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m2, alpha2))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m2            alpha2       
+   0 1.9386196279e+00   0.00e+00  7.94e+00    5.029959e+06  -2.993211e+00
+  26 1.0124697078e+00  -3.69e-06  7.94e-04    2.024067e+06  -2.742330e+00
+
+After 26 iterations the fit converged.
+final sum of squares of residuals : 1.01247
+rel. change during last iteration : -3.69344e-11
+
+degrees of freedom    (FIT_NDF)                        : 19
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.230842
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.0532879
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m2              = 2.02407e+06      +/- 4.557e+05    (22.51%)
+alpha2          = -2.74233         +/- 0.06019      (2.195%)
+
+correlation matrix of the fit parameters:
+                m2     alpha2 
+m2              1.000 
+alpha2         -0.975  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:52:15 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample3.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 22
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m3, alpha3))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m3            alpha3       
+   0 2.0596377543e+00   0.00e+00  7.04e+00    2.024067e+06  -2.742330e+00
+   4 1.4520445270e+00  -4.09e-02  7.04e-04    1.252474e+06  -2.599991e+00
+
+After 4 iterations the fit converged.
+final sum of squares of residuals : 1.45204
+rel. change during last iteration : -4.08884e-07
+
+degrees of freedom    (FIT_NDF)                        : 20
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.269448
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.0726022
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m3              = 1.25247e+06      +/- 2.229e+05    (17.8%)
+alpha3          = -2.59999         +/- 0.04924      (1.894%)
+
+correlation matrix of the fit parameters:
+                m3     alpha3 
+m3              1.000 
+alpha3         -0.946  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:52:30 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m1, alpha1))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m1            alpha1       
+   0 2.2808300655e+03   0.00e+00  5.47e+00    3.000000e+00  -2.000000e+00
+  91 1.4065924708e+00  -4.00e-04  5.47e-12    5.029959e+06  -2.993211e+00
+
+After 91 iterations the fit converged.
+final sum of squares of residuals : 1.40659
+rel. change during last iteration : -4.00327e-09
+
+degrees of freedom    (FIT_NDF)                        : 18
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.279543
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.078144
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m1              = 5.02996e+06      +/- 1.29e+06     (25.64%)
+alpha1          = -2.99321         +/- 0.06678      (2.231%)
+
+correlation matrix of the fit parameters:
+                m1     alpha1 
+m1              1.000 
+alpha1         -0.970  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:52:30 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample2.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 21
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m2, alpha2))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m2            alpha2       
+   0 1.9386196279e+00   0.00e+00  7.94e+00    5.029959e+06  -2.993211e+00
+  26 1.0124697078e+00  -3.69e-06  7.94e-04    2.024067e+06  -2.742330e+00
+
+After 26 iterations the fit converged.
+final sum of squares of residuals : 1.01247
+rel. change during last iteration : -3.69344e-11
+
+degrees of freedom    (FIT_NDF)                        : 19
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.230842
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.0532879
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m2              = 2.02407e+06      +/- 4.557e+05    (22.51%)
+alpha2          = -2.74233         +/- 0.06019      (2.195%)
+
+correlation matrix of the fit parameters:
+                m2     alpha2 
+m2              1.000 
+alpha2         -0.975  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:52:30 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample3.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 22
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m3, alpha3))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m3            alpha3       
+   0 2.0596377543e+00   0.00e+00  7.04e+00    2.024067e+06  -2.742330e+00
+   4 1.4520445270e+00  -4.09e-02  7.04e-04    1.252474e+06  -2.599991e+00
+
+After 4 iterations the fit converged.
+final sum of squares of residuals : 1.45204
+rel. change during last iteration : -4.08884e-07
+
+degrees of freedom    (FIT_NDF)                        : 20
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.269448
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.0726022
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m3              = 1.25247e+06      +/- 2.229e+05    (17.8%)
+alpha3          = -2.59999         +/- 0.04924      (1.894%)
+
+correlation matrix of the fit parameters:
+                m3     alpha3 
+m3              1.000 
+alpha3         -0.946  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:53:53 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample1.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 20
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m1, alpha1))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m1            alpha1       
+   0 2.2808300655e+03   0.00e+00  5.47e+00    3.000000e+00  -2.000000e+00
+  91 1.4065924708e+00  -4.00e-04  5.47e-12    5.029959e+06  -2.993211e+00
+
+After 91 iterations the fit converged.
+final sum of squares of residuals : 1.40659
+rel. change during last iteration : -4.00327e-09
+
+degrees of freedom    (FIT_NDF)                        : 18
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.279543
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.078144
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m1              = 5.02996e+06      +/- 1.29e+06     (25.64%)
+alpha1          = -2.99321         +/- 0.06678      (2.231%)
+
+correlation matrix of the fit parameters:
+                m1     alpha1 
+m1              1.000 
+alpha1         -0.970  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:53:54 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample2.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 21
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m2, alpha2))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m2            alpha2       
+   0 1.9386196279e+00   0.00e+00  7.94e+00    5.029959e+06  -2.993211e+00
+  26 1.0124697078e+00  -3.69e-06  7.94e-04    2.024067e+06  -2.742330e+00
+
+After 26 iterations the fit converged.
+final sum of squares of residuals : 1.01247
+rel. change during last iteration : -3.69344e-11
+
+degrees of freedom    (FIT_NDF)                        : 19
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.230842
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.0532879
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m2              = 2.02407e+06      +/- 4.557e+05    (22.51%)
+alpha2          = -2.74233         +/- 0.06019      (2.195%)
+
+correlation matrix of the fit parameters:
+                m2     alpha2 
+m2              1.000 
+alpha2         -0.975  1.000 
+
+
+*******************************************************************************
+Fri Mar 06 12:53:54 2020
+
+
+FIT:    data read from 'SoilMoisture_Sample3.txt' 	u 1:(log($3))
+        format = x:z
+        #datapoints = 22
+        residuals are weighted equally (unit weight)
+
+function used for fitting: log(model_SM(x, m3, alpha3))
+	model_SM(x, m, alpha) = m*(x**alpha)
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   m3            alpha3       
+   0 2.0596377543e+00   0.00e+00  7.04e+00    2.024067e+06  -2.742330e+00
+   4 1.4520445270e+00  -4.09e-02  7.04e-04    1.252474e+06  -2.599991e+00
+
+After 4 iterations the fit converged.
+final sum of squares of residuals : 1.45204
+rel. change during last iteration : -4.08884e-07
+
+degrees of freedom    (FIT_NDF)                        : 20
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.269448
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.0726022
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+m3              = 1.25247e+06      +/- 2.229e+05    (17.8%)
+alpha3          = -2.59999         +/- 0.04924      (1.894%)
+
+correlation matrix of the fit parameters:
+                m3     alpha3 
+m3              1.000 
+alpha3         -0.946  1.000 
