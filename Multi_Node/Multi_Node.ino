@@ -73,7 +73,7 @@ int run_DeepOcean(D_Struct, C_Struct);
 
 void setup() {
   Serial.begin(115200);
-  //  printf_begin();
+  printf_begin();
 
   // Set the LED as an output
   pinMode(LED, OUTPUT);
@@ -92,11 +92,13 @@ void setup() {
   mesh.begin();
 
   // Print out the mesh addr
-  
+
   Serial.print("Mesh Network ID: ");
   Serial.println(mesh.getNodeID());
   Serial.print("Mesh Address: "); Serial.println(mesh.getAddress(nodeID));
   radio.setPALevel(RF24_PA_MAX);
+
+//  radio.printDetails();
   Serial.println(F("**********************************\r\n"));
 
   // initialize the thresholds
@@ -120,23 +122,23 @@ void loop() {
     // Get the data from the current header
     network.peek(header);
 
-      // Switch on the header type, we only want the data if addressed to the master
-      switch (header.type) {
+    // Switch on the header type, we only want the data if addressed to the master
+    switch (header.type) {
 
-        // 'S' Type messages ask the sensor to read and send sensor data after evals
-        case 'S':
-          network.read(header, &M_Dat, sizeof(M_Dat));
-          Serial.print(F("\r\n"));
-          Serial.print("Received 'S' Type Message: "); Serial.println(M_Dat);
-          break;
+      // 'S' Type messages ask the sensor to read and send sensor data after evals
+      case 'S':
+        network.read(header, &M_Dat, sizeof(M_Dat));
+        Serial.print(F("\r\n"));
+        Serial.print("Received 'S' Type Message: "); Serial.println(M_Dat);
+        break;
 
-        // 'C' Type messages tell the sensor to calibrate or change its thresholds
-        case 'C':
-          network.read(header, &M_Dat, sizeof(M_Dat));
-          Serial.print(F("\r\n"));
-          Serial.print("Received 'C' Type Message: "); Serial.println(M_Dat);
-      }
+      // 'C' Type messages tell the sensor to calibrate or change its thresholds
+      case 'C':
+        network.read(header, &M_Dat, sizeof(M_Dat));
+        Serial.print(F("\r\n"));
+        Serial.print("Received 'C' Type Message: "); Serial.println(M_Dat);
     }
+  }
 
 
   /**** Read Sensors ****/
