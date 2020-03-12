@@ -1,0 +1,33 @@
+#Fits, characterizes, and plots the impedance of a loudspeaker
+#cd 'C:\Users\grant\OneDrive\Desktop\SkidLess\Testing Results\SoilMoistureTests_V2'
+cd 'C:\Users\Grant\Desktop\SkidLess\Testing Results\LightLevelTests'
+set xrange[*:*]
+set yrange[*:*]
+unset y2tics
+unset logscale
+
+# SOIL MOISTURE MODEL
+model_SM(x, m, alpha, b) = m*((x**(alpha))+b)
+
+# FITTING
+# Fitting Model to Sample 1
+m1 = 20
+alpha1 = 0.1
+b1 = 1
+fit model_SM(x, m1, alpha1, b1) 'LightLevel_Data.txt' \
+	u 1:3 via m1, alpha1, b1
+
+set key top right Left
+set grid
+unset style
+set xrange[0:110]
+set yrange[0:5]
+set format x '%.0s%c'
+set format y '%.1s%cV'
+set title 'Fitting Light Level Data to Affine Models' font 'Verdana, 20'
+set ylabel 'Output Voltage (V)' font 'Verdana, 18'
+set xlabel 'Lux (lumens)' font 'Verdana, 16'
+
+plot model_SM(x, m1, alpha1, b1) lw 2 lc 'brown' \
+		title sprintf('Sample 1:   %.3f (x^{%.3f} + %.2f)', m1, alpha1, b1), \
+	'LightLevel_Data.txt' u 1:3 pt 12 lw 5 lc 'brown' notitle

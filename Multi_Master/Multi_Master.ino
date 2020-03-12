@@ -20,18 +20,18 @@ RF24Mesh mesh(radio, network);
 
 // C_Struct stores relevant thresholds
 typedef struct {
-  uint16_t sM_thresh;
+  float sM_thresh;
   uint16_t bP_thresh;
-  uint16_t lL_thresh;
+  float lL_thresh;
   uint16_t t_thresh;
   uint8_t thresh_configure;
 } C_Struct;
 
 // D_Struct stores the relevant sensor data
 typedef struct {
-  uint16_t soilMoisture;
+  float soilMoisture;
   uint16_t baroPressure;
-  uint16_t lightLevel;
+  float lightLevel;
   uint16_t temp_C;
   uint8_t digitalOut;
   uint32_t timeStamp;
@@ -235,9 +235,9 @@ void C_Struct_Serial_print(C_Struct sct) {
 }
 
 void D_Struct_Serial_print(D_Struct sct) {
-  Serial.print("Soil Moisture Level (dV): "); Serial.println(sct.soilMoisture);
+  Serial.print("Soil Moisture Level (g%): "); Serial.println(sct.soilMoisture);
   Serial.print("Barometric Pressure (Pa): "); Serial.println(sct.baroPressure);
-  Serial.print("Ambient Light Level (dV): "); Serial.println(sct.lightLevel);
+  Serial.print("Ambient Lux Level   (lx): "); Serial.println(sct.lightLevel);
   Serial.print("Ambient Temperature (C ): "); Serial.println(sct.temp_C);
   Serial.print("Calucated Digital Output: "); Serial.println(sct.digitalOut);
   Serial.print("Watering Time Stamp (ms): "); Serial.println(sct.timeStamp);
