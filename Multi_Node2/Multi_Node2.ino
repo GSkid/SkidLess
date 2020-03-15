@@ -18,28 +18,30 @@ RF24Mesh mesh(radio, network);
 
 /**** GLOBALS ****/
 #define LED 2
+#define nodeID 3 // Set this to a different number for each node in the mesh network
 #define MOISTURE_PIN A1
 #define LIGHT_PIN A2
+#define LIQUID_SENSE 10000
 
 // C_Struct stores relevant thresholds
 typedef struct {
-  uint16_t sM_thresh;
-  uint16_t sM_thresh_00;
+  float sM_thresh;
+  float sM_thresh_00;
   //uint8_t bP_thresh;
-  uint16_t lL_thresh;
+  float lL_thresh;
   uint16_t tC_thresh;
   uint16_t time_thresh;
 } C_Struct;
 
 // D_Struct stores the relevant sensor data
 typedef struct {
-  uint16_t soilMoisture;
+  float soilMoisture;
   uint16_t baroPressure;
-  uint16_t lightLevel;
+  float lightLevel;
   uint16_t temp_C;
   uint8_t digitalOut;
   uint32_t timeStamp;
-  uint8_t nodeID;
+  uint8_t node_ID;
 } D_Struct;
 
 // Timers
@@ -50,7 +52,6 @@ uint32_t messageTimer = 0;
 Adafruit_BMP085 bmp;
 
 // RF24 Vars
-uint8_t nodeID = 3;    // Set this to a different number for each node in the mesh network
 uint8_t message_Flag = 0;
 
 // Use these vars to store the header data
@@ -64,16 +65,15 @@ D_Struct Data_Struct;
 void D_Struct_Serial_print(D_Struct);
 void C_Struct_Serial_print(C_Struct);
 void initC_Struct(C_Struct*);
-uint16_t pullSensor(int);
-void activateSensor(int);
-void de_activateSensor(int);
+float pullMoistureSensor(void);
+float pullLightSensor(void);
 int Timer(uint32_t, uint32_t);
 int run_DeepOcean(D_Struct, C_Struct);
 
 
 void setup() {
   Serial.begin(115200);
-  //  printf_begin();
+  printf_begin();
 
   // Set the LED as an output
   pinMode(LED, OUTPUT);
@@ -92,17 +92,19 @@ void setup() {
   mesh.begin();
 
   // Print out the mesh addr
-  
-  Serial.print("Mesh Network ID: ");
+
+  Serial.print(F("Mesh Network ID: "));
   Serial.println(mesh.getNodeID());
-  Serial.print("Mesh Address: "); Serial.println(mesh.getAddress(nodeID));
+  Serial.print(F("Mesh Address: ")); Serial.println(mesh.getAddress(nodeID));
   radio.setPALevel(RF24_PA_MAX);
+
+  //  radio.printDetails();
   Serial.println(F("**********************************\r\n"));
 
   // initialize the thresholds
   initC_Struct(&Thresholds);
   C_Struct_Serial_print(Thresholds);
-  Serial.print("\n");
+  Serial.print(F("\n"));
 }
 
 void loop() {
@@ -120,23 +122,23 @@ void loop() {
     // Get the data from the current header
     network.peek(header);
 
-      // Switch on the header type, we only want the data if addressed to the master
-      switch (header.type) {
+    // Switch on the header type, we only want the data if addressed to the master
+    switch (header.type) {
 
-        // 'S' Type messages ask the sensor to read and send sensor data after evals
-        case 'S':
-          network.read(header, &M_Dat, sizeof(M_Dat));
-          Serial.print(F("\r\n"));
-          Serial.print("Received 'S' Type Message: "); Serial.println(M_Dat);
-          break;
+      // 'S' Type messages ask the sensor to read and send sensor data after evals
+      case 'S':
+        network.read(header, &M_Dat, sizeof(M_Dat));
+        Serial.print(F("\r\n"));
+        Serial.print(F("Received 'S' Type Message: ")); Serial.println(M_Dat);
+        break;
 
-        // 'C' Type messages tell the sensor to calibrate or change its thresholds
-        case 'C':
-          network.read(header, &M_Dat, sizeof(M_Dat));
-          Serial.print(F("\r\n"));
-          Serial.print("Received 'C' Type Message: "); Serial.println(M_Dat);
-      }
+      // 'C' Type messages tell the sensor to calibrate or change its thresholds
+      case 'C':
+        network.read(header, &M_Dat, sizeof(M_Dat));
+        Serial.print(F("\r\n"));
+        Serial.print(F("Received 'C' Type Message: ")); Serial.println(M_Dat);
     }
+  }
 
 
   /**** Read Sensors ****/
@@ -145,15 +147,15 @@ void loop() {
     sleepTimer = millis();
 
     // Read all sensors
-    Data_Struct.soilMoisture = pullSensor(MOISTURE_PIN, 33);
+    Data_Struct.soilMoisture = pullMoistureSensor();
     Data_Struct.baroPressure = bmp.readPressure();
-    Data_Struct.lightLevel = pullSensor(LIGHT_PIN, 33);
+    Data_Struct.lightLevel = pullLightSensor();
     Data_Struct.temp_C = bmp.readTemperature();
     Data_Struct.digitalOut = run_DeepOcean(Data_Struct, Thresholds); // will be replaced by DeepOcean
     if (Data_Struct.digitalOut) {
       Data_Struct.timeStamp = millis();
     }
-    Data_Struct.nodeID = nodeID;
+    Data_Struct.node_ID = nodeID;
 
 
     /**** Data Transmission ****/
@@ -162,28 +164,28 @@ void loop() {
       // Send the D_Struct to Master
       // Sends the data up through the mesh to the master node to be evaluated
       if (!mesh.write(&Data_Struct, 'D', sizeof(Data_Struct), 0)) {
-        Serial.println("Send failed; checking network connection.");
+        Serial.println(F("Send failed; checking network connection."));
         // Check if still connected
         if (!mesh.checkConnection()) {
           // Reconnect to the network if disconnected and no send
-          Serial.println("Re-initializing the Network Address...");
+          Serial.println(F("Re-initializing the Network Address..."));
           mesh.renewAddress();
-          Serial.print("New Network Addr: "); Serial.println(mesh.getAddress(nodeID));
+          Serial.print(F("New Network Addr: ")); Serial.println(mesh.getAddress(nodeID));
         } else {
-          Serial.println("Network connection good.");
+          Serial.println(F("Network connection good."));
           Serial.println(F("**********************************\r\n"));
         }
       } else {
         Serial.println(F("**********************************"));
-        Serial.println("Sending Data to Master"); D_Struct_Serial_print(Data_Struct);
+        Serial.println(F("Sending Data to Master")); D_Struct_Serial_print(Data_Struct);
         // Set the flag to check for a failed message response
         message_Flag = 1; messageTimer = millis();
       }
     } else {
       // Reconnect to the mesh if disconnected
-      Serial.println("Re-initializing the Network Address...");
+      Serial.println(F("Re-initializing the Network Address..."));
       mesh.renewAddress();
-      Serial.print("New Network Addr: "); Serial.println(mesh.getAddress(nodeID));
+      Serial.print(F("New Network Addr: ")); Serial.println(mesh.getAddress(nodeID));
     }
   }
 
@@ -192,9 +194,9 @@ void loop() {
     // Reset the no message response flag
     message_Flag = 0;
     // Reconnect to the network
-    Serial.println("Re-initializing the network ID...");
+    Serial.println(F("Re-initializing the network ID..."));
     mesh.renewAddress();
-    Serial.print("New Network Address: "); Serial.println(mesh.getAddress(nodeID));
+    Serial.print(F("New Network Address: ")); Serial.println(mesh.getAddress(nodeID));
   }
 
   /**** 'C' Type Data Evaluation ****/
@@ -212,7 +214,7 @@ void loop() {
     // Reset the data variables
     M_Dat = 0;
     // Go to sleep
-    Serial.println("Received Sleep Instructions From Master");
+    Serial.println(F("Received Sleep Instructions From Master"));
     Serial.println(F("**********************************\r\n"));
   }
 
@@ -224,62 +226,66 @@ void loop() {
 /**** Helper Functions ****/
 
 void C_Struct_Serial_print(C_Struct sct) {
-  Serial.print("Soil Moisture Threshold: "); Serial.println(sct.sM_thresh);
-  Serial.print("Soil Moisture Danger Threshold: "); Serial.println(sct.sM_thresh_00);
-  //Serial.print("Barometric Pressure Threshold: "); Serial.println(sct.bP_thresh);
-  Serial.print("Ambient Light Level Threshold: "); Serial.println(sct.lL_thresh);
-  Serial.print("Ambient Temperature Threshold: "); Serial.println(sct.tC_thresh);
-  Serial.print("Maximum TimeStamp Threshold: "); Serial.println(sct.time_thresh);
+  Serial.print(F("Soil Moisture Threshold: ")); Serial.println(sct.sM_thresh);
+  Serial.print(F("Soil Moisture Danger Threshold: ")); Serial.println(sct.sM_thresh_00);
+  //Serial.print(F("Barometric Pressure Threshold: "); Serial.println(F(sct.bP_thresh);
+  Serial.print(F("Ambient Light Level Threshold: ")); Serial.println(sct.lL_thresh);
+  Serial.print(F("Ambient Temperature Threshold: ")); Serial.println(sct.tC_thresh);
+  Serial.print(F("Maximum TimeStamp Threshold: ")); Serial.println(sct.time_thresh);
   return;
 }
 
 void D_Struct_Serial_print(D_Struct sct) {
-  Serial.print("Soil Moisture Level (dV): "); Serial.println(sct.soilMoisture);
-  Serial.print("Barometric Pressure (Pa): "); Serial.println(sct.baroPressure);
-  Serial.print("Ambient Light Level (dV): "); Serial.println(sct.lightLevel);
-  Serial.print("Ambient Temperature (C ): "); Serial.println(sct.temp_C);
-  Serial.print("Calucated Digital Output: "); Serial.println(sct.digitalOut);
-  Serial.print("Previous Time Stamp (ms): "); Serial.println(sct.timeStamp);
-  Serial.print("Node ID: "); Serial.println(sct.nodeID);
+  Serial.print(F("Soil Moisture Cont. (g%): ")); Serial.println(sct.soilMoisture);
+  Serial.print(F("Barometric Pressure (Pa): ")); Serial.println(sct.baroPressure);
+  Serial.print(F("Ambient Lux Level   (lx): ")); Serial.println(sct.lightLevel);
+  Serial.print(F("Ambient Temperature (C ): ")); Serial.println(sct.temp_C);
+  Serial.print(F("Calucated Digital Output: ")); Serial.println(sct.digitalOut);
+  Serial.print(F("Previous Time Stamp (ms): ")); Serial.println(sct.timeStamp);
+  Serial.print(F("Node ID: ")); Serial.println(sct.node_ID);
   return;
 }
 
 void initC_Struct(C_Struct* sct) {
-  sct->sM_thresh = 21;
-  sct->sM_thresh_00 = 12;
+  sct->sM_thresh = 3.8;
+  sct->sM_thresh_00 = 1;
   //sct->bP_thresh = 20000;
-  sct->lL_thresh = 4;
-  sct->tC_thresh = 2;
+  sct->lL_thresh = 12;
+  sct->tC_thresh = 5;
   sct->time_thresh = 30000;
   return;
 }
 
-/* @name: pullSensor
-   @param: sensor - pin you want to read from
-   @param: toMax - maximum value you want the result mapped to
+/* @name: pullMoistureSensor
+   @param: none
    @return: value of the mapped sensor value
 */
-uint16_t pullSensor(int sensor, int toMax) {
+float pullMoistureSensor(void) {
+  // First map the voltage reading into a resistance
+  uint16_t soilV = map(analogRead(MOISTURE_PIN), 0, 1023, 0, 500);
+  float R_probes = 500 - soilV; //((500 - soilV)*LIQUID_SENSE)/soilV;
+  R_probes *= LIQUID_SENSE;
+  R_probes /= soilV;
+  R_probes = pow(2.774 / R_probes, 1 / 2.774) * 100;
   // Returns the mapped analog value
-  return (map(analogRead(sensor), 0, 900, 0, toMax));
+  return R_probes;
 }
 
-/* @name: activateSensor
-   @param: activePin - pin you want to turn on
-   @return: if the pin was turned on successfully
+/* @name: pullLightSensor
+   @param: none
+   @return: value of the mapped sensor value
 */
-void activateSensor(int activePin) {
-  // Turns on the argument pin
-  return (digitalWrite(activePin, 1));
-}
-
-/* @name: de_activateSensor
-   @param: inactivePin - pin you want to turn off
-   @return: if the pin was turned off successfully
-*/
-void de_activateSensor(int inactivePin) {
-  // Turns off the arugment pin
-  return (digitalWrite(inactivePin, 0));
+float pullLightSensor(void) {
+  float b = -0.94;
+  float c = 38.9;
+  float a = 0.014;
+  // First map the voltage reading
+  float lightV = map(analogRead(LIGHT_PIN), 0, 1023, 0, 500);
+  float mr_Lumen = lightV - b * c * 100;
+  mr_Lumen /= c * 100;
+  mr_Lumen = pow(mr_Lumen, 1 / a);
+  // Returns the mapped analog value
+  return (mr_Lumen);
 }
 
 /* @name: Timer
@@ -306,32 +312,33 @@ int Timer(uint32_t delayThresh, uint32_t prevDelay) {
 /* @name: run_DeepOcean
    @param: D_Struct - struct that holds sensor data
    @param: C_Struct - struct that holds thresholds
-   @return: HydroHomie - digital high/low telling the system to
-                          turn on or off the water
+   @return: digital high/low telling the system to
+                      turn on or off the water
 */
 int run_DeepOcean(D_Struct D_Struct, C_Struct C_Thresh) {
   int HydroHomie = 0;
-
-  // Chcek the soil moisture agains the first threshold
-  if ((D_Struct.soilMoisture < C_Thresh.sM_thresh) && time_Thresh) {
+  // Check for the time threshold
+  if (time_Thresh) {
+    
+    // Chcek the soil moisture against the first threshold
     // If its light, then don't water unless it has been a long time
-    if (D_Struct.lightLevel <= C_Thresh.lL_thresh) {
+    if ((D_Struct.soilMoisture < C_Thresh.sM_thresh) && (D_Struct.lightLevel <= C_Thresh.lL_thresh)) {
+        HydroHomie = 1;
+    }
+
+    // Check temperature to prevent freezing
+    // Also make sure you only water once in a while so water is not
+    // always on when its cold
+    else if (D_Struct.temp_C <= C_Thresh.tC_thresh) {
       HydroHomie = 1;
     }
   }
 
   // Water immediately if soilMoisture goes below a certain level
   if (D_Struct.soilMoisture < C_Thresh.sM_thresh_00) {
-    HydroHomie = 1;
+    return 2;
   }
-
-  // Check temperature to prevent freezing
-  // Also make sure you only water once in a while so water is not
-  // always on when its cold
-  if ((D_Struct.temp_C <= C_Thresh.tC_thresh) && time_Thresh) {
-    HydroHomie = 1;
-  }
-
-  // In main, make sure you check the result of HydroHomie to reset the timestamp
+  
+  // In main, make sure you update the timestamp if the output is >0
   return HydroHomie;
 }

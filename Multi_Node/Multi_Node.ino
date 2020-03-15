@@ -98,7 +98,7 @@ void setup() {
   Serial.print(F("Mesh Address: ")); Serial.println(mesh.getAddress(nodeID));
   radio.setPALevel(RF24_PA_MAX);
 
-//  radio.printDetails();
+  //  radio.printDetails();
   Serial.println(F("**********************************\r\n"));
 
   // initialize the thresholds
@@ -257,22 +257,22 @@ void initC_Struct(C_Struct* sct) {
 }
 
 /* @name: pullMoistureSensor
- * @param: none
+   @param: none
    @return: value of the mapped sensor value
 */
 float pullMoistureSensor(void) {
   // First map the voltage reading into a resistance
   uint16_t soilV = map(analogRead(MOISTURE_PIN), 0, 1023, 0, 500);
-  float R_probes = 500-soilV;//((500 - soilV)*LIQUID_SENSE)/soilV;
+  float R_probes = 500 - soilV; //((500 - soilV)*LIQUID_SENSE)/soilV;
   R_probes *= LIQUID_SENSE;
   R_probes /= soilV;
-  R_probes = pow(2.774/R_probes, 1/2.774)*100;
+  R_probes = pow(2.774 / R_probes, 1 / 2.774) * 100;
   // Returns the mapped analog value
   return R_probes;
 }
 
 /* @name: pullLightSensor
- * @param: none
+   @param: none
    @return: value of the mapped sensor value
 */
 float pullLightSensor(void) {
@@ -281,9 +281,9 @@ float pullLightSensor(void) {
   float a = 0.014;
   // First map the voltage reading
   float lightV = map(analogRead(LIGHT_PIN), 0, 1023, 0, 500);
-  float mr_Lumen = lightV - b*c*100;
-  mr_Lumen /= c*100;
-  mr_Lumen = pow(mr_Lumen, 1/a);
+  float mr_Lumen = lightV - b * c * 100;
+  mr_Lumen /= c * 100;
+  mr_Lumen = pow(mr_Lumen, 1 / a);
   // Returns the mapped analog value
   return (mr_Lumen);
 }
@@ -312,32 +312,33 @@ int Timer(uint32_t delayThresh, uint32_t prevDelay) {
 /* @name: run_DeepOcean
    @param: D_Struct - struct that holds sensor data
    @param: C_Struct - struct that holds thresholds
-   @return: HydroHomie - digital high/low telling the system to
-                          turn on or off the water
+   @return: digital high/low telling the system to
+                      turn on or off the water
 */
 int run_DeepOcean(D_Struct D_Struct, C_Struct C_Thresh) {
   int HydroHomie = 0;
-
-  // Chcek the soil moisture agains the first threshold
-  if ((D_Struct.soilMoisture < C_Thresh.sM_thresh) && time_Thresh) {
+  // Check for the time threshold
+  if (time_Thresh) {
+    
+    // Chcek the soil moisture against the first threshold
     // If its light, then don't water unless it has been a long time
-    if (D_Struct.lightLevel <= C_Thresh.lL_thresh) {
+    if ((D_Struct.soilMoisture < C_Thresh.sM_thresh) && (D_Struct.lightLevel <= C_Thresh.lL_thresh)) {
+        HydroHomie = 1;
+    }
+
+    // Check temperature to prevent freezing
+    // Also make sure you only water once in a while so water is not
+    // always on when its cold
+    else if (D_Struct.temp_C <= C_Thresh.tC_thresh) {
       HydroHomie = 1;
     }
   }
 
   // Water immediately if soilMoisture goes below a certain level
   if (D_Struct.soilMoisture < C_Thresh.sM_thresh_00) {
-    HydroHomie = 1;
+    return 2;
   }
-
-  // Check temperature to prevent freezing
-  // Also make sure you only water once in a while so water is not
-  // always on when its cold
-  if ((D_Struct.temp_C <= C_Thresh.tC_thresh) && time_Thresh) {
-    HydroHomie = 1;
-  }
-
-  // In main, make sure you check the result of HydroHomie to reset the timestamp
+  
+  // In main, make sure you update the timestamp if the output is >0
   return HydroHomie;
 }
