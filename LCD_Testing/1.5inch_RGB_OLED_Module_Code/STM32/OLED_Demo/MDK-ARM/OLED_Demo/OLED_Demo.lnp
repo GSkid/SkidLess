@@ -1,0 +1,28 @@
+--cpu Cortex-M3
+"oled_demo\startup_stm32f103xb.o"
+"oled_demo\system_stm32f1xx.o"
+"oled_demo\stm32f1xx_hal_rcc_ex.o"
+"oled_demo\stm32f1xx_hal_gpio.o"
+"oled_demo\stm32f1xx_hal.o"
+"oled_demo\stm32f1xx_hal_flash.o"
+"oled_demo\stm32f1xx_hal_flash_ex.o"
+"oled_demo\stm32f1xx_hal_spi_ex.o"
+"oled_demo\stm32f1xx_hal_gpio_ex.o"
+"oled_demo\stm32f1xx_hal_cortex.o"
+"oled_demo\stm32f1xx_hal_rcc.o"
+"oled_demo\stm32f1xx_hal_tim_ex.o"
+"oled_demo\stm32f1xx_hal_tim.o"
+"oled_demo\stm32f1xx_hal_pwr.o"
+"oled_demo\stm32f1xx_hal_spi.o"
+"oled_demo\stm32f1xx_hal_dma.o"
+"oled_demo\main.o"
+"oled_demo\spi.o"
+"oled_demo\stm32f1xx_hal_msp.o"
+"oled_demo\gpio.o"
+"oled_demo\stm32f1xx_it.o"
+"oled_demo\oled_driver.o"
+"oled_demo\oled_gfx.o"
+--library_type=microlib --strict --scatter "OLED_Demo\OLED_Demo.sct"
+--summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list "OLED_Demo.map" -o OLED_Demo\OLED_Demo.axf
