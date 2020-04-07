@@ -32,7 +32,7 @@ int main(int argc, char **argv)
     Device_Init();
     DEV_Delay_ms(20);
 
-    Display_Interface();
+    //Display_Interface();
     DEV_Delay_ms(3000);
     Clear_Screen();
     
@@ -56,10 +56,54 @@ int main(int argc, char **argv)
 
     */ 
     
+    
     Set_Color(WHITE);
-    print_String(25, 4, "Welcome To ", FONT_8X16);
-    print_String(30, 20, "Intuitive ", FONT_8X16);
-    print_String(5, 40, "Auto Irrigation", FONT_8X16);
+    
+    Write_Line(10, 120 , 400, 120);
+    
+    Write_Line(10, 10, 10, 120);
+    
+   // Draw_Line(0, 0, 100, SSD1351_HEIGHT - 1);
+    //DEV_Delay_ms(20);
+    
+   // Draw_Line(, 0, 100, SSD1351_HEIGHT - 1);
+    DEV_Delay_ms(20);
+    
+    
+    Set_Color(GREEN);
+    
+      
+    Draw_Pixel(15, 110);
+    
+    Draw_Pixel(20, 105);
+    
+    Draw_Pixel(25, 100);
+    
+    Draw_Pixel(30, 95);
+    
+    Draw_Pixel(35, 90);
+    
+    Draw_Pixel(40, 85);
+    
+    Draw_Pixel(50, 70);    
+      
+    Draw_Pixel(60, 60);
+    
+    Draw_Pixel(70, 55);
+    
+    Draw_Pixel(80, 45);
+    
+    Draw_Pixel(90, 40);
+    
+    Draw_Pixel(100, 35);
+  
+    Draw_Pixel(110, 30);
+    
+    Draw_Pixel(115, 20);    
+    
+    
+    Set_Color(RED);
+    Write_Line(110, 15 , 20, 115);
     
     /*
     testlines();
@@ -91,7 +135,7 @@ int main(int argc, char **argv)
     */
     
 
-    DEV_Delay_ms(8000);
+    DEV_Delay_ms(14000);
      
     Clear_Screen();
     
