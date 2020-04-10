@@ -3,6 +3,9 @@
 #include <RF24Network/RF24Network.h>
 #include <RF24Mesh/RF24Mesh.h>
 #include <RF24/utility/RPi/bcm2835.h>
+#include<iostream>
+#include<cstdio>
+#include<vector>
 
 /**** GLOBALS ****/
 #define LED RPI_BPLUS_GPIO_J8_07
@@ -46,6 +49,7 @@ typedef struct {
 D_Struct D_Dat;
 uint8_t dFlag = 0;
 uint8_t dataDat = 1;
+uint8_t column_flag = 0;
 
 // Timers
 uint32_t dTimer = 0;
@@ -58,7 +62,6 @@ uint8_t pingFlag = 0;
 uint16_t nodeID = 0;    // 0 = master
 
 /**** Helper Fxn Prototypes ****/
-//void D_Struct_DataLogger(D_Struct, File);
 void D_Struct_Serial_print(D_Struct);
 void C_Struct_Serial_print(C_Struct);
 int Timer(uint32_t, uint32_t);
@@ -72,8 +75,6 @@ void setup(void) {
   
   bcm2835_spi_begin();  
 
-  // Setup the SD Card
-
   // Set this node as the master node
   //printf("I am here \n");
   mesh.setNodeID(nodeID);
@@ -81,7 +82,7 @@ void setup(void) {
   radio.setPALevel(RF24_PA_MAX);
   
 
-  // Initialize & connect to the mesh
+  // Initialize the mesh and check for proper chip connection
  if (mesh.begin()) {
     printf("\nInitialized: %d\n", radio.isChipConnected());
   }
@@ -90,7 +91,7 @@ void setup(void) {
   return;
 }
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
   setup();
   while(1) {
     // Keep the network updated
@@ -155,32 +156,54 @@ int main(int argc, char** argv) {
 
       /**** Write Data Values to SD Card ****/
 
-      //    if (!SD.begin(10)) {
-      //      Serial.println("SD Setup Failed");
-      //    } else {
-      //      Serial.println("SD Setup Success");
-      //    }
-      //    File dataLog;
-      //    dataLog = SD.open("DLOG.TXT", FILE_WRITE);
-      //    if (dataLog) {
-      //      Serial.println("Writing D_Struct To SD Card");
-      //      D_Struct_Serial_print(D_Dat);
-      //      D_Struct_DataLogger(D_Dat, dataLog);
-      //      dataLog.close();
-      //    } else {
-      //      Serial.println("Error Writing To SD Card");
-      //    }
-      //    SD.end();
+      {
+          FILE* out;
+
+          if (argc < 2)
+          {
+              printf("No output file specified.\n");
+              break;
+          }
+
+          out = fopen(argv[1], "w");
+
+          if (out == NULL)
+          {
+              printf("Unable to open or generate file.\n");
+              break;
+          }
+
+          // this is the imported data vector
+          // std::vector<int> data = { 0, 1, 2, 3, 4, 5, 6 };
+
+          // prints out main column headers for the data file.
+          // conditional here: output if first loop, dont afterward, controlled by column_flag
+          if (column_flag == 0)
+          {
+              fprintf(out, "Soil Moisture:   Barametric Pressure:   Ambient Light:   Ambient Temperature:   Calculated Digital Output:   Time Stamp:   Node ID:   \n");
+              column_flag = 1;
+          }
+
+          fprintf(out, "%d                ", D_Dat.soilMoisture); // prints out 0th member of the data vector to the file.
+          fprintf(out, "%d                      ", D_Dat.baroPressure); // prints out 1st member of the data vector to the file.
+          fprintf(out, "%d                ", D_Dat.lightLevel); // prints out 2nd member of the data vector to the file.
+          fprintf(out, "%d                      ", D_Dat.temp_C); // prints out 3rd member of the data vector to the file.
+          fprintf(out, "%d                            ", D_Dat.digitalOut); // prints out 4th member of the data vector to the file.
+          fprintf(out, "%d             ", D_Dat.timeStamp); // prints out 5th member of the data vector to the file.
+          fprintf(out, "%d \n", D_Dat.nodeID); // prints out 6th member of the data vector to the file.
+          fclose(out);
+      }
 
 
       /**** 'S' and 'C' Type Message Responses ****/
+
       // Here we condition on if the node should be sent a configure message instead
 
       // Send to the message stored in the fromNode nodeID, message type 'S'
       RF24NetworkHeader p_header(mesh.getAddress(D_Dat.nodeID), 'S');
       // Data_Dat is just a 1 telling the node to go to sleep
       if (network.write(p_header, &dataDat, sizeof(dataDat))) {
-        printf("WOW");
+        printf("WOW\n");
       }
     }
 
@@ -213,21 +236,6 @@ return(1);
 
 
 /****  HELPER FXNS ****/
-
-/*
-void D_Struct_DataLogger(D_Struct sct, File dataFile) {
-  String dataString = "";
-  dataString += sct.soilMoisture; dataString += ",";
-  dataString += sct.baroPressure; dataString += ",";
-  dataString += sct.lightLevel; dataString += ",";
-  dataString += sct.temp_C; dataString += ",";
-  dataString += sct.digitalOut; dataString += ",";
-  dataString += sct.timeStamp; dataString += ",";
-  dataString += sct.nodeID;
-  dataFile.println(dataString);
-  return;
-}
-*/
 
 void C_Struct_Serial_print(C_Struct sct) {
   printf("Soil Moisture Threshold: %d", sct.sM_thresh);
