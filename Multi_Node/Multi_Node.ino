@@ -14,7 +14,7 @@ RF24Network network(radio);
 RF24Mesh mesh(radio, network);
 
 /**** #Defines ****/
-#define time_Thresh Timer(C_Thresh.time_thresh, D_Struct.timeStamp)
+#define time_Thresh Timer(C_Thresh.time_thresh, 10)//D_Struct.timeStamp)
 
 /**** GLOBALS ****/
 #define LED 2
@@ -36,17 +36,18 @@ typedef struct {
 // D_Struct stores the relevant sensor data
 typedef struct {
   float soilMoisture;
-  uint16_t baroPressure;
+  //uint16_t baroPressure;
   float lightLevel;
   uint16_t temp_C;
   uint8_t digitalOut;
-  uint32_t timeStamp;
+  //uint32_t timeStamp;
   uint8_t node_ID;
 } D_Struct;
 
 // Timers
 uint32_t sleepTimer = 0;
 uint32_t messageTimer = 0;
+uint32_t witchTimer = 120000;
 
 // Sensor Vars
 Adafruit_BMP085 bmp;
@@ -82,7 +83,7 @@ void setup() {
 
   // Begin the Barometric Pressure Sensor
   // Pin out: Vin->5V, SCL->A5, SDA->A4
-  bmp.begin();
+  //bmp.begin();
 
   // Set this node as the master node
   mesh.setNodeID(nodeID);
@@ -143,18 +144,18 @@ void loop() {
 
   /**** Read Sensors ****/
 
-  if (Timer(6000, sleepTimer)) {
+  if (Timer(witchTimer, sleepTimer)) {
     sleepTimer = millis();
 
     // Read all sensors
     Data_Struct.soilMoisture = pullMoistureSensor();
-    Data_Struct.baroPressure = bmp.readPressure();
+    //Data_Struct.baroPressure = 0; //change to bmp.readPressure();
     Data_Struct.lightLevel = pullLightSensor();
-    Data_Struct.temp_C = bmp.readTemperature();
+    Data_Struct.temp_C = 0; //change to bmp.readTemperature();
     Data_Struct.digitalOut = run_DeepOcean(Data_Struct, Thresholds); // will be replaced by DeepOcean
-    if (Data_Struct.digitalOut) {
-      Data_Struct.timeStamp = millis();
-    }
+//    if (Data_Struct.digitalOut) {
+//      Data_Struct.timeStamp = millis();
+//    }
     Data_Struct.node_ID = nodeID;
 
 
@@ -237,11 +238,11 @@ void C_Struct_Serial_print(C_Struct sct) {
 
 void D_Struct_Serial_print(D_Struct sct) {
   Serial.print(F("Soil Moisture Cont. (g%): ")); Serial.println(sct.soilMoisture);
-  Serial.print(F("Barometric Pressure (Pa): ")); Serial.println(sct.baroPressure);
+  //Serial.print(F("Barometric Pressure (Pa): ")); Serial.println(sct.baroPressure);
   Serial.print(F("Ambient Lux Level   (lx): ")); Serial.println(sct.lightLevel);
   Serial.print(F("Ambient Temperature (C ): ")); Serial.println(sct.temp_C);
   Serial.print(F("Calucated Digital Output: ")); Serial.println(sct.digitalOut);
-  Serial.print(F("Previous Time Stamp (ms): ")); Serial.println(sct.timeStamp);
+  //Serial.print(F("Previous Time Stamp (ms): ")); Serial.println(sct.timeStamp);
   Serial.print(F("Node ID: ")); Serial.println(sct.node_ID);
   return;
 }
@@ -322,7 +323,7 @@ int run_DeepOcean(D_Struct D_Struct, C_Struct C_Thresh) {
     
     // Chcek the soil moisture against the first threshold
     // If its light, then don't water unless it has been a long time
-    if ((D_Struct.soilMoisture < C_Thresh.sM_thresh) && (D_Struct.lightLevel <= C_Thresh.lL_thresh)) {
+    if ((D_Struct.soilMoisture < C_Thresh.sM_thresh) && (D_Struct.lightLevel <= C_Thresh.lL_thresh)) { // 
         HydroHomie = 1;
     }
 
