@@ -57,11 +57,75 @@ int main(int argc, char **argv)
     */ 
     
     
+      //  Testing Plotting
     Set_Color(WHITE);
     
-    Write_Line(10, 120 , 400, 120);
+    Write_Line(20, 120 , 400, 120);
     
-    Write_Line(10, 10, 10, 120);
+    Write_Line(20, 20, 20, 120);
+    
+    Write_Line(17, 25 , 23, 25);
+    
+    Write_Line(17, 30 , 23, 30);
+    
+    Write_Line(17, 35 , 23, 35);
+    
+    Write_Line(17, 40 , 23, 40);
+    
+    Write_Line(17, 45 , 23, 45);
+    
+    Write_Line(17, 50 , 23, 50);
+    
+    Write_Line(17, 55 , 23, 55);
+    
+    Write_Line(17, 60 , 23, 60);
+    
+    Write_Line(17, 65 , 23, 65);
+    
+    Write_Line(17, 70 , 23, 70);
+    
+    Write_Line(17, 75 , 23, 75);
+    
+    Write_Line(17, 80 , 23, 80);
+    
+    Write_Line(17, 85 , 23, 85);
+    
+    Write_Line(17, 90 , 23, 90);
+    
+    Write_Line(17, 95 , 23, 95);
+    
+    Write_Line(17, 100 , 23, 100);
+    
+    Write_Line(17, 105 , 23, 105);
+    
+    Write_Line(17, 110 , 23, 110);
+    
+    Write_Line(17, 110 , 23, 110);
+    
+    
+    Write_Line(25, 117 , 25, 123);
+    
+    Write_Line(35, 117 , 35, 123);
+    
+    Write_Line(45, 117 , 45, 123);
+    
+    Write_Line(55, 117 , 55, 123);
+    
+    Write_Line(65, 117 , 65, 123);
+    
+    Write_Line(75, 117 , 75, 123);
+    
+    Write_Line(85, 117 , 85, 123);
+    
+    Write_Line(95, 117 , 95, 123);
+    
+    Write_Line(105, 117 , 105, 123);
+    
+    Write_Line(115, 117 , 115, 123);
+    
+    
+    
+    
     
    // Draw_Line(0, 0, 100, SSD1351_HEIGHT - 1);
     //DEV_Delay_ms(20);
@@ -73,37 +137,88 @@ int main(int argc, char **argv)
     Set_Color(GREEN);
     
       
-    Draw_Pixel(15, 110);
     
-    Draw_Pixel(20, 105);
     
-    Draw_Pixel(25, 100);
+    //Draw_Pixel(25, 100);
     
-    Draw_Pixel(30, 95);
+    //Draw_Pixel(30, 95);
     
-    Draw_Pixel(35, 90);
+    Draw_Pixel(30, 50);
     
-    Draw_Pixel(40, 85);
+    Draw_Pixel(35, 53);
     
-    Draw_Pixel(50, 70);    
+    Draw_Pixel(40, 55);
+    
+    Draw_Pixel(45, 45);    
       
-    Draw_Pixel(60, 60);
+    Draw_Pixel(50, 40);
+       
+    Draw_Pixel(55, 35);
     
-    Draw_Pixel(70, 55);
+    Draw_Pixel(60, 37);
     
-    Draw_Pixel(80, 45);
+    Draw_Pixel(65, 39);
     
-    Draw_Pixel(90, 40);
-    
-    Draw_Pixel(100, 35);
+    Draw_Pixel(70, 42);
   
-    Draw_Pixel(110, 30);
+    Draw_Pixel(75, 45);
     
-    Draw_Pixel(115, 20);    
+    Draw_Pixel(80, 50);
     
+    Draw_Pixel(90, 53);
+    
+    Draw_Pixel(95, 55);
+    
+    Draw_Pixel(100, 50);
+    
+    Draw_Pixel(105, 45);
+    
+    Draw_Pixel(105, 45);
+    
+    Draw_Pixel(110, 40);
+    
+    Draw_Pixel(115, 38);
+    
+    Draw_Pixel(120, 36);
+    
+    
+    print_String(0,60, "Liters", FONT_5X8);
+    print_String(65,120, "Hours", FONT_5X8);
     
     Set_Color(RED);
-    Write_Line(110, 15 , 20, 115);
+    //Write_Line(110, 15 , 20, 115);
+    
+    print_String(10,0, "Water Level (Node 1)", FONT_5X8);
+    
+    
+    
+    
+    
+    /*
+     * Testing User Interface
+    Set_Color(GREEN);
+    print_String(0,0, "HOME PAGE", FONT_8X16);
+    
+    Set_Color(WHITE);
+    
+    print_String(85, 0, "4:28 PM", FONT_5X8);
+    
+    print_String(0, 30, "Sensor Data", FONT_5X8);
+    
+    print_String(0, 50, "Hose Setup", FONT_5X8);
+    
+    print_String(0, 70, "Options", FONT_5X8);
+    
+    Set_Color(GREEN);
+    print_String(70,27, "<", FONT_8X16);
+    
+    
+    */
+    
+    
+    
+    
+    
     
     /*
     testlines();
@@ -135,7 +250,7 @@ int main(int argc, char **argv)
     */
     
 
-    DEV_Delay_ms(14000);
+    DEV_Delay_ms(140000);
      
     Clear_Screen();
     
