@@ -83,7 +83,7 @@ void setup() {
 
   // Begin the Barometric Pressure Sensor
   // Pin out: Vin->5V, SCL->A5, SDA->A4
-  //bmp.begin();
+  bmp.begin();
 
   // Set this node as the master node
   mesh.setNodeID(nodeID);
@@ -151,7 +151,7 @@ void loop() {
     Data_Struct.soilMoisture = pullMoistureSensor();
     //Data_Struct.baroPressure = 0; //change to bmp.readPressure();
     Data_Struct.lightLevel = pullLightSensor();
-    Data_Struct.temp_C = 0; //change to bmp.readTemperature();
+    Data_Struct.temp_C = bmp.readTemperature();
     Data_Struct.digitalOut = run_DeepOcean(Data_Struct, Thresholds); // will be replaced by DeepOcean
 //    if (Data_Struct.digitalOut) {
 //      Data_Struct.timeStamp = millis();
