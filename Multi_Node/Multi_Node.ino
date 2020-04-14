@@ -264,11 +264,12 @@ void initC_Struct(C_Struct* sct) {
 float pullMoistureSensor(void) {
   // First map the voltage reading into a resistance
   uint16_t soilV = map(analogRead(MOISTURE_PIN), 0, 1023, 0, 500);
-  float R_probes = 500 - soilV; //((500 - soilV)*LIQUID_SENSE)/soilV;
-  R_probes *= LIQUID_SENSE;
-  R_probes /= soilV;
-  R_probes = pow(2.774 / R_probes, 1 / 2.774) * 100;
+  // convert to soil resistance in kohms
+  float R_probes = ((500 / soilV) - 1) * LIQUID_SENSE;
+  // convert to percentage of gravimetric water content (gwc)
+  R_probes = pow(1/(R_probes*2.81), 1 / 2.774) * 100;
   // Returns the mapped analog value
+  // A voltage of 2.5V should return a gwc of 60-70%
   return R_probes;
 }
 
