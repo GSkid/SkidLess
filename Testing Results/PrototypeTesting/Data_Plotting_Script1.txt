@@ -1,0 +1,33 @@
+# Plots the data from the prototype testing
+
+# Change this to your working directory
+cd 'C:/Users/Grant/OneDrive/Desktop/SkidLess/Testing Results/PrototypeTesting'
+
+set style data lines
+unset logscale
+unset arrow
+unset label
+unset format xy
+unset y2tics
+
+# SETTING PARAMS
+set title 'Sensor Data Over Time - Prototype Testing' font 'Verdana, 26'
+set yrange[*:*]
+set xrange[*:*]
+set ylabel 'Ambient Light Level' font 'Verdana, 22'
+set xlabel 'Time' font 'Verdana, 22'
+set grid
+set key top right Left
+
+# SETTING VALUES
+s = 70612
+n = 14
+Lambda_MLE = 5113
+likelihood(lambda) = lambda**-n * exp(-s/lambda)
+log_likelihood(lambda) = -n*log10(lambda) - (s/lambda)
+cdf(x) = -Lambda_MLE*log10(1-x)
+y(x) = x
+
+# PLOTTING
+plot 'sample_data1.txt' u (cdf(($1-0.5)/n)):2 lw 5 lc 2 title "Exponential Probability Model", \
+	y(x) lt 7 lw 2 lc 'red' title "45degree Reference"
