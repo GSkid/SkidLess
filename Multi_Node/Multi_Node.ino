@@ -7,6 +7,7 @@
 #include "RF24Mesh.h"
 #include "Adafruit_BMP085.h"
 #include <printf.h>
+#include <avr/sleep.h>
 
 /**** Configure the Radio ****/
 RF24 radio(7, 8);
@@ -17,11 +18,11 @@ RF24Mesh mesh(radio, network);
 #define time_Thresh Timer(C_Thresh.time_thresh, 10)//D_Struct.timeStamp)
 
 /**** GLOBALS ****/
-#define LED 2
 #define nodeID 2 // Set this to a different number for each node in the mesh network
 #define MOISTURE_PIN A1
 #define LIGHT_PIN A2
 #define LIQUID_SENSE 10000
+#define INTERRUPT_MASK 0b01000000
 
 // C_Struct stores relevant thresholds
 typedef struct {
@@ -47,13 +48,17 @@ typedef struct {
 // Timers
 uint32_t sleepTimer = 0;
 uint32_t messageTimer = 0;
-uint32_t witchTimer = 120000;
+uint32_t witchTimer = 60000;
+
+// Timer Support
+uint8_t timerFlag = 0;
+uint8_t message_Flag = 0;
 
 // Sensor Vars
 Adafruit_BMP085 bmp;
 
 // RF24 Vars
-uint8_t message_Flag = 0;
+uint8_t sleepFlag = 0;
 
 // Use these vars to store the header data
 uint8_t M_Dat = 0;
@@ -76,10 +81,13 @@ void setup() {
   Serial.begin(115200);
   printf_begin();
 
-  // Set the LED as an output
-  pinMode(LED, OUTPUT);
+  // Set the IO
   pinMode(MOISTURE_PIN, INPUT);
   pinMode(LIGHT_PIN, INPUT);
+
+  // Setting the watchdog timer
+  WDTCSR |= 0b000011000; //reset
+  WDTCSR = INTERRUPT_MASK | 0b1001;
 
   // Begin the Barometric Pressure Sensor
   // Pin out: Vin->5V, SCL->A5, SDA->A4
@@ -93,7 +101,6 @@ void setup() {
   mesh.begin();
 
   // Print out the mesh addr
-
   Serial.print(F("Mesh Network ID: "));
   Serial.println(mesh.getNodeID());
   Serial.print(F("Mesh Address: ")); Serial.println(mesh.getAddress(nodeID));
@@ -106,6 +113,11 @@ void setup() {
   initC_Struct(&Thresholds);
   C_Struct_Serial_print(Thresholds);
   Serial.print(F("\n"));
+
+  // Setting up sleep mode
+  set_sleep_mode(SLEEP_MODE_IDLE);
+  sleep_enable();
+  sleep_cpu();
 }
 
 void loop() {
@@ -113,6 +125,7 @@ void loop() {
   // Keep the network updated
   mesh.update();
 
+  
 
   /**** Network Data Loop ****/
   // Check for incoming data from other nodes
@@ -142,9 +155,27 @@ void loop() {
   }
 
 
+  /**** Sleep Timer Response ****/
+  if (!message_Flag) {
+    // increment the sleep timer
+    sleepTimer++;
+
+    // check the sleep timer for elapsed time
+    // increments of 8s
+    if (sleepTimer >= 8){
+      sleepFlag = 1;
+    } else {
+      sleep_enable();
+      sleep_cpu(); // cpu sleeps here
+
+      sleep_disable(); // cpu wakes here
+    }
+  }
+
+
   /**** Read Sensors ****/
 
-  if (Timer(witchTimer, sleepTimer)) {
+  if (sleepFlag) {
     sleepTimer = millis();
 
     // Read all sensors
@@ -190,14 +221,16 @@ void loop() {
     }
   }
 
+
   /**** No Message Response ****/
+
+  // Reset the mesh connection
   if (message_Flag && Timer(messageTimer, 1000)) {
-    // Reset the no message response flag
-    message_Flag = 0;
     // Reconnect to the network
     Serial.println(F("Re-initializing the network ID..."));
     mesh.renewAddress();
     Serial.print(F("New Network Address: ")); Serial.println(mesh.getAddress(nodeID));
+    M_Dat = 1;
   }
 
   /**** 'C' Type Data Evaluation ****/
@@ -217,6 +250,10 @@ void loop() {
     // Go to sleep
     Serial.println(F("Received Sleep Instructions From Master"));
     Serial.println(F("**********************************\r\n"));
+    sleep_enable();
+    sleep_cpu(); // cpu goes to sleep here
+
+    
   }
 
   /**** Config Options ****/
@@ -265,9 +302,9 @@ float pullMoistureSensor(void) {
   // First map the voltage reading into a resistance
   uint16_t soilV = map(analogRead(MOISTURE_PIN), 0, 1023, 0, 500);
   // convert to soil resistance in kohms
-  float R_probes = ((500 / soilV) - 1) * LIQUID_SENSE;
+  float R_probes = ((500 / soilV) - 1) * 10;
   // convert to percentage of gravimetric water content (gwc)
-  R_probes = pow(1/(R_probes*2.81), 1 / 2.774) * 100;
+  R_probes = pow((R_probes/2.81), -1/2.774) * 100;
   // Returns the mapped analog value
   // A voltage of 2.5V should return a gwc of 60-70%
   return R_probes;

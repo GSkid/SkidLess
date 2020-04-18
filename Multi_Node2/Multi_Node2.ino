@@ -47,7 +47,7 @@ typedef struct {
 // Timers
 uint32_t sleepTimer = 0;
 uint32_t messageTimer = 0;
-uint32_t witchTimer = 120000;
+uint32_t witchTimer = 1000;
 
 // Sensor Vars
 Adafruit_BMP085 bmp;
@@ -265,9 +265,9 @@ float pullMoistureSensor(void) {
   // First map the voltage reading into a resistance
   uint16_t soilV = map(analogRead(MOISTURE_PIN), 0, 1023, 0, 500);
   // convert to soil resistance in kohms
-  float R_probes = ((500 / soilV) - 1) * LIQUID_SENSE;
+  float R_probes = ((500 / soilV) - 1) * 10;
   // convert to percentage of gravimetric water content (gwc)
-  R_probes = pow(1/(R_probes*2.81), 1 / 2.774) * 100;
+  R_probes = pow((R_probes/2.81), -1/2.774) * 100;
   // Returns the mapped analog value
   // A voltage of 2.5V should return a gwc of 60-70%
   return R_probes;
