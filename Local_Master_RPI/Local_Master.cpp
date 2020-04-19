@@ -27,22 +27,23 @@ RF24Mesh mesh(radio, network);
 
 // C_Struct stores relevant thresholds
 typedef struct {
-  uint16_t sM_thresh;
-  uint16_t bP_thresh;
-  uint16_t lL_thresh;
-  uint16_t t_thresh;
-  uint8_t thresh_configure;
+  float sM_thresh;
+  float sM_thresh_00;
+  //uint16_t bP_thresh;
+  float lL_thresh;
+  uint16_t tC_thresh;
+  uint16_t time_thresh;
 } C_Struct;
 
 // D_Struct stores the relevant sensor data
 typedef struct {
-  uint16_t soilMoisture;
-  uint16_t baroPressure;
-  uint16_t lightLevel;
+  float soilMoisture;
+  //uint16_t baroPressure;
+  float lightLevel;
   uint16_t temp_C;
-  uint16_t digitalOut;
-  uint32_t timeStamp;
-  uint16_t nodeID;
+  uint8_t digitalOut;
+  //uint32_t timeStamp;
+  uint8_t nodeID;
 } D_Struct;
 
 // Data Vars
@@ -59,11 +60,9 @@ uint32_t frt = 0;
 uint8_t pingFlag = 0;
 
 // RF24 Vars
-uint16_t nodeID = 0;    // 0 = master
+uint8_t nodeID = 0;    // 0 = master
 
 /**** Helper Fxn Prototypes ****/
-void D_Struct_Serial_print(D_Struct);
-void C_Struct_Serial_print(C_Struct);
 int Timer(uint32_t, uint32_t);
 void setup(void);
 
@@ -87,7 +86,7 @@ void setup(void) {
     printf("\nInitialized: %d\n", radio.isChipConnected());
   }
   
-  //radio.printDetails();
+  radio.printDetails();
   return;
 }
 
@@ -122,9 +121,9 @@ int main(int argc, char **argv) {
           case 'D':
             printf("Message Received\n");
             // Use the data struct to store data messages and print out the result
-            while (network.available() ) {
+            //while (network.available() ) {
               network.read(header, &D_Dat, sizeof(D_Dat));
-            }
+            //}
             dFlag = 1;
             break;
 
@@ -142,6 +141,7 @@ int main(int argc, char **argv) {
   
     if (dFlag) {
       dFlag = 0;
+      /*
       printf("Celebration Time\n");
       // Based on the data values, turn on or off the LED
       if (D_Dat.digitalOut) {
@@ -151,18 +151,20 @@ int main(int argc, char **argv) {
         //bcm2835_gpio_clr(LED);
         printf("Celebration Time\n");
       }
+      */
   
 
 
       /**** Write Data Values to SD Card ****/
 
       {
-          FILE* out;
-
+          FILE* out = fopen("Data_Log.txt", "a");
+          
+/*
           if (argc < 2)
           {
               printf("No output file specified.\n");
-              break;
+              exit(1);
           }
 
           out = fopen(argv[1], "w");
@@ -170,8 +172,9 @@ int main(int argc, char **argv) {
           if (out == NULL)
           {
               printf("Unable to open or generate file.\n");
-              break;
+              exit(1);
           }
+*/
 
           // this is the imported data vector
           // std::vector<int> data = { 0, 1, 2, 3, 4, 5, 6 };
@@ -180,17 +183,23 @@ int main(int argc, char **argv) {
           // conditional here: output if first loop, dont afterward, controlled by column_flag
           if (column_flag == 0)
           {
-              fprintf(out, "Soil Moisture:   Barametric Pressure:   Ambient Light:   Ambient Temperature:   Calculated Digital Output:   Time Stamp:   Node ID:   \n");
+              fprintf(out, "Soil Moisture:   Ambient Light:   Ambient Temperature:   Calculated Digital Output:   Node ID:   \n");
+              //Barometric Pressure:   
+              //Time Stamp:   
               column_flag = 1;
           }
 
-          fprintf(out, "%d                ", D_Dat.soilMoisture); // prints out 0th member of the data vector to the file.
-          fprintf(out, "%d                      ", D_Dat.baroPressure); // prints out 1st member of the data vector to the file.
-          fprintf(out, "%d                ", D_Dat.lightLevel); // prints out 2nd member of the data vector to the file.
-          fprintf(out, "%d                      ", D_Dat.temp_C); // prints out 3rd member of the data vector to the file.
-          fprintf(out, "%d                            ", D_Dat.digitalOut); // prints out 4th member of the data vector to the file.
-          fprintf(out, "%d             ", D_Dat.timeStamp); // prints out 5th member of the data vector to the file.
-          fprintf(out, "%d \n", D_Dat.nodeID); // prints out 6th member of the data vector to the file.
+          printf("%f, %f, %d, %d, %d\n", D_Dat.soilMoisture, D_Dat.lightLevel, D_Dat.temp_C, D_Dat.digitalOut, D_Dat.nodeID);
+          //%d, D_Dat.baroPressure, 
+          //%d, D_Dat.timeStamp, 
+
+          fprintf(out, "%13f    ", D_Dat.soilMoisture); // prints out 0th member of the data vector to the file.
+          //fprintf(out, "%19d    ", D_Dat.baroPressure); // prints out 1st member of the data vector to the file.
+          fprintf(out, "%13f    ", D_Dat.lightLevel); // prints out 2nd member of the data vector to the file.
+          fprintf(out, "%19d    ", D_Dat.temp_C); // prints out 3rd member of the data vector to the file.
+          fprintf(out, "%25d    ", D_Dat.digitalOut); // prints out 4th member of the data vector to the file.
+          //fprintf(out, "%10d    ", D_Dat.timeStamp); // prints out 5th member of the data vector to the file.
+          fprintf(out, "%7d\n", D_Dat.nodeID); // prints out 6th member of the data vector to the file.
           fclose(out);
       }
 
@@ -203,7 +212,7 @@ int main(int argc, char **argv) {
       RF24NetworkHeader p_header(mesh.getAddress(D_Dat.nodeID), 'S');
       // Data_Dat is just a 1 telling the node to go to sleep
       if (network.write(p_header, &dataDat, sizeof(dataDat))) {
-        printf("WOW\n");
+        printf("Message Returned to %d\n\n", D_Dat.nodeID);
       }
     }
 
@@ -236,25 +245,6 @@ return(1);
 
 
 /****  HELPER FXNS ****/
-
-void C_Struct_Serial_print(C_Struct sct) {
-  printf("Soil Moisture Threshold: %d", sct.sM_thresh);
-  printf("Barometric Pressure Threshold: %d", sct.bP_thresh);
-  printf("Ambient Light Level Threshold: %d", sct.lL_thresh);
-  printf("Ambient Temperature Threshold: %d", sct.t_thresh);
-  return;
-}
-
-void D_Struct_Serial_print(D_Struct sct) {
-  printf("Soil Moisture Level (V ): %d", sct.soilMoisture);
-  printf("Barometric Pressure (Pa): %d", sct.baroPressure);
-  printf("Ambient Light Level (V ): %d", sct.lightLevel);
-  printf("Ambient Temperature (C ): %d", sct.temp_C);
-  printf("Calucated Digital Output: %d", sct.digitalOut);
-  printf("Time Stamp (ms): %d", sct.timeStamp);
-  printf("Node ID: %d", sct.nodeID);
-  return;
-}
 
 
 /* @name: Timer
