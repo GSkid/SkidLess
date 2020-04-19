@@ -40,7 +40,6 @@
     * @note: If used with RF24Ethernet, this value is used to set the buffer sizes.
     */
     #define MAX_PAYLOAD_SIZE  MAIN_BUFFER_SIZE-10
-
     /** Disable user payloads. Saves memory when used with RF24Ethernet or software that uses external data.*/
     //#define DISABLE_USER_PAYLOADS 
 
