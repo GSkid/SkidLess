@@ -7,7 +7,7 @@ Local_Master: Local_Master.o
 	g++ Local_Master.o $(CXXFLAGS) -Wall -I./ -lrf24-bcm  -lrf24network -lrf24mesh -loled -pthread -o Local_Master 
 
 Local_Master.o: Local_Master.cpp  
-		g++ -c Local_Master.cpp $(CXXFLAGS) -Wall -I./ -lrf24-bcm -lrf24network -loled -lrf24mesh -pthread	
+	g++ -c Local_Master.cpp $(CXXFLAGS) -Wall -I./ -lrf24-bcm -lrf24network -loled -lrf24mesh -pthread	
 		
 			
 		
