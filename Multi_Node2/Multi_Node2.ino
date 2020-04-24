@@ -3,10 +3,13 @@
 #include <EEPROM.h>
 #include <Wire.h>
 #include "RF24.h"
+#include "nRF24L01.h"
 #include "RF24Network.h"
 #include "RF24Mesh.h"
 #include "Adafruit_BMP085.h"
 #include <printf.h>
+#include <avr/sleep.h>
+#include <avr/power.h>
 
 /**** Configure the Radio ****/
 RF24 radio(7, 8);
@@ -17,11 +20,11 @@ RF24Mesh mesh(radio, network);
 #define time_Thresh Timer(C_Thresh.time_thresh, 10)//D_Struct.timeStamp)
 
 /**** GLOBALS ****/
-#define LED 2
 #define nodeID 3 // Set this to a different number for each node in the mesh network
 #define MOISTURE_PIN A1
 #define LIGHT_PIN A2
 #define LIQUID_SENSE 10000
+#define INTERRUPT_MASK 0b01000000
 
 // C_Struct stores relevant thresholds
 typedef struct {
@@ -47,13 +50,17 @@ typedef struct {
 // Timers
 uint32_t sleepTimer = 0;
 uint32_t messageTimer = 0;
-uint32_t witchTimer = 1000;
+uint32_t witchTimer = 60000;
+
+// Timer Support
+uint8_t timerFlag = 0;
+uint8_t message_Flag = 0;
 
 // Sensor Vars
 Adafruit_BMP085 bmp;
 
 // RF24 Vars
-uint8_t message_Flag = 0;
+uint8_t sleepFlag = 0;
 
 // Use these vars to store the header data
 uint8_t M_Dat = 0;
@@ -76,8 +83,7 @@ void setup() {
   Serial.begin(115200);
   printf_begin();
 
-  // Set the LED as an output
-  pinMode(LED, OUTPUT);
+  // Set the IO
   pinMode(MOISTURE_PIN, INPUT);
   pinMode(LIGHT_PIN, INPUT);
 
@@ -93,7 +99,6 @@ void setup() {
   mesh.begin();
 
   // Print out the mesh addr
-
   Serial.print(F("Mesh Network ID: "));
   Serial.println(mesh.getNodeID());
   Serial.print(F("Mesh Address: ")); Serial.println(mesh.getAddress(nodeID));
@@ -106,12 +111,18 @@ void setup() {
   initC_Struct(&Thresholds);
   C_Struct_Serial_print(Thresholds);
   Serial.print(F("\n"));
+
+  // Setting the watchdog timer
+  set_sleep_mode(SLEEP_MODE_IDLE);
+  network.setup_watchdog(9);
+  sleepFlag = 1;
 }
 
 void loop() {
 
   // Keep the network updated
   mesh.update();
+
 
 
   /**** Network Data Loop ****/
@@ -141,11 +152,10 @@ void loop() {
     }
   }
 
-
   /**** Read Sensors ****/
 
-  if (Timer(witchTimer, sleepTimer)) {
-    sleepTimer = millis();
+  if (sleepFlag) {
+    sleepFlag = 0;
 
     // Read all sensors
     Data_Struct.soilMoisture = pullMoistureSensor();
@@ -153,9 +163,9 @@ void loop() {
     Data_Struct.lightLevel = pullLightSensor();
     Data_Struct.temp_C = bmp.readTemperature();
     Data_Struct.digitalOut = run_DeepOcean(Data_Struct, Thresholds); // will be replaced by DeepOcean
-//    if (Data_Struct.digitalOut) {
-//      Data_Struct.timeStamp = millis();
-//    }
+    //    if (Data_Struct.digitalOut) {
+    //      Data_Struct.timeStamp = millis();
+    //    }
     Data_Struct.node_ID = nodeID;
 
 
@@ -175,6 +185,7 @@ void loop() {
         } else {
           Serial.println(F("Network connection good."));
           Serial.println(F("**********************************\r\n"));
+          sleepFlag = 1;
         }
       } else {
         Serial.println(F("**********************************"));
@@ -190,14 +201,20 @@ void loop() {
     }
   }
 
+
   /**** No Message Response ****/
-  if (message_Flag && Timer(messageTimer, 1000)) {
-    // Reset the no message response flag
+
+  // Reset the mesh connection
+  if (message_Flag && Timer(1000, messageTimer)) {
     message_Flag = 0;
     // Reconnect to the network
-    Serial.println(F("Re-initializing the network ID..."));
-    mesh.renewAddress();
-    Serial.print(F("New Network Address: ")); Serial.println(mesh.getAddress(nodeID));
+    if (!mesh.checkConnection()) {
+      Serial.println(F("Re-initializing the network ID..."));
+      mesh.renewAddress();
+      Serial.print(F("New Network Address: ")); Serial.println(mesh.getAddress(nodeID));
+    }
+    network.sleepNode(8, 255);
+    sleepFlag = 1;
   }
 
   /**** 'C' Type Data Evaluation ****/
@@ -208,7 +225,7 @@ void loop() {
   /**** 'D' Type Data Evaluation ****/
 
   // Responding to the S or C type message from the master
-  if (M_Dat) {
+  if (M_Dat && message_Flag) {
     // Turn off the message response flag
     message_Flag = 0;
     // If M_Dat == 2, reconfig the thresholds
@@ -216,7 +233,8 @@ void loop() {
     M_Dat = 0;
     // Go to sleep
     Serial.println(F("Received Sleep Instructions From Master"));
-    Serial.println(F("**********************************\r\n"));
+    network.sleepNode(8, 255);
+    sleepFlag = 1;
   }
 
   /**** Config Options ****/
@@ -263,11 +281,16 @@ void initC_Struct(C_Struct* sct) {
 */
 float pullMoistureSensor(void) {
   // First map the voltage reading into a resistance
-  uint16_t soilV = map(analogRead(MOISTURE_PIN), 0, 1023, 0, 500);
+  float soilV = map(analogRead(MOISTURE_PIN), 0, 1023, 0, 500);
   // convert to soil resistance in kohms
-  float R_probes = ((500 / soilV) - 1) * 10;
+  float R_probes = (500 / soilV);
+  Serial.println(R_probes);
+  R_probes -= 1;
+  Serial.println(R_probes);
+  R_probes *= 10;
+  Serial.println(R_probes);
   // convert to percentage of gravimetric water content (gwc)
-  R_probes = pow((R_probes/2.81), -1/2.774) * 100;
+  R_probes = pow((R_probes / 2.81), -1 / 2.774) * 100;
   // Returns the mapped analog value
   // A voltage of 2.5V should return a gwc of 60-70%
   return R_probes;
@@ -321,11 +344,11 @@ int run_DeepOcean(D_Struct D_Struct, C_Struct C_Thresh) {
   int HydroHomie = 0;
   // Check for the time threshold
   if (time_Thresh) {
-    
+
     // Chcek the soil moisture against the first threshold
     // If its light, then don't water unless it has been a long time
-    if ((D_Struct.soilMoisture < C_Thresh.sM_thresh) && (D_Struct.lightLevel <= C_Thresh.lL_thresh)) { // 
-        HydroHomie = 1;
+    if ((D_Struct.soilMoisture < C_Thresh.sM_thresh) && (D_Struct.lightLevel <= C_Thresh.lL_thresh)) { //
+      HydroHomie = 1;
     }
 
     // Check temperature to prevent freezing
@@ -340,7 +363,7 @@ int run_DeepOcean(D_Struct D_Struct, C_Struct C_Thresh) {
   if (D_Struct.soilMoisture < C_Thresh.sM_thresh_00) {
     return 2;
   }
-  
+
   // In main, make sure you update the timestamp if the output is >0
   return HydroHomie;
 }
