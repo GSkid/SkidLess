@@ -1,0 +1,51 @@
+#prefix := usr/local
+
+	
+CXXFLAGS = -Ofast -mfpu=vfp -mfloat-abi=hard -march=armv6zk -mtune=arm1176jzf-s -std=c++0x
+VPATH = RF24:RF24Network:RF24Mesh
+
+
+DIR_FONTS = ./Fonts
+DIR_OBJ = ./obj
+DIR_BIN = ./bin
+
+OBJ_C = $(wildcard ${DIR_FONTS}/*.c ${DIR_OBJ}/*.c ${DIR_OBJ}/*.cpp)
+OBJ_O = $(patsubst %.c,${DIR_BIN}/%.o,$(notdir ${OBJ_C}))
+
+TARGET = rf_oled_test_main
+#BIN_TARGET = ${DIR_BIN}/${TARGET}
+
+CC = gcc
+
+DEBUG = -g -O0 -Wall
+CFLAGS += $(DEBUG)
+
+USELIB = USE_BCM2835_LIB
+# USELIB = USE_WIRINGPI_LIB
+# USELIB = USE_DEV_LIB
+DEBUG = -D $(USELIB)
+ifeq ($(USELIB), USE_BCM2835_LIB)
+    LIB = -lbcm2835 -lrf24-bcm -lrf24network -lrf24mesh -lm 
+else ifeq ($(USELIB), USE_WIRINGPI_LIB)
+    LIB = -lwiringPi -lm 
+endif
+
+${TARGET}:${OBJ_O}
+	$(CC) $(CFLAGS) $(OBJ_O) -o $@ #./bin/bcm2835.o  #$(LIB)
+
+#Local_Master: Local_Master.o ./bin/font12.o ./bin/font16.o ./bin/font20.o ./bin/font8.o ./bin/font24.o ./bin/ASCII_Font.o ./bin/dev_hardware_i2c.o ./bin/sysfs_gpio.o ./bin/OLED_GFX.o ./bin/main.o ./bin/OLED_Driver.o ./bin/bcm2835.o ./bin/DEV_Config.o ./bin/dev_hardware_SPI.o 
+#	g++ Local_Master.o ./bin/font12.o ./bin/font16.o ./bin/font20.o ./bin/font8.o ./bin/font24.o ./bin/ASCII_Font.o ./bin/dev_hardware_i2c.o ./bin/sysfs_gpio.o ./bin/OLED_GFX.o ./bin/main.o ./bin/OLED_Driver.o ./bin/bcm2835.o ./bin/DEV_Config.o ./bin/dev_hardware_SPI.o $(CXXFLAGS) -Wall -I./ -lrf24-bcm  -lrf24network -lrf24mesh -pthread -o rf_oled_test_main
+
+${DIR_BIN}/%.o : $(DIR_OBJ)/%.c 
+	$(CC) $(CFLAGS) -c  $< -o $@ -I $(DIR_FONTS) $(DIR_OBJ) #$(LIB)
+
+${DIR_BIN}/%.o:$(DIR_FONTS)/%.c
+	$(CC) $(CFLAGS) -c  $< -o $@ 	
+	
+Local_Master.o: Local_Master.cpp  
+		gcc -c Local_Master.cpp obj/OLED_GFX.h obj/OLED_Driver.h $(CXXFLAGS) -Wall -o bin/main.o -I ./Fonts -I./ -lrf24-bcm -lrf24network -lrf24mesh -pthread	 		
+		
+clean:
+	$(RM) $(DIR_BIN)/*.* $(TARGET) $(DIR_OBJ)/.*.sw?
+	rm *.o
+	rm Local_Master
