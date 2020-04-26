@@ -1,3 +1,7 @@
+#ifdef  __cplusplus
+extern "C" {
+#endif
+
 /*****************************************************************************
 * | File        :   sysfs_gpio.h
 * | Author      :   Waveshare team
@@ -56,4 +60,8 @@ int SYSFS_GPIO_Direction(int Pin, int Dir);
 int SYSFS_GPIO_Read(int Pin);
 int SYSFS_GPIO_Write(int Pin, int value);
 
+#endif
+
+#ifdef  __cplusplus
+}
 #endif

@@ -1,3 +1,7 @@
+#ifdef  __cplusplus
+extern "C" {
+#endif
+
 /**
   ******************************************************************************
   * @file    font24.c
@@ -2518,3 +2522,7 @@ sFONT Font24 = {
 };
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+
+#ifdef  __cplusplus
+}
+#endif

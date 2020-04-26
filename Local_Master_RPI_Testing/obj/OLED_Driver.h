@@ -1,3 +1,7 @@
+#ifdef  __cplusplus
+extern "C" {
+#endif
+
 #ifndef __OLED_DRIVER_H__
 #define __OLED_DRIVER_H__
 
@@ -80,3 +84,6 @@ void RAM_Address(void);
   
 #endif
 
+#ifdef  __cplusplus
+}
+#endif

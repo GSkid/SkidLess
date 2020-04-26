@@ -1,3 +1,7 @@
+#ifdef  __cplusplus
+extern "C" {
+#endif
+
 #include "OLED_GFX.h"
 #include <stdio.h>
 
@@ -367,5 +371,7 @@ void Display_bmp(void) {
   }
 }
 
-
+#ifdef  __cplusplus
+}
+#endif
 

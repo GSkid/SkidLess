@@ -1,3 +1,7 @@
+#ifndef __cplusplus
+#define __cplusplus
+#endif
+
 // ********** INCLUDES **********
 //#include <OLED/Fonts/ASCII_Font.h>
 //#include <obj/OLED_Driver.h>
@@ -5,7 +9,7 @@
 //#include <obj/OLED_GFX.h>
 #include "OLED_GFX.h"
 #include "OLED_Driver.h"
-#include "DEV_Config.h"
+//#include "DEV_Config.h"
 #include <stdio.h>
 #include <stdlib.h>		//exit()
 #include <signal.h>     //signal()
@@ -100,8 +104,8 @@ void setup(void) {
   bcm2835_spi_begin();  
   
   //signal(SIGINT, Handler);
-  //DEV_ModuleInit();
-  //Device_Init();
+  DEV_ModuleInit();
+  Device_Init();
     
   // Set this node as the master node
   //printf("I am here \n");

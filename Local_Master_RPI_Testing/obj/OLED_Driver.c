@@ -1,3 +1,7 @@
+#ifdef  __cplusplus
+extern "C" {
+#endif
+
 #include "OLED_Driver.h"
 
 
@@ -466,5 +470,7 @@ void Draw_FastVLine(int16_t x, int16_t y, int16_t length)  {
   }
 }
 
-
+#ifdef  __cplusplus
+}
+#endif
 

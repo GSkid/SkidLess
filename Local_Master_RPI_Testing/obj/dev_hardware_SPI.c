@@ -1,3 +1,10 @@
+#ifdef  __cplusplus
+extern "C" {
+#endif
+
+
+
+
 /*****************************************************************************
 * | File        :   dev_hardware_SPI.c
 * | Author      :   Waveshare team
@@ -360,3 +367,6 @@ int DEV_HARDWARE_SPI_Transfer(uint8_t *buf, uint32_t len)
     return 1;
 }
 
+#ifdef  __cplusplus
+}
+#endif

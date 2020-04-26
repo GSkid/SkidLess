@@ -1,3 +1,8 @@
+#ifdef  __cplusplus
+extern "C" {
+#endif
+
+
 /*****************************************************************************
 * | File        :   dev_hardware_SPI.h
 * | Author      :   Waveshare team
@@ -117,4 +122,9 @@ int DEV_HARDWARE_SPI_CSEN(SPICSEN EN);
 int DEV_HARDWARE_SPI_Mode(SPIMode mode);
 
 
+
+#endif
+
+#ifdef  __cplusplus
+}
 #endif

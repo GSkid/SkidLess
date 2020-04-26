@@ -1,7 +1,7 @@
-#ifndef __ASCII_FONT_H
-#define __ASCII_FONT_H
+#ifdef  __cplusplus
+extern "C" {
+#endif
 
-//#include "ASCII_Font.h"
 
 
 const unsigned char ascii_table_8x16[95][16] =  {
@@ -7418,6 +7418,8 @@ const unsigned char gImage_bmp3[32768] = { /* 0X10,0X10,0X00,0X80,0X00,0X80,0X01
 0X00,0X20,0X00,0X21,0X00,0X20,0X00,0X20,0X00,0X00,0X00,0X20,0X00,0X21,0X00,0X20,
 };
 
+#ifdef  __cplusplus
+}
+#endif
 
 
-#endif /*__ASCII_CODE__8X16_5X8_VERTICAL_H*/
