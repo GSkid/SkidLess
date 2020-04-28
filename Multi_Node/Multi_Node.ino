@@ -154,8 +154,8 @@ void loop() {
 
   /**** Read Sensors ****/
 
-  if (sleepFlag) {
-    sleepFlag = 0;
+  if (sleepFlag) { 
+    sleepFlag = 0; // Ensures that we only read and send a message once after waking up
 
     // Read all sensors
     Data_Struct.soilMoisture = pullMoistureSensor();
@@ -213,8 +213,8 @@ void loop() {
       mesh.renewAddress();
       Serial.print(F("New Network Address: ")); Serial.println(mesh.getAddress(nodeID));
     }
-    network.sleepNode(8, 255);
-    sleepFlag = 1;
+    network.sleepNode(8, 255); // Node goes to sleep here
+    sleepFlag = 1; // Tell the node it's time to read sensors and send a message
   }
 
   /**** 'C' Type Data Evaluation ****/
@@ -233,8 +233,8 @@ void loop() {
     M_Dat = 0;
     // Go to sleep
     Serial.println(F("Received Sleep Instructions From Master"));
-    network.sleepNode(8, 255);
-    sleepFlag = 1;
+    network.sleepNode(8, 255); // Node goes to sleep here
+    sleepFlag = 1; // Tell the node it's time to read sensors and send a message
   }
 
   /**** Config Options ****/
