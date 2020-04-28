@@ -1,3 +1,7 @@
+#ifdef  __cplusplus
+extern "C" {
+#endif
+
 #ifndef __OLED_GFX_H
 #define __OLED_GFX_H
 
@@ -41,4 +45,8 @@ void DrawCircle_Helper( int16_t x0, int16_t y0, int16_t r, uint8_t corner);
 void Display_bmp(void);
 void Display_Interface(void);
 
+#endif
+
+#ifdef  __cplusplus
+}
 #endif

@@ -1,3 +1,7 @@
+#ifdef  __cplusplus
+extern "C" {
+#endif
+
 #include "ASCII_Font.h"
 
 
@@ -7415,3 +7419,7 @@ const unsigned char gImage_bmp3[32768] = { /* 0X10,0X10,0X00,0X80,0X00,0X80,0X01
 0X00,0X20,0X00,0X21,0X00,0X20,0X00,0X20,0X00,0X00,0X00,0X20,0X00,0X21,0X00,0X20,
 };
 
+
+#ifdef  __cplusplus
+}
+#endif

@@ -1,3 +1,8 @@
+#ifdef  __cplusplus
+extern "C" {
+#endif
+
+
 /*****************************************************************************
 * | File        :   SYSFS_GPIO.c
 * | Author      :   Waveshare team
@@ -150,3 +155,7 @@ int SYSFS_GPIO_Write(int Pin, int value)
     close(fd);
     return 0;
 }
+
+#ifdef  __cplusplus
+}
+#endif
