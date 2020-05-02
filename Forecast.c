@@ -8,8 +8,6 @@
 #include <sys/wait.h>
 #include <math.h>
 
-// #Defines
-
 
 struct Forecast{
 	int precipProb;
@@ -25,12 +23,16 @@ int main(int argc, char *argv[])
 {
 	struct Forecast Forecast1;
 	char buffer[10];
-	//char something[6][10];
 	double data[6];
 	
 	FILE *fp;
 	
+	/* 	calls python-wrapped shell script.
+		In this example, "python RFpython_test.py" is the command used in the shell.
+	 	The RFpython_test.py file was in the current directory */
 	fp = popen("python RFpython_test.py","r");
+	
+	// error checking
 	if(fp == NULL)
 	{
 		printf("Failed to run command.\n");
@@ -38,13 +40,15 @@ int main(int argc, char *argv[])
 	}
 	
 	int tmp = 0;
+	
+	// loop that extracts the outputted data from the shell and places it in an array
 	while(fgets(buffer, sizeof(buffer), fp) != NULL)
 	{
 		sscanf(buffer, "%lf", &data[tmp]);
-		//fprintf(stdout, "Fin: %lf", data[tmp]);
 		++tmp;
 	}
 	
+	// moves the extracted data from the array to the struct
 	Forecast1.precipProb = round(data[0]);
 	printf("Forecast1.precipProb = %d.\n", Forecast1.precipProb);
 	Forecast1.temperature = round(data[1]);
