@@ -9,7 +9,7 @@ OBJECTS = ./bin/Local_Master.o  ./bin/font12.o ./bin/font16.o ./bin/font20.o ./b
 
 LIBS = -lrf24-bcm -lrf24network -lrf24mesh -pthread #-lbcm2835 -lm
 
-TARGET = rf_oled_test_main
+TARGET = Local_Master
 
 ${TARGET}: $(OBJ_TARGETS)
 	g++ -o rf_oled_test_main $(OBJECTS)  $(CXXFLAGS) -Wall -I./ -lrf24-bcm  -lrf24network -lrf24mesh -pthread 
