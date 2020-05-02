@@ -12,7 +12,7 @@ LIBS = -lrf24-bcm -lrf24network -lrf24mesh -pthread #-lbcm2835 -lm
 TARGET = Local_Master
 
 ${TARGET}: $(OBJ_TARGETS)
-	g++ -o rf_oled_test_main $(OBJECTS)  $(CXXFLAGS) -Wall -I./ -lrf24-bcm  -lrf24network -lrf24mesh -pthread 
+	g++ -o $(TARGET) $(OBJECTS)  $(CXXFLAGS) -Wall -I./ -lrf24-bcm  -lrf24network -lrf24mesh -pthread 
 
 
 font12.o: $(HEADERS) $(SOURCES)
