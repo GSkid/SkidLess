@@ -1,16 +1,24 @@
+#ifndef __cplusplus
+#define __cplusplus
+#endif
+
 // ********** INCLUDES **********
 #include <RF24/RF24.h>
 #include <RF24Network/RF24Network.h>
 #include <RF24Mesh/RF24Mesh.h>
 #include <RF24/utility/RPi/bcm2835.h>
-#include<iostream>
-#include<cstdio>
-#include<vector>
+#include <iostream>
+#include <cstdio>
+#include <vector>
+#include "OLED_GFX.h"
+#include "OLED_Driver.h"
+#include <stdio.h>
+#include <stdlib.h>		//exit()
+#include <signal.h>     //signal()
 
 /**** GLOBALS ****/
 #define LED RPI_BPLUS_GPIO_J8_07
 #define pushButton RPI_BPLUS_GPIO_J8_29
-
 #define SPI_SPEED_2MHZ 2000000
 
 
@@ -61,6 +69,9 @@ uint8_t pingFlag = 0;
 
 // RF24 Vars
 uint8_t nodeID = 0;    // 0 = master
+
+// Data Array
+
 
 /**** Helper Fxn Prototypes ****/
 int Timer(uint32_t, uint32_t);
