@@ -20,6 +20,7 @@
 #define LED RPI_BPLUS_GPIO_J8_07
 #define pushButton RPI_BPLUS_GPIO_J8_29
 #define SPI_SPEED_2MHZ 2000000
+#define FORECAST_CALL 1800000
 
 #define MAX_ELEMENTS 20
 #define MOISTURE 0
@@ -73,6 +74,15 @@ typedef struct {
   uint8_t nodeID;
 } D_Struct;
 
+typedef struct{
+    int precipProb;
+    int temperature;
+    int humidity;
+    int pressure;
+    int windSpeed;
+    int windBearing;
+} Forecast;
+
 //States for Water Delivery SM
 typedef enum {
   HOSE_IDLE,
@@ -98,6 +108,7 @@ uint8_t column_flag = 0;
 uint32_t dTimer = 0;
 uint32_t wTimer = 0; //Timer for driving Water Delivery
 uint32_t frt = 0;
+uint32_t forecastTimer = 0;
 
 // Timer Support
 uint8_t pingFlag = 0;
@@ -105,7 +116,11 @@ uint8_t pingFlag = 0;
 // RF24 Vars
 uint8_t nodeID = 0;    // 0 = master
 
-// Data Array
+// Forecast Support
+Forecast Forecast1;
+char buffer[10];
+double data[6];
+FILE* fp;
 
 
 /**** Helper Fxn Prototypes ****/
@@ -210,44 +225,12 @@ int main(int argc, char **argv) {
   
     if (dFlag) {
       dFlag = 0;
-      /*
-      printf("Celebration Time\n");
-      // Based on the data values, turn on or off the LED
-      if (D_Dat.digitalOut) {
-        //bcm2835_gpio_set(LED);
-        printf("Celebration Time\n");
-      } else {
-        //bcm2835_gpio_clr(LED);
-        printf("Celebration Time\n");
-      }
-      */
-  
-
 
       /**** Write Data Values to SD Card ****/
 
       {
           FILE* out = fopen("Data_Log.txt", "a");
-          
-/*
-          if (argc < 2)
-          {
-              printf("No output file specified.\n");
-              exit(1);
-          }
-
-          out = fopen(argv[1], "w");
-
-          if (out == NULL)
-          {
-              printf("Unable to open or generate file.\n");
-              exit(1);
-          }
-*/
-
-          // this is the imported data vector
-          // std::vector<int> data = { 0, 1, 2, 3, 4, 5, 6 };
-
+ 
           // prints out main column headers for the data file.
           // conditional here: output if first loop, dont afterward, controlled by column_flag
           if (column_flag == 0)
@@ -305,7 +288,48 @@ int main(int argc, char **argv) {
       }
     }
 */
+
   /**** UI Menu Control ****/
+
+    /**** Forecast Data API Call ****/
+
+    if (Timer(FORECAST_CALL, forecastTimer)) {
+        forecastTimer = millis();
+        fp = popen("python RFpython_test.py", "r");
+
+        // error checking
+        if (fp == NULL)
+        {
+            printf("Failed to run command.\n");
+            break;
+        }
+
+        int tmp = 0;
+
+        // loop that extracts the outputted data from the shell and places it in an array
+        while (fgets(buffer, sizeof(buffer), fp) != NULL)
+        {
+            sscanf(buffer, "%lf", &data[tmp]);
+            ++tmp;
+        }
+
+        // moves the extracted data from the array to the struct
+        Forecast1.precipProb = round(data[0]);
+        printf("Forecast1.precipProb = %d.\n", Forecast1.precipProb);
+        Forecast1.temperature = round(data[1]);
+        printf("Forecast1.temperature = %d.\n", Forecast1.temperature);
+        Forecast1.humidity = round(data[2]);
+        printf("Forecast1.humidity = %d.\n", Forecast1.humidity);
+        Forecast1.pressure = round(data[3]);
+        printf("Forecast1.pressure = %d.\n", Forecast1.pressure);
+        Forecast1.windSpeed = round(data[4]);
+        printf("Forecast1.windSpeed = %d.\n", Forecast1.windSpeed);
+        Forecast1.windBearing = round(data[5]);
+        printf("Forecast1.windBearing = %d.\n", Forecast1.windBearing);
+
+
+        pclose(fp);
+    }
   }  // Loop
   
 // Should NEVER get here
