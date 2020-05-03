@@ -21,6 +21,25 @@
 #define pushButton RPI_BPLUS_GPIO_J8_29
 #define SPI_SPEED_2MHZ 2000000
 
+#define MAX_ELEMENTS 20
+#define MOISTURE 0
+#define SUNLIGHT 1
+#define TEMP  2
+
+#define WATER_OFF 0
+#define WATER_ON  1
+#define PMOS_ON 0
+#define PMOS_OFF 1
+#define NMOS_ON 1
+#define NMOS_OFF 0
+
+#define LPMOS_Pin 6
+#define LNMOS_Pin 13
+#define RPMOS_Pin 19
+#define RNMOS_Pin 26
+
+#define ONE_SECOND 1000
+#define HUNDRED_MILLI 100
 
 /**** Configure the Radio ****/
 /* Radio Pins:
@@ -54,14 +73,30 @@ typedef struct {
   uint8_t nodeID;
 } D_Struct;
 
+//States for Water Delivery SM
+typedef enum {
+  HOSE_IDLE,
+  HOSE_ON_S1,
+  HOSE_ON_S2,
+  HOSE_ON_S3,
+  HOSE_ON_S4,
+  HOSE_OFF_S1,
+  HOSE_OFF_S2, 
+  HOSE_OFF_S3, 
+  HOSE_OFF_S4,
+} w_State;
+
+
 // Data Vars
 D_Struct D_Dat;
+D_Struct Test_Data[MAX_ELEMENTS];
 uint8_t dFlag = 0;
 uint8_t dataDat = 1;
 uint8_t column_flag = 0;
 
 // Timers
 uint32_t dTimer = 0;
+uint32_t wTimer = 0; //Timer for driving Water Delivery
 uint32_t frt = 0;
 
 // Timer Support
@@ -76,6 +111,15 @@ uint8_t nodeID = 0;    // 0 = master
 /**** Helper Fxn Prototypes ****/
 int Timer(uint32_t, uint32_t);
 void setup(void);
+int printGrid(int16_t x0, int16_t x1, int16_t y0, int16_t y1, int16_t xtics, int16_t ytics);
+int plotSampleData(D_Struct data[], uint8_t dataType, int16_t size);
+int WaterDeliverySM(w_State state, uint8_t status, uint32_t delayP_N, uint32_t pulseTime);
+void LPMOS_Set(uint8_t status);
+void RPMOS_Set(uint8_t status);
+void LNMOS_Set(uint8_t status);
+void RNMOS_Set(uint8_t status);
+
+
 
 /**** Void Setup ****/
 void setup(void) {
@@ -84,7 +128,21 @@ void setup(void) {
   bcm2835_init();
   
   bcm2835_spi_begin();  
-
+  
+  DEV_ModuleInit();
+  Device_Init();
+  
+  //Set Pins to Output
+  DEV_GPIO_Mode(LPMOS_Pin, 1);
+  DEV_GPIO_Mode(RPMOS_Pin, 1);
+  DEV_GPIO_Mode(LNMOS_Pin, 1);
+  DEV_GPIO_Mode(RNMOS_Pin, 1);
+    
+  LPMOS_Set(PMOS_OFF); //Initial States for MOS devices 
+  RPMOS_Set(PMOS_OFF);
+  LNMOS_Set(NMOS_OFF); 
+  RNMOS_Set(NMOS_OFF);
+  
   // Set this node as the master node
   //printf("I am here \n");
   mesh.setNodeID(nodeID);
@@ -277,5 +335,269 @@ int Timer(uint32_t delayThresh, uint32_t prevDelay) {
     }
   }
   return 0;
+}
+
+/* @name: printGrid
+   @param: x0 - initial x position for grid
+   @param: x1 - final x position for grid
+   @param: y0 - initial y position for grid
+   @param: y1 - final y position for grid
+   @param: xtics - # of lines on x line
+   @param: ytics - # of lines on y line
+   @return: TRUE/FALSE depending if grid was successfully printed
+*/
+
+int printGrid(int16_t x0, int16_t x1, int16_t y0, int16_t y1, int16_t xtics, int16_t ytics){
+  int i = 0;
+  int xTic = 0;
+  int yTic = 0;
+  int incrementX =  ( x1 - x0 ) / xtics ;
+  int incrementY =  ( y1 - y0 ) / ytics ;
+  
+  printf("Xspaces: %d", incrementX);
+  printf("Yspaces: %d", incrementY);
+  
+  //print x-axis
+  Write_Line(x0, y1, x1, y1);
+  
+  xTic = x0 + incrementX;
+  
+  for(i=0;i <= xtics-1; i++){
+    Write_Line(xTic, y1-2, xTic, y1+2 );
+    xTic += incrementX;
+  }
+  
+  //print y-axis  
+  Write_Line(x0, y0, x0, y1);
+  
+  yTic = y1 - incrementY; 
+  
+  for(i=0;i <= ytics-1; i++){
+    Write_Line(x0-2, yTic, x0+2, yTic );
+    yTic -= incrementY;
+  }
+  
+  return 0;
+  
+}
+
+/* @name: plotSampleData 
+   @param: TestData - array of structs used for plotting
+   @param: dataType - type of sensor data to display
+   @param: size - # of elements in array
+   
+   @return: TRUE/FALSE depending if data was successfully printed
+*/
+
+int plotSampleData( D_Struct TestData[], uint8_t dataType, int16_t size){
+  
+  int i = 0;
+  int16_t x_Value = 20; 
+  int16_t mapped_y_Value = 0;
+  
+  if( dataType == MOISTURE){
+    
+    printf("Plotting Moisture \r\n ");
+    
+    Set_Color(RED);
+    print_String(10,0, (const uint8_t*)"Moisture Level", FONT_5X8);
+    print_String(10,10, (const uint8_t*)"(Node 1)", FONT_5X8);
+    
+    Set_Color(BLUE);
+    print_String(0,60, (const uint8_t*)"Water%", FONT_5X8);
+    print_String(65,120, (const uint8_t*)"Hours", FONT_5X8);
+    
+    
+    for(i = 0; i <= (size-1) ; i++){
+      
+      mapped_y_Value = (int16_t)TestData[i].soilMoisture;
+   
+      printf("Element: %d \r\n", i);
+      
+      printf("Moisture Value: %f \r\n", TestData[i].soilMoisture);
+      
+      Draw_Pixel(x_Value, mapped_y_Value);
+      
+      x_Value += 5;
+      
+    }
+    
+  } else if( dataType == SUNLIGHT){
+    printf("Plotting Sunlight \r\n ");
+    
+    Set_Color(RED);
+    print_String(10,0, (const uint8_t*)"Light Level", FONT_5X8);
+    print_String(10,10, (const uint8_t*)"(Node 1)", FONT_5X8);
+    
+    
+    Set_Color(YELLOW);
+    print_String(0,60, (const uint8_t*)"Light%", FONT_5X8);
+    print_String(65,120, (const uint8_t*)"Hours", FONT_5X8);
+    
+    
+    
+    for(i = 0; i <= (size-1) ; i++){
+      
+      mapped_y_Value = (int16_t)TestData[i].lightLevel;
+   
+      printf("Element: %d \r\n", i);
+      
+      printf("Light Level Value: %f \r\n", TestData[i].lightLevel);
+      
+      Draw_Pixel(x_Value, mapped_y_Value);
+      
+      x_Value += 5;
+      
+    }
+    
+  } else if( dataType == TEMP){
+    printf("Plotting Temperature \r\n ");
+    
+    for(i = 0; i <= size ; i++){
+      
+      mapped_y_Value = (int16_t)TestData[i].temp_C;
+   
+      printf("Element: %d \r\n", i);
+      
+      printf("Temp Value: %d \r\n", TestData[i].temp_C);
+      
+      Draw_Pixel(x_Value, mapped_y_Value);
+      
+      x_Value += 5;
+      
+    }
+    
+  } else {
+    printf(" No Plot Selected \r\n ");
+    
+    
+  }  
+
+  return 0;
+  
+}
+
+/* @name: LPMOS_Set
+   @param: status - whether to turn off or on MOSFET
+   @return:void
+*/
+void LPMOS_Set(uint8_t status){
+  DEV_Digital_Write(LPMOS_Pin, status);
+}
+
+/* @name: RPMOS_Set
+   @param: status - whether to turn off or on MOSFET
+   @return:void
+*/
+void RPMOS_Set(uint8_t status){
+  DEV_Digital_Write(RPMOS_Pin, status);
+}
+
+/* @name: LNMOS_Set
+   @param: status - whether to turn off or on MOSFET
+   @return:void
+*/
+void LNMOS_Set(uint8_t status){
+  DEV_Digital_Write(LNMOS_Pin, status);
+}
+
+/* @name: RNMOS_Set
+   @param: status - whether to turn off or on MOSFET
+   @return:void
+*/
+void RNMOS_Set(uint8_t status){
+  DEV_Digital_Write(RNMOS_Pin, status);
+}
+
+
+/* @name: WaterDeliverSM 
+   @param: state - current state of waterDelivery Driving
+   @param: status - whether to turn on or off WD
+   @param: delayP_N - delay time between turning ON/OFF PFET and NFET
+   @param: pulseTime - Time for +/-5V Pulse, Delays time between ON and OFF 
+   @return: 1/0 depending on whether drive was completed
+*/
+int WaterDeliverySM(w_State state, uint8_t status, uint32_t delayP_N, uint32_t pulseTime){
+  w_State nextState = state;
+  int hoseSet = 0; // Set to 1 once done Driving 
+  
+  switch(state){
+    case HOSE_IDLE:
+      if (status == WATER_ON){
+        nextState = HOSE_ON_S1;
+        wTimer = bcm2835_millis();
+        hoseSet = 0; 
+      }
+      break;
+      
+    case HOSE_ON_S1:
+      LNMOS_Set(NMOS_ON);
+      if (Timer(delayP_N, wTimer)){
+        wTimer = bcm2835_millis();
+        nextState = HOSE_ON_S2;
+      }
+      break;
+    
+    case HOSE_ON_S2:
+      RPMOS_Set(PMOS_ON); 
+      if (Timer(pulseTime, wTimer)){
+        wTimer = bcm2835_millis();
+        nextState = HOSE_ON_S3;
+      }
+      break;
+      
+    case HOSE_ON_S3:
+      RPMOS_Set(PMOS_OFF); 
+      if (Timer(delayP_N, wTimer)){
+        wTimer = bcm2835_millis();
+        nextState = HOSE_ON_S4;
+      }
+      break;
+      
+    case HOSE_ON_S4:
+      LNMOS_Set(NMOS_OFF); 
+      if (Timer(delayP_N, wTimer)){
+        nextState = HOSE_IDLE;
+        hoseSet = 1;
+      }
+      break;
+    
+    case HOSE_OFF_S1:
+      RNMOS_Set(NMOS_ON);
+      if (Timer(delayP_N, wTimer)){
+        wTimer = bcm2835_millis();
+        nextState = HOSE_OFF_S2;
+      }
+      break;
+    
+    case HOSE_OFF_S2:
+      LPMOS_Set(PMOS_ON); 
+      if (Timer(pulseTime, wTimer)){
+        wTimer = bcm2835_millis();
+        nextState = HOSE_OFF_S3;
+      }
+      break;
+      
+    case HOSE_OFF_S3:
+      LPMOS_Set(PMOS_OFF); 
+      if (Timer(delayP_N, wTimer)){
+        wTimer = bcm2835_millis();
+        nextState = HOSE_OFF_S4;
+      }
+      break;
+      
+    case HOSE_OFF_S4:
+      RNMOS_Set(NMOS_OFF); 
+      if (Timer(delayP_N, wTimer)){
+        nextState = HOSE_IDLE;
+        hoseSet = 1;
+      }
+      break;
+    
+  }
+    
+  state = nextState;
+  return hoseSet;  //1 if set, 0 if still in S1-4
+
 }
 
