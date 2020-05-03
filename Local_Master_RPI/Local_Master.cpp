@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <stdlib.h>		//exit()
 #include <signal.h>     //signal()
+#include <math.h>
 
 /**** GLOBALS ****/
 #define LED RPI_BPLUS_GPIO_J8_07

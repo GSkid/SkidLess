@@ -5,14 +5,14 @@ C++ = gcc
 HEADERS =  ./Fonts/ASCII_Font.h ./obj/dev_hardware_i2c.h ./obj/sysfs_gpio.h ./obj/OLED_GFX.h ./obj/OLED_Driver.h ./obj/bcm2835.h ./obj/DEV_Config.h ./obj/dev_hardware_SPI.h  
 SOURCES =  ./Fonts/font12.c ./Fonts/font16.c ./Fonts/font20.c ./Fonts/font8.c ./Fonts/font24.c  ./obj/dev_hardware_i2c.c ./obj/sysfs_gpio.c ./obj/OLED_GFX.c ./obj/OLED_Driver.c ./obj/bcm2835.c ./obj/DEV_Config.c ./obj/dev_hardware_SPI.c  
 OBJ_TARGETS = Local_Master.o font8.o font12.o font16.o font20.o font24.o font8.o  dev_hardware_SPI.o OLED_GFX.o OLED_Driver.o sysfs_gpio.o DEV_Config.o bcm2835.o 
-OBJECTS = ./bin/Local_Master.o  ./bin/font12.o ./bin/font16.o ./bin/font20.o ./bin/font8.o ./bin/font24.o  ./bin/dev_hardware_i2c.o ./bin/sysfs_gpio.o ./bin/OLED_GFX.o ./bin/OLED_Driver.o ./bin/bcm2835.o ./bin/DEV_Config.o ./bin/dev_hardware_SPI.o $(CXXFLAGS) -Wall -I./ -lrf24-bcm  -lrf24network -lrf24mesh -pthread
+OBJECTS = ./bin/Local_Master.o  ./bin/font12.o ./bin/font16.o ./bin/font20.o ./bin/font8.o ./bin/font24.o  ./bin/dev_hardware_i2c.o ./bin/sysfs_gpio.o ./bin/OLED_GFX.o ./bin/OLED_Driver.o ./bin/DEV_Config.o ./bin/dev_hardware_SPI.o $(CXXFLAGS) -Wall -I./ -lrf24-bcm  -lrf24network -lrf24mesh -pthread
 
 LIBS = -lrf24-bcm -lrf24network -lrf24mesh -pthread #-lbcm2835 -lm
 
 TARGET = Local_Master
 
 ${TARGET}: $(OBJ_TARGETS)
-	g++ -o $(TARGET) $(OBJECTS)  $(CXXFLAGS) -Wall -I./ -lrf24-bcm  -lrf24network -lrf24mesh -pthread 
+	g++ $(OBJECTS) -o $(TARGET)
 
 
 font12.o: $(HEADERS) $(SOURCES)
