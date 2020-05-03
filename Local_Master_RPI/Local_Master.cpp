@@ -252,23 +252,23 @@ int main(int argc, char **argv) {
           // conditional here: output if first loop, dont afterward, controlled by column_flag
           if (column_flag == 0)
           {
-              fprintf(out, "Soil Moisture:   Ambient Light:   Ambient Temperature:   Calculated Digital Output:   Node ID:   \n");
+              fprintf(out, "Soil Moisture,   Ambient Light,   Ambient Temperature,   Calculated Digital Output,   Node ID,   \n");
               //Barometric Pressure:   
               //Time Stamp:   
               column_flag = 1;
           }
 
-          printf("%f, %f, %d, %d, %d\n", D_Dat.soilMoisture, D_Dat.lightLevel, D_Dat.temp_C, D_Dat.digitalOut, D_Dat.nodeID);
+          printf("%f, %f, %d, %d, %d,\n", D_Dat.soilMoisture, D_Dat.lightLevel, D_Dat.temp_C, D_Dat.digitalOut, D_Dat.nodeID);
           //%d, D_Dat.baroPressure, 
           //%d, D_Dat.timeStamp, 
 
-          fprintf(out, "%13f    ", D_Dat.soilMoisture); // prints out 0th member of the data vector to the file.
-          //fprintf(out, "%19d    ", D_Dat.baroPressure); // prints out 1st member of the data vector to the file.
-          fprintf(out, "%13f    ", D_Dat.lightLevel); // prints out 2nd member of the data vector to the file.
-          fprintf(out, "%19d    ", D_Dat.temp_C); // prints out 3rd member of the data vector to the file.
-          fprintf(out, "%25d    ", D_Dat.digitalOut); // prints out 4th member of the data vector to the file.
-          //fprintf(out, "%10d    ", D_Dat.timeStamp); // prints out 5th member of the data vector to the file.
-          fprintf(out, "%7d\n", D_Dat.nodeID); // prints out 6th member of the data vector to the file.
+          fprintf(out, "%13f,   ", D_Dat.soilMoisture); // prints out 0th member of the data vector to the file.
+          //fprintf(out, "%19d,    ", D_Dat.baroPressure); // prints out 1st member of the data vector to the file.
+          fprintf(out, "%13f,   ", D_Dat.lightLevel); // prints out 2nd member of the data vector to the file.
+          fprintf(out, "%19d,   ", D_Dat.temp_C); // prints out 3rd member of the data vector to the file.
+          fprintf(out, "%25d,   ", D_Dat.digitalOut); // prints out 4th member of the data vector to the file.
+          //fprintf(out, "%10d,    ", D_Dat.timeStamp); // prints out 5th member of the data vector to the file.
+          fprintf(out, "%7d,\n", D_Dat.nodeID); // prints out 6th member of the data vector to the file.
           fclose(out);
       }
 
