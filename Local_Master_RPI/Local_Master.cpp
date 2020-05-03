@@ -294,6 +294,7 @@ int main(int argc, char **argv) {
     /**** Forecast Data API Call ****/
 
     if (Timer(FORECAST_CALL, forecastTimer)) {
+        printf("Opening call to forecast API...\n");
         forecastTimer = millis();
         fp = popen("python RFpython_test.py", "r");
 
@@ -304,6 +305,7 @@ int main(int argc, char **argv) {
             break;
         }
 
+        printf("Call to forecast API success.\n");
         int tmp = 0;
 
         // loop that extracts the outputted data from the shell and places it in an array
