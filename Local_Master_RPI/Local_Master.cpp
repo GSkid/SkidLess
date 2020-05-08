@@ -42,6 +42,9 @@
 
 #define ONE_SECOND 1000
 #define HUNDRED_MILLI 100
+#define MAX_SENSORS 20
+#define HOURS_36 129600000
+#define MIN_10 600000
 
 /**** Configure the Radio ****/
 /* Radio Pins:
@@ -84,6 +87,13 @@ typedef struct{
     int windBearing;
 } Forecast;
 
+typedef struct {
+    uint8_t status;
+    uint8_t sensors[MAX_SENSORS];
+    uint8_t waterLevel;
+    uint8_t tally;
+}Hoses;
+
 //States for Water Delivery SM
 typedef enum {
   HOSE_IDLE,
@@ -97,19 +107,29 @@ typedef enum {
   HOSE_OFF_S4,
 } w_State;
 
+// Enum for hsoe specification
+typedef enum {
+    HOSE0,
+    HOSE1,
+    HOSE2,
+}HOSE_NUM;
+
 
 // Data Vars
 D_Struct D_Dat;
-D_Struct Test_Data[MAX_ELEMENTS];
+D_Struct sensor_data[MAX_ELEMENTS];
 uint8_t dFlag = 0;
 uint8_t dataDat = 1;
 uint8_t column_flag = 0;
+uint8_t sd_index = 0;
 
 // Timers
 uint32_t dTimer = 0;
 uint32_t wTimer = 0; //Timer for driving Water Delivery
 uint32_t frt = 0;
 uint32_t forecastTimer = 0;
+uint32_t rainTimer = 0;
+uint32_t waterDeliveryTimer = 0;
 
 // Timer Support
 uint8_t pingFlag = 0;
@@ -122,6 +142,12 @@ Forecast Forecast1;
 char buffer[10];
 double data[6];
 FILE* fp;
+uint8_t rainFlag = 0;
+
+// Water Delivery Support
+Hoses Hose0, Hose1, Hose2;
+Hoses Hose[] = { Hose0, Hose1, Hose2 };
+uint8_t hose_statuses = 0;
 
 
 /**** Helper Fxn Prototypes ****/
@@ -134,6 +160,7 @@ void LPMOS_Set(uint8_t status);
 void RPMOS_Set(uint8_t status);
 void LNMOS_Set(uint8_t status);
 void RNMOS_Set(uint8_t status);
+uint8_t WaterDelivery(HOSE_NUM);
 
 
 
@@ -206,10 +233,11 @@ int main(int argc, char **argv) {
           case 'D':
             printf("Message Received\n");
             // Use the data struct to store data messages and print out the result
-            //while (network.available() ) {
-              network.read(header, &D_Dat, sizeof(D_Dat));
-            //}
+            network.read(header, &D_Dat, sizeof(D_Dat));
             dFlag = 1;
+            // Add the sensor data to the sensor data array
+            sensor_data[sd_index] = D_Dat;
+            sd_index++;
             break;
 
           // Do not read the header data, instead print the address inidicated by the header type
@@ -290,7 +318,17 @@ int main(int argc, char **argv) {
     }
 */
 
-  /**** UI Menu Control ****/
+    /**** UI Menu Control ****/
+
+    /**** Water Delivery ****/
+
+    if (Timer(MIN_10, waterDeliveryTimer)) {
+        // reset the timer
+        waterDeliveryTimer = millis();
+        WaterDelivery(HOSE0);
+        WaterDelivery(HOSE1);
+        hose_statuses = WaterDelivery(HOSE2);
+    }
 
     /**** Forecast Data API Call ****/
 
@@ -503,6 +541,74 @@ int plotSampleData( D_Struct TestData[], uint8_t dataType, int16_t size){
   return 0;
   
 }
+
+
+/* @name: WaterDelivery
+   @param: HOSE_NUM - an enum that specifies which hose to evaluate
+   @return: uint8_t - a bit array of values that indicate which hoses are on/off
+ */
+uint8_t WaterDelivery(HOSE_NUM HOSE_IN) {
+    //Hose[HOSE_IN].whatever
+    // First need to tally up the digital outs on the hose
+    int i, j = 0;
+    for (i = 0; i <= MAX_SENSORS; i++) {
+        for (j = 0; j <= MAX_ELEMENTS; j++) {
+            // Check if the data item is a sensor mapped to the hose
+            if (sensor_data[j].nodeID == Hose(HOSE_IN).sensor[i]) {
+                // If it is, increase the tally
+                Hose(HOSE_IN).tally += sensor_data[j].digitalOut;
+            }
+            // This just shuts down the for loop if the list of sensors is exhausted
+            else if ((Hose[HOSE_IN].sensors[i] <= 0) || (Hose[HOSE_IN].sensors[i] == NULL)) {
+                break;
+            }
+        }
+    }
+
+    // Next check if the tally is above the water level threshold
+    if (Hose[HOSE_IN].tally >= Hose[HOSE_IN].waterLevel) {
+        // Check the forecast data
+        if (Forecast1.precipProb <= 30) {
+            rainFlag = 0;
+            // Go ahead and turn on the water
+            Hose[HOSE_IN].status = WATER_ON;
+            w_State Astate = HOSE_IDLE;
+            // Call the state machine to open the solenoid valve
+            while (!WaterDeliverySM(state, WATER_ON, 5, 1000);
+        }
+        // Now we check the forecast data
+        else {
+            if (!rainFlag) {
+                rainFlag++;
+                rainTimer = millis();
+            }
+            if (Timer(HOURS_36, rainTimer)) {
+                rainFlag = 0;
+                // Go ahead and turn on the water
+                Hose[HOSE_IN].status = WATER_ON;
+                w_State Astate = HOSE_IDLE;
+                // Call the state machine to open the solenoid valve
+                while (!WaterDeliverySM(state, WATER_ON, 5, 1000);
+            }
+        }
+    }
+
+    // ...If the sensors indicate it is not dry enough to water
+    else {
+        if (Hose[HOSE_IN].status == WATER_ON) {
+            // Turn off the water
+            w_State Astate = HOSE_IDLE;
+            // Call the state machine to close the solenoid valve
+            while (!WaterDeliverySM(state, WATER_OFF, 5, 1000);
+        }
+        Hose[HOSE_IN].status = WATER_OFF;
+    }
+
+    // Create a bit array of hose states to return
+    uint8_t hose_status = Hose[2].status * 4 + Hose[1].status * 2 + Hose[0].status;
+    return hose_status;
+}
+
 
 /* @name: LPMOS_Set
    @param: status - whether to turn off or on MOSFET
