@@ -163,7 +163,7 @@ void RNMOS_Set(uint8_t status);
 uint8_t WaterDelivery(HOSE_NUM);
 
 
-
+/*********************************************************************************************/
 /**** Void Setup ****/
 void setup(void) {
   //Init the GPIO Library
@@ -202,6 +202,7 @@ void setup(void) {
   return;
 }
 
+/********************************************************************************************/
 int main(int argc, char **argv) {
   setup();
   while(1) {
@@ -377,7 +378,7 @@ int main(int argc, char **argv) {
 return(1);
 }
 
-
+/**************************************************************************************************/
 /****  HELPER FXNS ****/
 
 
