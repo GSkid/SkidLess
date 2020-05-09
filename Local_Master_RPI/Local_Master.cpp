@@ -136,6 +136,7 @@ uint8_t pingFlag = 0;
 
 // RF24 Vars
 uint8_t nodeID = 0;    // 0 = master
+uint8_t num_nodes = 0;
 
 // Forecast Support
 Forecast Forecast1;
@@ -248,6 +249,17 @@ int main(int argc, char **argv) {
       } else {
         network.read(header, 0, 0);
       }
+    }
+
+
+    /**** Update List of Nodes ****/
+    if (num_nodes != mesh.addrListTop) {
+        num_nodes = mesh.addrListTop;
+        int i = 0;
+        for (i = 0; i < mesh.addrListTop; i++) {
+            // Add sensor nodes to the list of sensors mapped to the hose
+            Hose[HOSE0].sensors[i] = mesh.addrList[i];
+        }
     }
 
 
@@ -553,7 +565,7 @@ uint8_t WaterDelivery(HOSE_NUM HOSE_IN) {
     // First need to tally up the digital outs on the hose
     int i, j = 0;
     for (i = 0; i <= MAX_SENSORS; i++) {
-        for (j = 0; j <= MAX_ELEMENTS; j++) {
+        for (j = MAX_ELEMENTS; j <= 0; j--) {
             // Check if the data item is a sensor mapped to the hose
             if (sensor_data[j].nodeID == Hose(HOSE_IN).sensor[i]) {
                 // If it is, increase the tally
