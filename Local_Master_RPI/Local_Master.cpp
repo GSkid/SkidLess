@@ -92,6 +92,7 @@ typedef struct {
     uint8_t sensors[MAX_SENSORS];
     uint8_t waterLevel;
     uint8_t tally;
+    uint8_t flowRate;
 }Hoses;
 
 //States for Water Delivery SM
