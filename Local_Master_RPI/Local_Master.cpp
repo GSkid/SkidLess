@@ -272,7 +272,6 @@ int main(int argc, char **argv) {
       dFlag = 0;
 
       /**** Write Data Values to SD Card ****/
-
       {
           FILE* out = fopen("Data_Log.txt", "a");
  
@@ -299,12 +298,10 @@ int main(int argc, char **argv) {
           fprintf(out, "%7d,\n", D_Dat.nodeID); // prints out 6th member of the data vector to the file.
           fclose(out);
       }
-
-
+      
       /**** 'S' and 'C' Type Message Responses ****/
 
       // Here we condition on if the node should be sent a configure message instead
-
       // Send to the message stored in the fromNode nodeID, message type 'S'
       RF24NetworkHeader p_header(mesh.getAddress(D_Dat.nodeID), 'S');
       // Data_Dat is just a 1 telling the node to go to sleep
@@ -313,26 +310,6 @@ int main(int argc, char **argv) {
       }
     }
 
-
-    /**** Get Node Data Values ****/
-/*
-    // Every 2 seconds, if the pushbutton is pressed, the master will send a 'D' message to
-    // the current indexed node
-    if (bcm2835_gpio_lev(pushButton) && ((bcm2835_millis() - dTimer) >= 2000)) {
-      // Reset the dTimer
-      dTimer = bcm2835_millis();
-
-      //Prepare the data to be sent
-      RF24NetworkHeader d_header(mesh.addrList[1].address, 'D');
-      // addrIndex will be changed to reflect the a selectable option from the UI
-      if (network.write(d_header, &dataDat, sizeof(dataDat))) {
-        // Print out successful message sent
-      } 
-      else {
-        //Print out error message
-      }
-    }
-*/
 
     /**** UI Menu Control ****/
 
@@ -345,6 +322,7 @@ int main(int argc, char **argv) {
         WaterDelivery(HOSE1);
         hose_statuses = WaterDelivery(HOSE2);
     }
+
 
     /**** Forecast Data API Call ****/
 
@@ -383,7 +361,6 @@ int main(int argc, char **argv) {
         printf("Forecast1.windSpeed = %d.\n", Forecast1.windSpeed);
         Forecast1.windBearing = round(data[5]);
         printf("Forecast1.windBearing = %d.\n", Forecast1.windBearing);
-
 
         pclose(fp);
     }
