@@ -164,6 +164,7 @@ void RNMOS_Set(uint8_t status);
 uint8_t WaterDelivery(HOSE_NUM);
 
 
+
 /*********************************************************************************************/
 /**** Void Setup ****/
 void setup(void) {
@@ -202,6 +203,7 @@ void setup(void) {
   radio.printDetails();
   return;
 }
+
 
 /********************************************************************************************/
 int main(int argc, char **argv) {
@@ -390,6 +392,7 @@ int main(int argc, char **argv) {
 return(1);
 }
 
+
 /**************************************************************************************************/
 /****  HELPER FXNS ****/
 
@@ -414,6 +417,7 @@ int Timer(uint32_t delayThresh, uint32_t prevDelay) {
   }
   return 0;
 }
+
 
 /* @name: printGrid
    @param: x0 - initial x position for grid
@@ -458,6 +462,7 @@ int printGrid(int16_t x0, int16_t x1, int16_t y0, int16_t y1, int16_t xtics, int
   return 0;
   
 }
+
 
 /* @name: plotSampleData 
    @param: TestData - array of structs used for plotting
@@ -556,6 +561,7 @@ int plotSampleData( D_Struct TestData[], uint8_t dataType, int16_t size){
 }
 
 
+
 /* @name: WaterDelivery
    @param: HOSE_NUM - an enum that specifies which hose to evaluate
    @return: uint8_t - a bit array of values that indicate which hoses are on/off
@@ -623,6 +629,7 @@ uint8_t WaterDelivery(HOSE_NUM HOSE_IN) {
 }
 
 
+
 /* @name: LPMOS_Set
    @param: status - whether to turn off or on MOSFET
    @return:void
@@ -654,6 +661,7 @@ void LNMOS_Set(uint8_t status){
 void RNMOS_Set(uint8_t status){
   DEV_Digital_Write(RNMOS_Pin, status);
 }
+
 
 
 /* @name: WaterDeliverSM 
