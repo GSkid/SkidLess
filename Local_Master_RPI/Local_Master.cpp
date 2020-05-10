@@ -269,6 +269,8 @@ int main(int argc, char **argv) {
     mesh.DHCP();
     
 
+
+
     /**** Check For Available Network Data ****/
 
     // Check for incoming data from other nodes
@@ -306,6 +308,8 @@ int main(int argc, char **argv) {
     }
 
 
+
+
     /**** Update List of Nodes ****/
     if (num_nodes != mesh.addrListTop) {
         num_nodes = mesh.addrListTop;
@@ -315,6 +319,8 @@ int main(int argc, char **argv) {
             Hose[HOSE0].sensors[i] = (uint8_t)mesh.addrList[i];
         }
     }
+
+
 
 
     /**** 'P' Type Evaluation ****/
@@ -362,17 +368,14 @@ int main(int argc, char **argv) {
     }
 
 
-    /**** UI Menu Control ****/
+
 
     /**** UI Menu Control ****/
 
    // Draw_Line(0, 0, 100, SSD1351_HEIGHT - 1);
     //DEV_Delay_ms(20);
-    
    // Draw_Line(, 0, 100, SSD1351_HEIGHT - 1);
 
-      
-      
     //Testing Hardcoded D_Struct Moisture Data  
       
     /*  
@@ -425,17 +428,12 @@ int main(int argc, char **argv) {
     
   //User Input
   checkButtons();
-    
   
   //Plot Grid
   Set_Color(WHITE);
-    
   printGrid(20,120,20,120,10,10);
     
   // plotSampleData(Test_Data, MOISTURE, MAX_ELEMENTS);
-      
-  
-      
   if (Timer(FIVE_SECONDS, oledTimer)){
     plotSampleData(Test_Data, MOISTURE, MAX_ELEMENTS);
     oledTimer = bcm2835_millis();
@@ -446,7 +444,7 @@ int main(int argc, char **argv) {
 
     /**** Water Delivery ****/
 
-    if (Timer(MIN_10, waterDeliveryTimer)) {
+    if (Timer(MIN_5, waterDeliveryTimer)) {
         // reset the timer
         waterDeliveryTimer = millis();
         WaterDelivery(HOSE0);
@@ -454,19 +452,7 @@ int main(int argc, char **argv) {
         hose_statuses = WaterDelivery(HOSE2);
     }
     
-    //printf("Testing Hose 1 Status Before: %d \r \n", HOSE_ONE);    
-      
-  if( !HOSE_ONE ) {
-      WaterDeliverySM(WATER_ON, ONE_SECOND, FIVE_SECONDS);
-  }
-  
-  //printf("Testing Hose 1 Status After On: %d \r \n", HOSE_ONE);
-  
-  if( HOSE_ONE ) {
-    WaterDeliverySM(WATER_OFF, ONE_SECOND, FIVE_SECONDS);
-  }
-  
-  //printf("Testing Hose 1 Status After Off: %d \r \n", HOSE_ONE);
+
 
 
     /**** Forecast Data API Call ****/
@@ -618,9 +604,8 @@ uint8_t WaterDelivery(HOSE_NUM HOSE_IN)
 
     // Now we actually turn on or off the Hose
     if (prevstatus != Hose[HOSE_IN].status) {
-        w_State Astate = HOSE_IDLE;
         // Call the state machine to open the solenoid valve
-        while (!WaterDeliverySM(Astate, Hose[HOSE_IN].status, FET_DELAY, PULSE_DURATION));
+        while (!WaterDeliverySM(Hose[HOSE_IN].status, FET_DELAY, PULSE_DURATION));
     }
 
     // Create a bit array of hose states to return
