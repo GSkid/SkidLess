@@ -41,6 +41,8 @@
 #define RNMOS_Pin 26
 
 #define ONE_SECOND 1000
+#define PULSE_DURATION 1500
+#define FET_DELAY 5
 #define HUNDRED_MILLI 100
 #define MAX_SENSORS 20
 #define HOURS_36 129600000
@@ -93,6 +95,8 @@ typedef struct {
     uint8_t waterLevel;
     uint8_t tally;
     uint8_t flowRate;
+    uint8_t rainFlag;
+    uint32_t rainTimer;
 }Hoses;
 
 //States for Water Delivery SM
@@ -129,8 +133,6 @@ uint32_t dTimer = 0;
 uint32_t wTimer = 0; //Timer for driving Water Delivery
 uint32_t frt = 0;
 uint32_t forecastTimer = 0;
-uint32_t rainTimer = 0;
-uint32_t waterDeliveryTimer = 0;
 
 // Timer Support
 uint8_t pingFlag = 0;
@@ -148,7 +150,7 @@ uint8_t rainFlag = 0;
 
 // Water Delivery Support
 Hoses Hose0, Hose1, Hose2;
-Hoses Hose[] = { Hose0, Hose1, Hose2 };
+Hoses Hose[3];
 uint8_t hose_statuses = 0;
 
 
@@ -169,6 +171,8 @@ uint8_t WaterDelivery(HOSE_NUM);
 /*********************************************************************************************/
 /**** Void Setup ****/
 void setup(void) {
+  // Initialize the Hose array
+    Hose[0] = Hose0; Hose[1] = Hose1; Hose[2] = Hose2;
   //Init the GPIO Library
   
   bcm2835_init();
@@ -544,20 +548,22 @@ int plotSampleData( D_Struct TestData[], uint8_t dataType, int16_t size){
    @param: HOSE_NUM - an enum that specifies which hose to evaluate
    @return: uint8_t - a bit array of values that indicate which hoses are on/off
  */
-uint8_t WaterDelivery(HOSE_NUM HOSE_IN) {
-    //Hose[HOSE_IN].whatever
+uint8_t WaterDelivery(HOSE_NUM HOSE_IN)
+{
+    Hose[HOSE_IN].tally = 0;
+    int prevStatus = Hose[HOSE_IN].status;
     // First need to tally up the digital outs on the hose
     int i, j = 0;
     for (i = 0; i <= MAX_SENSORS; i++) {
-        for (j = MAX_ELEMENTS; j <= 0; j--) {
+        // This just shuts down the for loop if the list of sensors is exhausted
+        if (Hose[HOSE_IN].sensors[i] <= 0) {
+            break;
+        }
+        for (j = MAX_ELEMENTS; j >= 0; j--) {
             // Check if the data item is a sensor mapped to the hose
-            if (sensor_data[j].nodeID == Hose(HOSE_IN).sensor[i]) {
+            if ((sensor_data[j].nodeID == Hose[HOSE_IN].sensors[i]) && (sensor_data[j].nodeID)) {
                 // If it is, increase the tally
-                Hose(HOSE_IN).tally += sensor_data[j].digitalOut;
-            }
-            // This just shuts down the for loop if the list of sensors is exhausted
-            else if ((Hose[HOSE_IN].sensors[i] <= 0) || (Hose[HOSE_IN].sensors[i] == NULL)) {
-                break;
+                Hose[HOSE_IN].tally += sensor_data[j].digitalOut;
             }
         }
     }
@@ -566,43 +572,37 @@ uint8_t WaterDelivery(HOSE_NUM HOSE_IN) {
     if (Hose[HOSE_IN].tally >= Hose[HOSE_IN].waterLevel) {
         // Check the forecast data
         if (Forecast1.precipProb <= 30) {
-            rainFlag = 0;
+            rHose[HOSE_IN].rainFlag = 0;
             // Go ahead and turn on the water
             Hose[HOSE_IN].status = WATER_ON;
-            w_State Astate = HOSE_IDLE;
-            // Call the state machine to open the solenoid valve
-            while (!WaterDeliverySM(state, WATER_ON, 5, 1000);
-        }
-        // Now we check the forecast data
+        }// Now we check the forecast data
         else {
-            if (!rainFlag) {
-                rainFlag++;
-                rainTimer = millis();
+            if (!Hose[HOSE_IN].rainFlag) {
+                Hose[HOSE_IN].rainFlag++;
+                Hose[HOSE_IN].rainTimer = millis();
+                Hose[HOSE_IN].status = WATER_OFF;
             }
-            if (Timer(HOURS_36, rainTimer)) {
+            else if (Timer(HOURS_36, rainTimer)) {
                 rainFlag = 0;
                 // Go ahead and turn on the water
                 Hose[HOSE_IN].status = WATER_ON;
-                w_State Astate = HOSE_IDLE;
-                // Call the state machine to open the solenoid valve
-                while (!WaterDeliverySM(state, WATER_ON, 5, 1000);
             }
         }
+    }// ...If the sensors indicate it is not dry enough to water
+    else {
+        Hose[HOSE_IN].status = WATER_OFF;
     }
 
-    // ...If the sensors indicate it is not dry enough to water
-    else {
-        if (Hose[HOSE_IN].status == WATER_ON) {
-            // Turn off the water
-            w_State Astate = HOSE_IDLE;
-            // Call the state machine to close the solenoid valve
-            while (!WaterDeliverySM(state, WATER_OFF, 5, 1000);
-        }
-        Hose[HOSE_IN].status = WATER_OFF;
+    // Now we actually turn on or off the Hose
+    if (prevstatus != Hose[HOSE_IN].status) {
+        w_State Astate = HOSE_IDLE;
+        // Call the state machine to open the solenoid valve
+        while (!WaterDeliverySM(Astate, Hose[HOSE_IN].status, FET_DELAY, PULSE_DURATION));
     }
 
     // Create a bit array of hose states to return
     uint8_t hose_status = Hose[2].status * 4 + Hose[1].status * 2 + Hose[0].status;
+
     return hose_status;
 }
 
