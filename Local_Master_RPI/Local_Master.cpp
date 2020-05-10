@@ -175,13 +175,9 @@ static int lastUpButtonState, lastDownButtonState, lastBackButtonState, lastEnte
 uint32_t dTimer = 0;
 uint32_t frt = 0;
 uint32_t forecastTimer = 0;
-<<<<<<< HEAD
-=======
-uint32_t rainTimer = 0;
 uint32_t waterDeliveryTimer = 0;
 uint32_t wTimer = 0; //Timer used for driving Water Delivery testing
 uint32_t oledTimer = 0; //Timer used for updating OLED testing
->>>>>>> 27aa314230c878906ab91bd8f5741af734466dae
 
 // Timer Support
 uint8_t pingFlag = 0;
@@ -553,6 +549,27 @@ int Timer(uint32_t delayThresh, uint32_t prevDelay) {
  */
 uint8_t WaterDelivery(HOSE_NUM HOSE_IN)
 {
+    // First reset the hose tally
+    Hose[HOSE_IN].tally = 0;
+
+    // Then we need to tally up the digital outs on the hose
+    int i, j = 0;
+    for (i = 0; i <= MAX_SENSORS; i++) {
+        // This just shuts down the for loop if the list of sensors is exhausted
+        if (Hose[HOSE_IN].sensors[i] <= 0) {
+            break;
+        }
+        for (j = MAX_ELEMENTS; j > 0; j--) {
+            // Check if the data item is a sensor mapped to the hose
+            if ((sensor_data[j].nodeID == Hose[HOSE_IN].sensors[i]) && (sensor_data[j].nodeID)) {
+                // If it is, increase the tally
+                Hose[HOSE_IN].tally += sensor_data[j].digitalOut;
+                break;
+            }
+        }
+    }
+
+    // Next check if the tally is above the water level threshold
     if (Hose[HOSE_IN].tally >= Hose[HOSE_IN].waterLevel) {
         // Check the forecast data
         if (Forecast1.precipProb <= 30) {
