@@ -552,7 +552,7 @@ uint8_t WaterDelivery(HOSE_NUM HOSE_IN)
     // First reset the hose tally
     Hose[HOSE_IN].tally = 0;
 
-    // Then we need to tally up the digital outs on the hose
+    // Then need to tally up the digital outs on the hose
     int i, j = 0;
     for (i = 0; i <= MAX_SENSORS; i++) {
         // This just shuts down the for loop if the list of sensors is exhausted
