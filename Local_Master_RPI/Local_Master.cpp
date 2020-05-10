@@ -223,7 +223,7 @@ uint8_t WaterDelivery(HOSE_NUM);
 /**** Void Setup ****/
 void setup(void) {
   // Initialize the Hose array
-    Hose[0] = Hose0; Hose[1] = Hose1; Hose[2] = Hose2;
+  Hose[0] = Hose0; Hose[1] = Hose1; Hose[2] = Hose2;
   //Init the GPIO Library
   
   bcm2835_init();
@@ -553,80 +553,50 @@ int Timer(uint32_t delayThresh, uint32_t prevDelay) {
  */
 uint8_t WaterDelivery(HOSE_NUM HOSE_IN)
 {
-    Hose[HOSE_IN].tally = 0;
-    int prevStatus = Hose[HOSE_IN].status;
-    // First need to tally up the digital outs on the hose
-    int i, j = 0;
-    for (i = 0; i <= MAX_SENSORS; i++) {
-        // This just shuts down the for loop if the list of sensors is exhausted
-        if (Hose[HOSE_IN].sensors[i] <= 0) {
-            break;
-        }
-        for (j = MAX_ELEMENTS; j >= 0; j--) {
-            // Check if the data item is a sensor mapped to the hose
-<<<<<<< HEAD
-            if ((sensor_data[j].nodeID == Hose[HOSE_IN].sensors[i]) && (sensor_data[j].nodeID)) {
-                // If it is, increase the tally
-                Hose[HOSE_IN].tally += sensor_data[j].digitalOut;
-=======
-            if (sensor_data[j].nodeID == Hose[HOSE_IN].sensor[i]) {
-                // If it is, increase the tally
-                Hose[HOSE_IN].tally += sensor_data[j].digitalOut;
-            }
-            // This just shuts down the for loop if the list of sensors is exhausted
-            else if ((Hose[HOSE_IN].sensors[i] <= 0) || (Hose[HOSE_IN].sensors[i] == NULL)) {
-                break;
->>>>>>> 27aa314230c878906ab91bd8f5741af734466dae
-            }
-        }
-    }
-
-    // Next check if the tally is above the water level threshold
     if (Hose[HOSE_IN].tally >= Hose[HOSE_IN].waterLevel) {
         // Check the forecast data
         if (Forecast1.precipProb <= 30) {
+            rainFlag = 0;
             rHose[HOSE_IN].rainFlag = 0;
             // Go ahead and turn on the water
             Hose[HOSE_IN].status = WATER_ON;
-<<<<<<< HEAD
-        }// Now we check the forecast data
-=======
             w_State Astate = HOSE_IDLE;
             // Call the state machine to open the solenoid valve
-            //while (!WaterDeliverySM(state, WATER_ON, 5, 1000);
+            while (!WaterDeliverySM(state, WATER_ON, 5, 1000);
         }
         // Now we check the forecast data
->>>>>>> 27aa314230c878906ab91bd8f5741af734466dae
-        else {
+    }// Now we check the forecast data
+    else {
+        if (!rainFlag) {
+            rainFlag++;
+            rainTimer = millis();
             if (!Hose[HOSE_IN].rainFlag) {
                 Hose[HOSE_IN].rainFlag++;
                 Hose[HOSE_IN].rainTimer = millis();
                 Hose[HOSE_IN].status = WATER_OFF;
             }
+            if (Timer(HOURS_36, rainTimer)) {
             else if (Timer(HOURS_36, rainTimer)) {
                 rainFlag = 0;
                 // Go ahead and turn on the water
                 Hose[HOSE_IN].status = WATER_ON;
-<<<<<<< HEAD
-=======
                 w_State Astate = HOSE_IDLE;
                 // Call the state machine to open the solenoid valve
-                //while (!WaterDeliverySM(state, WATER_ON, 5, 1000);
->>>>>>> 27aa314230c878906ab91bd8f5741af734466dae
+                while (!WaterDeliverySM(state, WATER_ON, 5, 1000);
+            }
             }
         }
+
+        // ...If the sensors indicate it is not dry enough to water
     }// ...If the sensors indicate it is not dry enough to water
     else {
-<<<<<<< HEAD
-=======
-        if (Hose[HOSE_IN].status == WATER_ON) {
-            // Turn off the water
-            w_State Astate = HOSE_IDLE;
-            // Call the state machine to close the solenoid valve
-            //while (!WaterDeliverySM(state, WATER_OFF, 5, 1000);
-        }
->>>>>>> 27aa314230c878906ab91bd8f5741af734466dae
-        Hose[HOSE_IN].status = WATER_OFF;
+    if (Hose[HOSE_IN].status == WATER_ON) {
+        // Turn off the water
+        w_State Astate = HOSE_IDLE;
+        // Call the state machine to close the solenoid valve
+        while (!WaterDeliverySM(state, WATER_OFF, 5, 1000);
+    }
+    Hose[HOSE_IN].status = WATER_OFF;
     }
 
     // Now we actually turn on or off the Hose
@@ -640,6 +610,7 @@ uint8_t WaterDelivery(HOSE_NUM HOSE_IN)
     uint8_t hose_status = Hose[2].status * 4 + Hose[1].status * 2 + Hose[0].status;
 
     return hose_status;
+}
 }
 
 
