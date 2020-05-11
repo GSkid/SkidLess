@@ -159,15 +159,15 @@ void loop() {
 
 
   /**** Battery Level Check ****/
-  if (Timer(2000, batteryTimer)) {
-    batteryTimer = millis();
-    printf("Battery Level Low: %d\n\n", pullBatteryLevel());
-    if (pullBatteryLevel() <= 35) {
-      while (pullBatteryLevel() <= 35) {
-        continue;
-      }
-    }
-  }
+//  if (Timer(2000, batteryTimer)) {
+//    batteryTimer = millis();
+//    printf("Battery Level Low: %d\n\n", pullBatteryLevel());
+//    if (pullBatteryLevel() <= 35) {
+//      while (pullBatteryLevel() <= 35) {
+//        continue;
+//      }
+//    }
+//  }
 
 
 
