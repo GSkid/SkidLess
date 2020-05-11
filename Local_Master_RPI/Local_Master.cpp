@@ -43,6 +43,11 @@
 #define RPMOS_Pin 19
 #define RNMOS_Pin 26
 
+#define ENTER_Pin  16 
+#define BACK_Pin  20
+#define DOWN_Pin 12
+#define UP_Pin 21
+
 #define FIVE_SECONDS 5000
 #define MIN_5 300000
 #define ONE_SECOND 1000
@@ -132,8 +137,15 @@ typedef enum{
   SLEEP,
   HOME_PAGE,
   SENSORS_HOME,
+  SENSORS_PLOT,
   HOSES_HOME, 
+  HOSES_STATUS,
+  HOSES_WATER,
+  HOSES_REMAP,
   SETTINGS_HOME,
+  SETTINGS_SLEEP,
+  SETTINGS_CAL,
+  SETTINGS_RESET,
 } OLED_State;
 
 // Enum for hsoe specification
@@ -158,13 +170,10 @@ static w_State waterState = HOSE_IDLE; //Water Deliver SM state var
 static int HOSE_ONE = WATER_OFF; //flags used to monitor which Hoses are on
 //static int HOSE_TWO = WATER_OFF;
 //static int HOSE_THREE = WATER_OFF;
-
+static uint8_t dataType = 0;
 
 //Button Variables
-static int enterButtonInput = 4;
-static int backButtonInput = 5;
-static int downButtonInput = 3;
-static int upButtonInput = 6;
+static int prevArrowState, arrowState = 0;
 static int lastUpButtonState, lastDownButtonState, lastBackButtonState, lastEnterButtonState,
        upButtonValue, downButtonValue, backButtonValue, enterButtonValue,
        upButtonValue2, downButtonValue2, backButtonValue2, enterButtonValue2,
@@ -205,7 +214,8 @@ void checkButtons(void);
 int printGrid(int16_t x0, int16_t x1, int16_t y0, int16_t y1, int16_t xtics, int16_t ytics);
 int plotSampleData(D_Struct data[], uint8_t dataType, int16_t size);
 int WaterDeliverySM(uint8_t status, uint32_t delayP_N, uint32_t pulseTime);
-int OLED_SM(uint32_t OLED_Delay, uint16_t color);
+void OLED_PrintArrow(int x, int y);
+void OLED_SM(uint16_t color);
 void LPMOS_Set(uint8_t status);
 void RPMOS_Set(uint8_t status);
 void LNMOS_Set(uint8_t status);
@@ -235,6 +245,12 @@ void setup(void) {
   DEV_GPIO_Mode(RPMOS_Pin, 1);
   DEV_GPIO_Mode(LNMOS_Pin, 1);
   DEV_GPIO_Mode(RNMOS_Pin, 1);
+  
+  //Set Pins to Input
+  DEV_GPIO_Mode(ENTER_Pin, 0);
+  DEV_GPIO_Mode(BACK_Pin, 0);
+  DEV_GPIO_Mode(DOWN_Pin, 0);
+  DEV_GPIO_Mode(UP_Pin, 0);
     
   LPMOS_Set(PMOS_OFF); //Initial States for MOS devices 
   RPMOS_Set(PMOS_OFF);
@@ -678,66 +694,281 @@ int WaterDeliverySM(uint8_t status, uint32_t delayP_N, uint32_t pulseTime){
 }
 
 
+/**
+   @Function LCD_PrintArrow(int state)
+   @param int x, int y Used to determine x,y position of arrow
+   @return None
+   @brief This function prints Arrow on OLED at x,y coordinates
+   @note
+   @author Brian Naranjo, 1/25/20
+   @editor   */
+
+void OLED_PrintArrow(int x, int y) {
+  print_String(x,y, (const uint8_t*)"<", FONT_5X8);
+}
+
 /* @name: OLED_SM 
-   @param: OLED_Delay
-   @return: status of next page as an int 
+   @param: Color of Page Text
+   @return: void
 */
 
-int OLED_SM(uint32_t OLED_Delay, uint16_t color){
+void OLED_SM(uint16_t color){
   OLED_State nextPage = oledState;
   Set_Color(color);
   
+  //Toggle Arrow
+  if (DOWN_PRESSED) { //if down, increment arrowstate.
+    if (arrowState >= 3) {
+      arrowState = 0;
+    } else {
+      arrowState++;
+    }
+  } else if (UP_PRESSED){
+    if (arrowState <= 0) { //otherwise, decrement arrowstate.
+      arrowState = 3;
+    } else {
+      arrowState--;
+    }
+  }
+
+
   switch(oledState){
     case SLEEP:
-      print_String(10,0, (const uint8_t*)"Sleep", FONT_5X8);
-      if (Timer(OLED_Delay,oledTimer)){
+      print_String(35,55, (const uint8_t*)"SLEEPING", FONT_8X16);
+      if (ENTER_PRESSED){
         nextPage = HOME_PAGE;
-        oledTimer = bcm2835_millis();
         Clear_Screen();
       }
       break;
     
     case HOME_PAGE:
-      print_String(10,0, (const uint8_t*)"Home Page", FONT_5X8);
-      if (Timer(OLED_Delay,oledTimer)){
-        nextPage = SENSORS_HOME;
-        oledTimer = bcm2835_millis();
+      if (prevArrowState != arrowState){
+        Clear_Screen();
+      }  
+        
+      print_String(0,0, (const uint8_t*)"Home Page", FONT_8X16);
+      print_String(0,30, (const uint8_t*)"Sensor Data", FONT_5X8);
+      print_String(0,40, (const uint8_t*)"Hose Configuration", FONT_5X8);
+      print_String(0,50, (const uint8_t*)"Settings", FONT_5X8);
+      
+      if(arrowState == 0){
+        OLED_PrintArrow(70, 30);
+      } else if (arrowState == 1){
+        OLED_PrintArrow(110, 40);
+      } else {
+        OLED_PrintArrow(55, 50);
+      } 
+      
+      
+      if (ENTER_PRESSED){
+        if(arrowState == 0){
+          nextPage = SENSORS_HOME;
+        } else if(arrowState == 1){
+          nextPage = HOSES_HOME;
+        } else{
+          nextPage = SETTINGS_HOME;
+        }
+        Clear_Screen();
+      } else if (BACK_PRESSED){
+        nextPage = SLEEP;
         Clear_Screen();
       }
       break;
     
     case SENSORS_HOME:
-      print_String(10,0, (const uint8_t*)"Sensors Home", FONT_5X8);
-      if (Timer(OLED_Delay,oledTimer)){
-        nextPage =HOSES_HOME;
-        oledTimer = bcm2835_millis();
+      if (prevArrowState != arrowState){
+        Clear_Screen();
+      }
+      
+      print_String(0,0, (const uint8_t*)"Sensors Home", FONT_8X16);
+      print_String(0,30, (const uint8_t*)"Plot Moisture Data", FONT_5X8);
+      print_String(0,40, (const uint8_t*)"Plot Sunlight Data", FONT_5X8);
+      
+      
+      if(arrowState == 0){
+        OLED_PrintArrow(110, 30);
+      } else {
+        OLED_PrintArrow(110, 40);
+      } 
+      
+      if (ENTER_PRESSED){
+        Clear_Screen();
+        if(arrowState == 0){
+          dataType = MOISTURE;
+        } else {
+          dataType = SUNLIGHT;
+        }
+        nextPage = SENSORS_PLOT;
+        Clear_Screen();
+        
+      } else if (BACK_PRESSED){
+        nextPage = HOME_PAGE;
         Clear_Screen();
       }
       break;
     
+    case SENSORS_PLOT:
+      printGrid(20,120,20,120,10,10);
+      plotSampleData(Test_Data, dataType, MAX_ELEMENTS);
+      
+      if(ENTER_PRESSED){
+        if(dataType == MOISTURE){
+          dataType = SUNLIGHT;
+        } else {
+          dataType = MOISTURE;
+        }
+        Clear_Screen();
+      } else if (BACK_PRESSED){
+        nextPage = SENSORS_HOME;
+        Clear_Screen();
+      }
+      
+      break;
+      
+   
     
     case HOSES_HOME: 
-      print_String(10,0, (const uint8_t*)"Hoses", FONT_5X8);
-      if (Timer(OLED_Delay,oledTimer)){
-        nextPage = SETTINGS_HOME;
-        oledTimer = bcm2835_millis();
+      if (prevArrowState != arrowState){
+        Clear_Screen();
+      }
+      
+      print_String(0,0, (const uint8_t*)"Hoses", FONT_8X16);
+      
+      print_String(0,30, (const uint8_t*)"Current Hose Status", FONT_5X8);
+      print_String(0,40, (const uint8_t*)"Watering Log", FONT_5X8);
+      print_String(0,50, (const uint8_t*)"Remap Sensors ", FONT_5X8);
+      
+      if(arrowState == 0){
+        OLED_PrintArrow(112, 30);
+      } else if (arrowState == 1) {
+        OLED_PrintArrow(80, 40);
+      } else {
+        OLED_PrintArrow(85, 50);
+      }
+      
+      if (ENTER_PRESSED){
+        if(arrowState == 0){
+          nextPage = HOSES_STATUS;
+        } else if (arrowState == 1){
+          nextPage = HOSES_WATER;
+        } else {
+          nextPage = HOSES_REMAP;
+        }
+        Clear_Screen();
+      } else if (BACK_PRESSED){
+        nextPage = HOME_PAGE;
         Clear_Screen();
       }
       break;
+      
+    case HOSES_STATUS: 
+      print_String(0,0, (const uint8_t*)"Hoses Status", FONT_8X16);
+      if (ENTER_PRESSED){
+        nextPage = SLEEP;
+        Clear_Screen();
+      } else if (BACK_PRESSED){
+        nextPage = HOSES_HOME;
+        Clear_Screen();
+      }
+      break;
+      
+    case HOSES_WATER: 
+      print_String(0,0, (const uint8_t*)"Watering Log", FONT_8X16);
+      if (ENTER_PRESSED){
+        nextPage = SLEEP;
+        Clear_Screen();
+      } else if (BACK_PRESSED){
+        nextPage = HOSES_HOME;
+        Clear_Screen();
+      }
+      break;
+      
+    case HOSES_REMAP: 
+      print_String(0,0, (const uint8_t*)"Remap Hoses", FONT_8X16);
+      if (ENTER_PRESSED){
+        nextPage = SLEEP;
+        Clear_Screen();
+      } else if (BACK_PRESSED){
+        nextPage = HOSES_HOME;
+        Clear_Screen();
+      }
+      break;     
     
     
     case SETTINGS_HOME:
-      print_String(10,0, (const uint8_t*)"Settings", FONT_5X8);
-      if (Timer(OLED_Delay,oledTimer)){
-        nextPage = SLEEP;
-        oledTimer = bcm2835_millis();
+    
+      if (prevArrowState != arrowState){
+        Clear_Screen();
+      }
+      
+      print_String(0,0, (const uint8_t*)"Settings", FONT_8X16);
+      
+      print_String(0,30, (const uint8_t*)"Adjust Sleep Timer", FONT_5X8);
+      print_String(0,40, (const uint8_t*)"Calibrate Sensors", FONT_5X8);
+      print_String(0,50, (const uint8_t*)"Reset System", FONT_5X8);
+      
+      if(arrowState == 0){
+        OLED_PrintArrow(112, 30);
+      } else if (arrowState == 1) {
+        OLED_PrintArrow(100, 40);
+      } else {
+        OLED_PrintArrow(85, 50);
+      }
+      
+      if (ENTER_PRESSED){
+        if(arrowState == 0){
+          nextPage = SETTINGS_SLEEP;
+        } else if (arrowState == 1){
+          nextPage = SETTINGS_CAL;
+        } else {
+          nextPage = SETTINGS_RESET;
+        }
+        Clear_Screen();
+      } else if (BACK_PRESSED){
+        nextPage = HOME_PAGE;
         Clear_Screen();
       }
       break;
+      
+     case SETTINGS_SLEEP: 
+      print_String(0,0, (const uint8_t*)"Sleep Settings", FONT_8X16);
+      if (ENTER_PRESSED){
+        nextPage = SLEEP;
+        Clear_Screen();
+      } else if (BACK_PRESSED){
+        nextPage = SETTINGS_HOME;
+        Clear_Screen();
+      }
+      break;  
+      
+     case SETTINGS_CAL: 
+      print_String(0,0, (const uint8_t*)"Sensors Recal", FONT_8X16);
+      if (ENTER_PRESSED){
+        nextPage = SLEEP;
+        Clear_Screen();
+      } else if (BACK_PRESSED){
+        nextPage = SETTINGS_HOME;
+        Clear_Screen();
+      }
+      break; 
+      
+      case SETTINGS_RESET: 
+      print_String(0,0, (const uint8_t*)"System Reset", FONT_8X16);
+      if (ENTER_PRESSED){
+        nextPage = SLEEP;
+        Clear_Screen();
+      } else if (BACK_PRESSED){
+        nextPage = SETTINGS_HOME;
+        Clear_Screen();
+      }
+      break;    
+      
     }
     
+    prevArrowState = arrowState;
     oledState = nextPage;
-    return int(nextPage);
+    
+    return;
 }
 
 
@@ -759,22 +990,23 @@ void checkButtons(void) {
   DOWN_PRESSED = FALSE;
   UP_PRESSED = FALSE;
 
-  enterButtonValue = DEV_Digital_Read(enterButtonInput);
-  downButtonValue = DEV_Digital_Read(downButtonInput);
-  backButtonValue = DEV_Digital_Read(backButtonInput);
-  upButtonValue = DEV_Digital_Read(upButtonInput);
+  enterButtonValue = DEV_Digital_Read(ENTER_Pin);
+  downButtonValue = DEV_Digital_Read(DOWN_Pin);
+  backButtonValue = DEV_Digital_Read(BACK_Pin);
+  upButtonValue = DEV_Digital_Read(UP_Pin);
 
-  DEV_Delay_ms(20);
+  DEV_Delay_ms(5);
   
-  enterButtonValue2 = DEV_Digital_Read(enterButtonInput);
-  downButtonValue2 = DEV_Digital_Read(downButtonInput);
-  backButtonValue2 = DEV_Digital_Read(backButtonInput);
-  upButtonValue2 = DEV_Digital_Read(upButtonInput);
+  enterButtonValue2 = DEV_Digital_Read(ENTER_Pin);
+  downButtonValue2 = DEV_Digital_Read(DOWN_Pin);
+  backButtonValue2 = DEV_Digital_Read(BACK_Pin);
+  upButtonValue2 = DEV_Digital_Read(UP_Pin);
 
   if (enterButtonValue == enterButtonValue2) {
     if (enterButtonValue != lastEnterButtonState) { //Change in State
       if (enterButtonValue == LOW) { //Flipped, Low is pressed
         ENTER_PRESSED = TRUE; //set flag TRUE
+        printf("Enter Pressed \r \n ");
       } else {
         ENTER_PRESSED = FALSE; //set flag FALSE
       }
@@ -784,6 +1016,7 @@ void checkButtons(void) {
     if (downButtonValue != lastDownButtonState) { //Change in State
       if (downButtonValue == LOW) { //Flipped, Low is pressed
         DOWN_PRESSED = TRUE; //set flag TRUE
+        printf("Down Pressed \r \n ");
       } else {
         DOWN_PRESSED = FALSE; //set flag FALSE
       }
@@ -793,6 +1026,7 @@ void checkButtons(void) {
     if (upButtonValue != lastUpButtonState) { //Change in State
       if (upButtonValue == LOW) { //Flipped, Low is pressed
         UP_PRESSED = TRUE; //set flag TRUE
+        printf("Up Pressed \r \n ");
       } else {
         UP_PRESSED = FALSE; //set flag FALSE
       }
@@ -802,6 +1036,7 @@ void checkButtons(void) {
     if (backButtonValue != lastBackButtonState) { //Change in State
       if (backButtonValue == LOW) { //Flipped, Low is pressed
         BACK_PRESSED = TRUE; //set flag TRUE
+        printf("Back Pressed \r \n ");
       } else {
         BACK_PRESSED = FALSE; //set flag FALSE
       }
