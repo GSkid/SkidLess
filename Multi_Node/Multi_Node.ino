@@ -20,17 +20,18 @@ RF24Mesh mesh(radio, network);
 #define time_Thresh Timer(C_Thresh.time_thresh, 10)//D_Struct.timeStamp)
 
 /**** GLOBALS ****/
-#define nodeID 2 // Set this to a different number for each node in the mesh network
+#define nodeID 5 // Set this to a different number for each node in the mesh network
 #define MOISTURE_PIN A1
 #define LIGHT_PIN A2
+#define BATTERY A3
 #define LIQUID_SENSE 10000
 #define INTERRUPT_MASK 0b01000000
+#define VOLTAGE_DIVIDER 10
 
 // C_Struct stores relevant thresholds
 typedef struct {
   float sM_thresh;
   float sM_thresh_00;
-  //uint8_t bP_thresh;
   float lL_thresh;
   uint16_t tC_thresh;
   uint16_t time_thresh;
@@ -39,18 +40,18 @@ typedef struct {
 // D_Struct stores the relevant sensor data
 typedef struct {
   float soilMoisture;
-  //uint16_t baroPressure;
   float lightLevel;
   uint16_t temp_C;
   uint8_t digitalOut;
-  //uint32_t timeStamp;
   uint8_t node_ID;
+  uint8_t battLevel;
 } D_Struct;
 
 // Timers
 uint32_t sleepTimer = 0;
 uint32_t messageTimer = 0;
 uint32_t witchTimer = 60000;
+uint32_t batteryTimer = 0;
 
 // Timer Support
 uint8_t timerFlag = 0;
@@ -74,7 +75,10 @@ void D_Struct_Serial_print(D_Struct);
 void C_Struct_Serial_print(C_Struct);
 void initC_Struct(C_Struct*);
 float pullMoistureSensor(void);
+float getMoistureReading(void);
 float pullLightSensor(void);
+float getLightReading(void);
+uint8_t pullBatteryLevel(void);
 int Timer(uint32_t, uint32_t);
 int run_DeepOcean(D_Struct, C_Struct);
 
@@ -86,6 +90,7 @@ void setup() {
   // Set the IO
   pinMode(MOISTURE_PIN, INPUT);
   pinMode(LIGHT_PIN, INPUT);
+  pinMode(BATTERY, INPUT);
 
   // Begin the Barometric Pressure Sensor
   // Pin out: Vin->5V, SCL->A5, SDA->A4
@@ -152,20 +157,31 @@ void loop() {
     }
   }
 
+
+  /**** Battery Level Check ****/
+  if (Timer(2000, batteryTimer)) {
+    batteryTimer = millis();
+    printf("Battery Level Low: %d\n\n", pullBatteryLevel());
+    if (pullBatteryLevel() <= 35) {
+      while (pullBatteryLevel() <= 35) {
+        continue;
+      }
+    }
+  }
+
+
+
   /**** Read Sensors ****/
 
-  if (sleepFlag) { 
+  if (sleepFlag) {
     sleepFlag = 0; // Ensures that we only read and send a message once after waking up
 
     // Read all sensors
     Data_Struct.soilMoisture = pullMoistureSensor();
-    //Data_Struct.baroPressure = 0; //change to bmp.readPressure();
     Data_Struct.lightLevel = pullLightSensor();
     Data_Struct.temp_C = bmp.readTemperature();
+    Data_Struct.battLevel = pullBatteryLevel();
     Data_Struct.digitalOut = run_DeepOcean(Data_Struct, Thresholds); // will be replaced by DeepOcean
-    //    if (Data_Struct.digitalOut) {
-    //      Data_Struct.timeStamp = millis();
-    //    }
     Data_Struct.node_ID = nodeID;
 
 
@@ -256,39 +272,35 @@ void C_Struct_Serial_print(C_Struct sct) {
 
 void D_Struct_Serial_print(D_Struct sct) {
   Serial.print(F("Soil Moisture Cont. (g%): ")); Serial.println(sct.soilMoisture);
-  //Serial.print(F("Barometric Pressure (Pa): ")); Serial.println(sct.baroPressure);
   Serial.print(F("Ambient Lux Level   (lx): ")); Serial.println(sct.lightLevel);
   Serial.print(F("Ambient Temperature (C ): ")); Serial.println(sct.temp_C);
   Serial.print(F("Calucated Digital Output: ")); Serial.println(sct.digitalOut);
-  //Serial.print(F("Previous Time Stamp (ms): ")); Serial.println(sct.timeStamp);
+  Serial.print(F("Power Supply Battery(dV): ")); Serial.println(sct.battLevel);
   Serial.print(F("Node ID: ")); Serial.println(sct.node_ID);
   return;
 }
 
 void initC_Struct(C_Struct* sct) {
-  sct->sM_thresh = 3.8;
-  sct->sM_thresh_00 = 1;
-  //sct->bP_thresh = 20000;
-  sct->lL_thresh = 12;
+  sct->sM_thresh = 55;
+  sct->sM_thresh_00 = 45;
+  sct->lL_thresh = 25;
   sct->tC_thresh = 5;
   sct->time_thresh = 30000;
   return;
 }
 
-/* @name: pullMoistureSensor
+
+/* @name: getMoistureReading
    @param: none
    @return: value of the mapped sensor value
 */
-float pullMoistureSensor(void) {
+float getMoistureReading(void) {
   // First map the voltage reading into a resistance
   float soilV = map(analogRead(MOISTURE_PIN), 0, 1023, 0, 500);
   // convert to soil resistance in kohms
   float R_probes = (500 / soilV);
-  Serial.println(R_probes);
   R_probes -= 1;
-  Serial.println(R_probes);
   R_probes *= 10;
-  Serial.println(R_probes);
   // convert to percentage of gravimetric water content (gwc)
   R_probes = pow((R_probes / 2.81), -1 / 2.774) * 100;
   // Returns the mapped analog value
@@ -296,11 +308,30 @@ float pullMoistureSensor(void) {
   return R_probes;
 }
 
-/* @name: pullLightSensor
+
+/* @name: pullMoistureSensor
    @param: none
    @return: value of the mapped sensor value
 */
-float pullLightSensor(void) {
+float pullMoistureSensor(void) {
+  float read1 = getMoistureReading();
+  delayMicroseconds(10);
+  float read2 = getMoistureReading();
+  delayMicroseconds(10);
+  float read3 = getMoistureReading();
+  delayMicroseconds(10);
+  float read4 = getMoistureReading();
+  delayMicroseconds(10);
+  float read5 = getMoistureReading();
+  return ((read1 + read2 + read3 + read4 + read5) / 5);
+}
+
+
+/* @name: getLightReading
+   @param: none
+   @return: value of the mapped sensor value
+*/
+float getLightReading(void) {
   float b = -0.94;
   float c = 38.9;
   float a = 0.014;
@@ -312,6 +343,67 @@ float pullLightSensor(void) {
   // Returns the mapped analog value
   return (mr_Lumen);
 }
+
+
+/* @name: pullLightSensor
+   @param: none
+   @return: averaged value of the mapped sensor value
+*/
+float pullLightSensor(void) {
+  float read1 = getLightReading();
+  delayMicroseconds(10);
+  float read2 = getLightReading();
+  delayMicroseconds(10);
+  float read3 = getLightReading();
+  delayMicroseconds(10);
+  float read4 = getLightReading();
+  delayMicroseconds(10);
+  float read5 = getLightReading();
+  return ((read1 + read2 + read3 + read4 + read5) / 5);
+}
+
+/* @name: getBatteryReading
+   @param: none
+   @return: mapped battery voltage in dV
+*/
+uint8_t getBatteryReading(void) {
+  float rawVoltageDivider1 = ((float)analogRead(BATTERY) * 50.5) / 1023.0;
+  delayMicroseconds(10);
+  float rawVoltageDivider2 = ((float)analogRead(BATTERY) * 50.5) / 1023.0;
+  delayMicroseconds(10);
+  float rawVoltageDivider3 = ((float)analogRead(BATTERY) * 50.5) / 1023.0;
+  delayMicroseconds(10);
+  float rawVoltageDivider4 = ((float)analogRead(BATTERY) * 50.5) / 1023.0;
+  delayMicroseconds(10);
+  float rawVoltageDivider5 = ((float)analogRead(BATTERY) * 50.5) / 1023.0;
+  delayMicroseconds(10);
+  float rawVoltageDivider6 = ((float)analogRead(BATTERY) * 50.5) / 1023.0;
+  delayMicroseconds(10);
+  float rawVoltageDivider7 = ((float)analogRead(BATTERY) * 50.5) / 1023.0;
+  delayMicroseconds(10);
+  float rawVoltageDivider8 = ((float)analogRead(BATTERY) * 50.5) / 1023.0;
+  delayMicroseconds(10);
+  float rawVoltageDivider9 = ((float)analogRead(BATTERY) * 50.5) / 1023.0;
+  delayMicroseconds(10);
+  float rawVoltageDivider10 = ((float)analogRead(BATTERY) * 50.5) / 1023.0;
+  delayMicroseconds(10);
+  float rawVoltageDivider11 = ((float)analogRead(BATTERY) * 50.5) / 1023.0;
+  float battAvg = rawVoltageDivider2 + rawVoltageDivider3 + rawVoltageDivider4 + rawVoltageDivider5 + rawVoltageDivider6;
+  battAvg =  battAvg + rawVoltageDivider7 + rawVoltageDivider8 + rawVoltageDivider9 + rawVoltageDivider10 + rawVoltageDivider11;
+  uint8_t bat_soup = (uint8_t)battAvg;
+  return bat_soup;
+}
+
+
+/* @name: getBatteryReading
+   @param: none
+   @return: mapped battery voltage in dV
+*/
+uint8_t pullBatteryLevel(void) {
+  uint8_t mr_avg = getBatteryReading() + getBatteryReading() + getBatteryReading() + getBatteryReading() + getBatteryReading();
+  return (mr_avg/5);
+}
+
 
 /* @name: Timer
    @param: delayThresh - timer duration
