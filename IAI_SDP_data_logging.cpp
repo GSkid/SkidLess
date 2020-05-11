@@ -30,7 +30,7 @@ int main(int argc, char **argv)
 	// will need a conditional here: output if first loop, dont afterward
 	if (column_flag == 1)
 	{
-		fprintf(out, "Soil Moisture:   Barametric Pressure:   Ambient Light:   Ambient Temperature:   Calculated Digital Output:   Time Stamp:   Node ID:   \n");                                                                                                                     
+		fprintf(out, "Soil Moisture,Barametric Pressure,Ambient Light,Ambient Temperature,Calculated Digital Output,Time Stamp,Node ID\n");                                                                                                                     
 		column_flag = 0;
 	}
 	
@@ -40,7 +40,7 @@ int main(int argc, char **argv)
 	fprintf(out, "%d                      ", data.at(3)); // prints out 3rd member of the data vector to the file.
 	fprintf(out, "%d                            ", data.at(4)); // prints out 4th member of the data vector to the file.
 	fprintf(out, "%d             ", data.at(5)); // prints out 5th member of the data vector to the file.
-	fprintf(out, "%d \n", data.at(6)); // prints out 6th member of the data vector to the file.
+	fprintf(out, "%d\n", data.at(6)); // prints out 6th member of the data vector to the file.
 	fclose(out);
 	return 0;
 	
