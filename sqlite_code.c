@@ -2,6 +2,7 @@
 /*
 pi@raspberry:~ $ sudo apt-get install sqlite3 // installs sqlite packages
 
+pi@raspberry:~ $ sudo apt-get installlibsqlite3-dev // installs sqlite dev packages
 
 pi@raspberry:~ $ sqlite3 sensordata.db // creates database
 
