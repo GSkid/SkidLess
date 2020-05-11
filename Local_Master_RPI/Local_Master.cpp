@@ -44,6 +44,7 @@
 #define RNMOS_Pin 26
 
 #define FIVE_SECONDS 5000
+#define MIN_5 300000
 #define ONE_SECOND 1000
 #define PULSE_DURATION 1500
 #define FET_DELAY 5
@@ -79,7 +80,6 @@ RF24Mesh mesh(radio, network);
 typedef struct {
   float sM_thresh;
   float sM_thresh_00;
-  //uint16_t bP_thresh;
   float lL_thresh;
   uint16_t tC_thresh;
   uint16_t time_thresh;
@@ -88,12 +88,11 @@ typedef struct {
 // D_Struct stores the relevant sensor data
 typedef struct {
   float soilMoisture;
-  //uint16_t baroPressure;
   float lightLevel;
   uint16_t temp_C;
   uint8_t digitalOut;
-  //uint32_t timeStamp;
   uint8_t nodeID;
+  uint8_t battLevel;
 } D_Struct;
 
 typedef struct{
@@ -220,6 +219,8 @@ uint8_t WaterDelivery(HOSE_NUM);
 void setup(void) {
   // Initialize the Hose array
   Hose[0] = Hose0; Hose[1] = Hose1; Hose[2] = Hose2;
+  Hose[0].waterLevel = 1; Hose[1].waterLevel = 1; Hose[2].waterLevel = 1; 
+  
   //Init the GPIO Library
   
   bcm2835_init();
@@ -316,8 +317,9 @@ int main(int argc, char **argv) {
         int i = 0;
         for (i = 0; i < mesh.addrListTop; i++) {
             // Add sensor nodes to the list of sensors mapped to the hose
-            Hose[HOSE0].sensors[i] = (uint8_t)mesh.addrList[i];
+            Hose[HOSE0].sensors[i] = mesh.addrList[i].nodeID;
         }
+        Hose[HOSE0].waterLevel = mesh.addrListTop/2;
     }
 
 
@@ -336,23 +338,23 @@ int main(int argc, char **argv) {
           // conditional here: output if first loop, dont afterward, controlled by column_flag
           if (column_flag == 0)
           {
-              fprintf(out, "Soil Moisture,   Ambient Light,   Ambient Temperature,   Calculated Digital Output,   Node ID,   \n");
-              //Barometric Pressure:   
-              //Time Stamp:   
+              fprintf(out, "Soil Moisture,   Ambient Light,   Ambient Temperature,   Barometric Pressure,   Precip Prob,   Digital Output,   Node ID,   Battery Level,   Hose1,   Hose 2,   Hose3\n");
               column_flag = 1;
           }
 
-          printf("%f, %f, %d, %d, %d,\n", D_Dat.soilMoisture, D_Dat.lightLevel, D_Dat.temp_C, D_Dat.digitalOut, D_Dat.nodeID);
-          //%d, D_Dat.baroPressure, 
-          //%d, D_Dat.timeStamp, 
-
+          printf("%f, %f, %d, %d, %d, %d, %d, %d, %d, %d, %d\n", D_Dat.soilMoisture, D_Dat.lightLevel, D_Dat.temp_C, Forecast1.pressure, Forecast1.precipProb, D_Dat.digitalOut, D_Dat.nodeID, D_Dat.battLevel, Hose[0].status, Hose[1].status, Hose[2].status);
+        
           fprintf(out, "%13f,   ", D_Dat.soilMoisture); // prints out 0th member of the data vector to the file.
-          //fprintf(out, "%19d,    ", D_Dat.baroPressure); // prints out 1st member of the data vector to the file.
           fprintf(out, "%13f,   ", D_Dat.lightLevel); // prints out 2nd member of the data vector to the file.
           fprintf(out, "%19d,   ", D_Dat.temp_C); // prints out 3rd member of the data vector to the file.
-          fprintf(out, "%25d,   ", D_Dat.digitalOut); // prints out 4th member of the data vector to the file.
-          //fprintf(out, "%10d,    ", D_Dat.timeStamp); // prints out 5th member of the data vector to the file.
-          fprintf(out, "%7d,\n", D_Dat.nodeID); // prints out 6th member of the data vector to the file.
+          fprintf(out, "%19d,   ", Forecast1.pressure);
+          fprintf(out, "%11d,   ", Forecast1.precipProb);
+          fprintf(out, "%14d,   ", D_Dat.digitalOut); // prints out 4th member of the data vector to the file.
+          fprintf(out, "%7d,   ", D_Dat.nodeID); // prints out 6th member of the data vector to the file.
+          fprintf(out, "%14d,   ", D_Dat.battLevel);
+          fprintf(out, "%5d,   ", Hose[0].status);
+          fprintf(out, "%5d,   ", Hose[1].status);
+          fprintf(out, "%5d,\n", Hose[2].status);
           fclose(out);
       }
       
@@ -372,74 +374,7 @@ int main(int argc, char **argv) {
 
     /**** UI Menu Control ****/
 
-   // Draw_Line(0, 0, 100, SSD1351_HEIGHT - 1);
-    //DEV_Delay_ms(20);
-   // Draw_Line(, 0, 100, SSD1351_HEIGHT - 1);
-
-    //Testing Hardcoded D_Struct Moisture Data  
-      
-    /*  
-    Test_Data[0].soilMoisture = 50;
-    Test_Data[1].soilMoisture = 53;
-    Test_Data[2].soilMoisture = 54;
-    Test_Data[3].soilMoisture = 46;
-    Test_Data[4].soilMoisture = 43;
-    Test_Data[5].soilMoisture = 35;
-    Test_Data[6].soilMoisture = 38;
-    Test_Data[7].soilMoisture = 42;
-    Test_Data[8].soilMoisture = 46;
-    Test_Data[9].soilMoisture = 50;
-    Test_Data[10].soilMoisture = 50;
-    Test_Data[11].soilMoisture = 53;
-    Test_Data[12].soilMoisture = 54;
-    Test_Data[13].soilMoisture = 46;
-    Test_Data[14].soilMoisture = 43;
-    Test_Data[15].soilMoisture = 35;
-    Test_Data[16].soilMoisture = 38;
-    Test_Data[17].soilMoisture = 42;
-    Test_Data[18].soilMoisture = 46;
-    Test_Data[19].soilMoisture = 50;
-    */  
-      
-    //Testing Hardcoded D_Struct Sunlight Data  
-      
-    /*  
-    Test_Data[0].lightLevel = 35;
-    Test_Data[1].lightLevel = 37;
-    Test_Data[2].lightLevel = 36;
-    Test_Data[3].lightLevel = 37;
-    Test_Data[4].lightLevel = 35;
-    Test_Data[5].lightLevel = 38;
-    Test_Data[6].lightLevel = 69;
-    Test_Data[7].lightLevel = 96;
-    Test_Data[8].lightLevel = 98;
-    Test_Data[9].lightLevel = 100;
-    Test_Data[10].lightLevel = 105;
-    Test_Data[11].lightLevel = 102;
-    Test_Data[12].lightLevel = 103;
-    Test_Data[13].lightLevel = 100;
-    Test_Data[14].lightLevel = 56;
-    Test_Data[15].lightLevel = 42;
-    Test_Data[16].lightLevel = 40;
-    Test_Data[17].lightLevel = 38;
-    Test_Data[18].lightLevel = 36;
-    Test_Data[19].lightLevel = 35;
-    */
-    
-  //User Input
-  checkButtons();
-  
-  //Plot Grid
-  Set_Color(WHITE);
-  printGrid(20,120,20,120,10,10);
-    
-  // plotSampleData(Test_Data, MOISTURE, MAX_ELEMENTS);
-  if (Timer(FIVE_SECONDS, oledTimer)){
-    plotSampleData(Test_Data, MOISTURE, MAX_ELEMENTS);
-    oledTimer = bcm2835_millis();
-  }  
-
-
+   
 
 
     /**** Water Delivery ****/
@@ -537,6 +472,7 @@ uint8_t WaterDelivery(HOSE_NUM HOSE_IN)
 {
     // First reset the hose tally
     Hose[HOSE_IN].tally = 0;
+    int prevstatus = Hose[HOSE_IN].status;
 
     // Then need to tally up the digital outs on the hose
     int i, j = 0;
@@ -556,63 +492,40 @@ uint8_t WaterDelivery(HOSE_NUM HOSE_IN)
     }
 
     // Next check if the tally is above the water level threshold
-    if (Hose[HOSE_IN].tally >= Hose[HOSE_IN].waterLevel) {
+    if (Hose[HOSE_IN].tally > Hose[HOSE_IN].waterLevel) {
         // Check the forecast data
         if (Forecast1.precipProb <= 30) {
             rainFlag = 0;
-            rHose[HOSE_IN].rainFlag = 0;
+            Hose[HOSE_IN].rainFlag = 0;
             // Go ahead and turn on the water
             Hose[HOSE_IN].status = WATER_ON;
-            w_State Astate = HOSE_IDLE;
-            // Call the state machine to open the solenoid valve
-            while (!WaterDeliverySM(state, WATER_ON, 5, 1000);
         }
-        // Now we check the forecast data
-    }// Now we check the forecast data
-    else {
-        if (!rainFlag) {
-            rainFlag++;
-            rainTimer = millis();
+        else {
             if (!Hose[HOSE_IN].rainFlag) {
                 Hose[HOSE_IN].rainFlag++;
                 Hose[HOSE_IN].rainTimer = millis();
                 Hose[HOSE_IN].status = WATER_OFF;
             }
-            if (Timer(HOURS_36, rainTimer)) {
-            else if (Timer(HOURS_36, rainTimer)) {
+            else if (Timer(HOURS_36, Hose[HOSE_IN].rainTimer)) {
                 rainFlag = 0;
                 // Go ahead and turn on the water
                 Hose[HOSE_IN].status = WATER_ON;
-                w_State Astate = HOSE_IDLE;
-                // Call the state machine to open the solenoid valve
-                while (!WaterDeliverySM(state, WATER_ON, 5, 1000);
-            }
             }
         }
-
-        // ...If the sensors indicate it is not dry enough to water
     }// ...If the sensors indicate it is not dry enough to water
     else {
-    if (Hose[HOSE_IN].status == WATER_ON) {
-        // Turn off the water
-        w_State Astate = HOSE_IDLE;
-        // Call the state machine to close the solenoid valve
-        while (!WaterDeliverySM(state, WATER_OFF, 5, 1000);
+      Hose[HOSE_IN].status = WATER_OFF;
     }
-    Hose[HOSE_IN].status = WATER_OFF;
-    }
-
+    printf("Hose %d Water Delivery:\nHose Status: %d;  Prev State = %d\n\n", HOSE_IN, Hose[HOSE_IN].status, prevstatus);
     // Now we actually turn on or off the Hose
     if (prevstatus != Hose[HOSE_IN].status) {
         // Call the state machine to open the solenoid valve
         while (!WaterDeliverySM(Hose[HOSE_IN].status, FET_DELAY, PULSE_DURATION));
     }
-
     // Create a bit array of hose states to return
     uint8_t hose_status = Hose[2].status * 4 + Hose[1].status * 2 + Hose[0].status;
 
     return hose_status;
-}
 }
 
 
@@ -669,14 +582,14 @@ int WaterDeliverySM(uint8_t status, uint32_t delayP_N, uint32_t pulseTime){
       if ( (status == WATER_ON) && (HOSE_ONE == WATER_OFF) ){
         nextState = HOSE_ON_S1;
         wTimer = bcm2835_millis();
-        hoseSet = FALSE; 
+        hoseSet = 0; 
         //printf("Test Next State2 = %d", nextState);
         //printf("Test State2 = %d", waterState);
         printf("Leaving Hose Idle: On  \r \n");
       } else if ( (status == WATER_OFF) && (HOSE_ONE == WATER_ON) ){
         nextState = HOSE_OFF_S1;
         wTimer = bcm2835_millis();
-        hoseSet = FALSE; 
+        hoseSet = 0; 
         printf("Leaving Hose Idle: off  \r \n");
       }
       break;
@@ -714,7 +627,7 @@ int WaterDeliverySM(uint8_t status, uint32_t delayP_N, uint32_t pulseTime){
         nextState = HOSE_IDLE;
         printf("Leaving Hose On S4 \r \n");
         HOSE_ONE = WATER_ON;
-        hoseSet = TRUE;
+        hoseSet = 1;
       }
       break;
     
@@ -750,7 +663,7 @@ int WaterDeliverySM(uint8_t status, uint32_t delayP_N, uint32_t pulseTime){
       if (Timer(delayP_N, wTimer)){
         nextState = HOSE_IDLE;
         HOSE_ONE = WATER_OFF;
-        hoseSet = TRUE;
+        hoseSet = 1;
         printf("Leaving Hose Off S4 \r \n");
       }
       break;
