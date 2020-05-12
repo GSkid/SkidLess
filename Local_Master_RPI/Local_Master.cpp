@@ -310,11 +310,21 @@ int main(int argc, char **argv) {
             // Use the data struct to store data messages and print out the result
             network.read(header, &D_Dat, sizeof(D_Dat));
             dFlag = 1;
-            // Add the sensor data to the sensor data array
-            if (sd_index > MAX_ELEMENTS) {
-                sd_index = -1;
+            // Here is where we add the sensor data to the sensor data array
+            // But first we want to see if the sensor data array is full
+            if (sd_index >= MAX_ELEMENTS) { // checks if the index is at the max # of elements
+                int i, j = 0;
+                // Now we transfer the 10 most recent data values to the bottom of the list
+                for ((i = MAX_ELEMENTS - 10); i <= MAX_ELEMENTS; i++) {
+                    sensor_data[j] = sensor_data[i]; // j is the bottom, is the top
+                    j++;
+                }
+                // Reset the sensor data index
+                sd_index = 10;
             }
+            // Increment the sensor data index for the new value
             sd_index++;
+            // Then place the new data into the array
             sensor_data[sd_index] = D_Dat;
             break;
 
