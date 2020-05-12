@@ -2,7 +2,7 @@
 /*
 pi@raspberry:~ $ sudo apt-get install sqlite3 // installs sqlite packages
 
-pi@raspberry:~ $ sudo apt-get installlibsqlite3-dev // installs sqlite dev packages
+pi@raspberry:~ $ sudo apt-get install libsqlite3-dev // installs sqlite dev packages
 
 pi@raspberry:~ $ sqlite3 sensordata.db // creates database
 
@@ -64,10 +64,12 @@ printf("A \n");
    
    printf("E \n");
    
+   
    if( rc != SQLITE_OK ){
       fprintf(stderr, "SQL error: %s\n", zErrMsg);
       sqlite3_free(zErrMsg);
    }
+   
    
    printf("H \n");
       
@@ -81,14 +83,17 @@ printf("A \n");
    
    printf("K \n");
    
+   
    if( rc != SQLITE_OK ){
-      fprintf(stderr, "SQL error: %s\n", zErrMsg);
-      sqlite3_free(zErrMsg);
+      fprintf(stderr, "SQL error: %s\n", &zErrMsg);
+      sqlite3_free(&zErrMsg);
    }
-
+   
+   
    printf("L \n");
    
    /* Close database */
+   
    rc = sqlite3_close(db);
    
    printf("M \n");
@@ -123,7 +128,30 @@ printf("A \n");
 
 		/* Close database */
 		rc = sqlite3_close(db);
+		
+		
 	}
+	
+	/*  //Testing Other forms of database loading 
+	 
+	 sql = "COPY SOIL_MOISTURE FROM sensordata_example.csv DELIMITER ','; " ;
+   
+
+	
+	 // Execute SQL statement 
+	 rc = sqlite3_exec(db, sql, callback, 0, &zErrMsg); 
+	 
+	 sql = "INSERT INTO DATA(SOIL_MOISTURE) VALUES(?); " ;
+   
+  
+	
+	 // Execute SQL statement 
+	    * 
+	 rc = sqlite3_exec(db, sql, callback, 0, &zErrMsg);
+   
+	 
+	 
+	 */
 	
 	printf("End of Program.");
 }
