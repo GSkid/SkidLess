@@ -26,7 +26,7 @@
 #define TRUE  1
 #define FALSE 0
 
-#define MAX_ELEMENTS 20
+#define MAX_ELEMENTS 100
 #define MOISTURE 0
 #define SUNLIGHT 1
 #define TEMP  2
@@ -162,7 +162,7 @@ D_Struct sensor_data[MAX_ELEMENTS];
 uint8_t dFlag = 0;
 uint8_t dataDat = 1;
 uint8_t column_flag = 0;
-uint8_t sd_index = 0;
+uint8_t sd_index = -1;
 
 D_Struct Test_Data[MAX_ELEMENTS];
 OLED_State oledState = SLEEP;
@@ -311,8 +311,11 @@ int main(int argc, char **argv) {
             network.read(header, &D_Dat, sizeof(D_Dat));
             dFlag = 1;
             // Add the sensor data to the sensor data array
-            sensor_data[sd_index] = D_Dat;
+            if (sd_index > MAX_ELEMENTS) {
+                sd_index = -1;
+            }
             sd_index++;
+            sensor_data[sd_index] = D_Dat;
             break;
 
           // Do not read the header data, instead print the address inidicated by the header type
@@ -497,7 +500,7 @@ uint8_t WaterDelivery(HOSE_NUM HOSE_IN)
         if (Hose[HOSE_IN].sensors[i] <= 0) {
             break;
         }
-        for (j = MAX_ELEMENTS; j > 0; j--) {
+        for (j = sd_index; j >= 0; j--) {
             // Check if the data item is a sensor mapped to the hose
             if ((sensor_data[j].nodeID == Hose[HOSE_IN].sensors[i]) && (sensor_data[j].nodeID)) {
                 // If it is, increase the tally
