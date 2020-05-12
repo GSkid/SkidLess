@@ -497,7 +497,7 @@ uint8_t WaterDelivery(HOSE_NUM HOSE_IN)
     int i, j = 0;
     for (i = 0; i <= MAX_SENSORS; i++) {
         // This just shuts down the for loop if the list of sensors is exhausted
-        if (Hose[HOSE_IN].sensors[i] <= 0) {
+        if ((Hose[HOSE_IN].sensors[i] <= 0) || (sd_index == -1)) {
             break;
         }
         for (j = sd_index; j >= 0; j--) {
