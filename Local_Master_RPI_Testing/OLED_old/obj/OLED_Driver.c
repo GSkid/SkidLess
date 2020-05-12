@@ -1,7 +1,3 @@
-#ifdef  __cplusplus
-extern "C" {
-#endif
-
 #include "OLED_Driver.h"
 
 
@@ -22,9 +18,9 @@ extern "C" {
 
 uint8_t color_byte[2],color_fill_byte[2];
 
-uint8_t oled_cs = 16;
-uint8_t oled_dc = 23;
-uint8_t oled_rst= 24;
+uint8_t oled_cs = 8;
+uint8_t oled_dc = 24;
+uint8_t oled_rst= 25;
 
 void OLED_CS(uint8_t x) {
   DEV_Digital_Write(oled_cs, x);
@@ -470,7 +466,5 @@ void Draw_FastVLine(int16_t x, int16_t y, int16_t length)  {
   }
 }
 
-#ifdef  __cplusplus
-}
-#endif
+
 

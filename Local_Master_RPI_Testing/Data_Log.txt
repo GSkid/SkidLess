@@ -1,0 +1,33 @@
+Soil Moisture:   Ambient Light:   Ambient Temperature:   Calculated Digital Output:   Node ID:   
+    79.859352         2.755796                      0                            0          2
+    63.279640         1.236994                      0                            0          2
+    63.097404         1.259841                      0                            0          2
+    62.915695         1.214545                      0                            0          2
+    63.097404         1.259841                      0                            0          2
+Soil Moisture:   Ambient Light:   Ambient Temperature:   Calculated Digital Output:   Node ID:   
+    75.033363         2.216946                      0                            0          2
+    63.462395         1.330920                      0                            0          2
+    64.757065         1.405960                      0                            0          2
+    64.757065         1.431881                      0                            0          2
+    64.570419         1.431881                      0                            0          2
+    64.570419         1.458286                      0                            0          2
+    64.757065         1.458286                      0                            0          2
+    64.944305         1.458286                      0                            0          2
+    63.829517         1.380491                      0                            0          2
+    64.944305         1.458286                      0                            0          2
+    64.757065         1.458286                      0                            0          2
+Soil Moisture:   Ambient Light:   Ambient Temperature:   Calculated Digital Output:   Node ID:   
+    70.669106         2.610053                      0                            0          2
+    64.013901         1.330920                      0                            0          2
+Soil Moisture:   Ambient Light:   Ambient Temperature:   Calculated Digital Output:   Node ID:   
+    64.384338         1.355487                      0                            0          2
+    64.384338         1.355487                      0                            0          2
+    64.570419         1.405960                      0                            0          2
+    64.384338         1.380491                      0                            0          2
+    64.384338         1.380491                      0                            0          2
+    64.384338         1.380491                      0                            0          2
+    64.384338         1.405960                      0                            0          2
+    64.570419         1.380491                      0                            0          2
+    64.384338         1.431881                      0                            0          2
+Soil Moisture:   Ambient Light:   Ambient Temperature:   Calculated Digital Output:   Node ID:   
+    81.683945         2.962626                      0                            1          2
