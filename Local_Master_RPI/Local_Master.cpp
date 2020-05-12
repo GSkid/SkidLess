@@ -309,7 +309,9 @@ int main(int argc, char **argv) {
             printf("Message Received\n");
             // Use the data struct to store data messages and print out the result
             network.read(header, &D_Dat, sizeof(D_Dat));
+            // Set the flag that indicates we need to respond to a new message
             dFlag = 1;
+
             // Here is where we add the sensor data to the sensor data array
             // But first we want to see if the sensor data array is full
             if (sd_index >= MAX_ELEMENTS) { // checks if the index is at the max # of elements
@@ -354,9 +356,10 @@ int main(int argc, char **argv) {
 
 
 
-    /**** 'P' Type Evaluation ****/
+    /**** Data Logging ****/
   
     if (dFlag) {
+        // This should be the last thing that gets done when data is received
       dFlag = 0;
 
       /**** Write Data Values to SD Card ****/
@@ -411,6 +414,7 @@ int main(int argc, char **argv) {
     if (Timer(MIN_5, waterDeliveryTimer)) {
         // reset the timer
         waterDeliveryTimer = millis();
+        // Then call WaterDelivery to see if we need to turn on each hose
         WaterDelivery(HOSE0);
         WaterDelivery(HOSE1);
         hose_statuses = WaterDelivery(HOSE2);
@@ -424,6 +428,7 @@ int main(int argc, char **argv) {
     if (Timer(FORECAST_CALL, forecastTimer)) {
         printf("Opening call to forecast API...\n");
         forecastTimer = millis();
+        // Opens and runs the python script in the terminal
         fp = popen("python RFpython_test.py", "r");
 
         // error checking
