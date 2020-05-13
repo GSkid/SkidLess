@@ -238,7 +238,7 @@ void setup(void) {
   // Initialize the Hose array
   Hose[0] = Hose0; Hose[1] = Hose1; Hose[2] = Hose2;
   Hose[0].waterLevel = 1; Hose[1].waterLevel = 1; Hose[2].waterLevel = 1; 
-  Hose[0].control = AUTOMATIC; Hose[1].control = AUTOMATIC; Hose[2].control = AUTOMATIC;
+  Hose[0].control = AUTOMATIC; Hose[1].control = OFF; Hose[2].control = OFF;
   
   //Init the GPIO Library
   
