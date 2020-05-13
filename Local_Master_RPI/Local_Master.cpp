@@ -117,6 +117,7 @@ typedef struct {
     uint8_t flowRate;
     uint8_t rainFlag;
     uint32_t rainTimer;
+    uint8_t control;
 }Hoses;
 
 //States for Water Delivery SM
@@ -154,6 +155,13 @@ typedef enum {
     HOSE1,
     HOSE2,
 }HOSE_NUM;
+
+// Enum for control types
+enum {
+    OFF,
+    ON,
+    AUTOMATIC,
+};
 
 
 // Data Vars
@@ -230,6 +238,7 @@ void setup(void) {
   // Initialize the Hose array
   Hose[0] = Hose0; Hose[1] = Hose1; Hose[2] = Hose2;
   Hose[0].waterLevel = 1; Hose[1].waterLevel = 1; Hose[2].waterLevel = 1; 
+  Hose[0].control = AUTOMATIC; Hose[1].control = AUTOMATIC; Hose[2].control = AUTOMATIC;
   
   //Init the GPIO Library
   
@@ -421,9 +430,15 @@ int main(int argc, char **argv) {
         // reset the timer
         waterDeliveryTimer = millis();
         // Then call WaterDelivery to see if we need to turn on each hose
-        WaterDelivery(HOSE0);
-        WaterDelivery(HOSE1);
-        hose_statuses = WaterDelivery(HOSE2);
+        if (Hose[0].control == AUTOMATIC) {
+            hose_statuses = WaterDelivery(HOSE0);
+        }
+        if (Hose[1].control == AUTOMATIC) {
+            hose_statuses = WaterDelivery(HOSE1);
+        }
+        if (Hose[2].control == AUTOMATIC) {
+            hose_statuses = WaterDelivery(HOSE2);
+        }
     }
     
 
