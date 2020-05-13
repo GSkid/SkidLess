@@ -28,6 +28,8 @@ RF24Mesh mesh(radio, network);
 #define INTERRUPT_MASK 0b01000000
 #define VOLTAGE_DIVIDER 10
 
+#define MINS_10 600000
+
 // C_Struct stores relevant thresholds
 typedef struct {
   float sM_thresh;
@@ -159,15 +161,21 @@ void loop() {
 
 
   /**** Battery Level Check ****/
-//  if (Timer(2000, batteryTimer)) {
-//    batteryTimer = millis();
-//    printf("Battery Level Low: %d\n\n", pullBatteryLevel());
-//    if (pullBatteryLevel() <= 35) {
-//      while (pullBatteryLevel() <= 35) {
-//        continue;
-//      }
-//    }
-//  }
+  if (Timer(MINS_10, batteryTimer)) {
+    batteryTimer = millis();
+    uint8_t batteryVoltage = pullBatteryLevel();
+    if (batteryVoltage <= 35) {
+      batteryVoltage = pullBatteryLevel();
+      if (batteryVoltage <= 35) {
+        printf("Battery Level Low: %d\n\n--------------- Reset Device To Continue ---------------", batteryVoltage);
+        set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+        while (1) {
+          sleep_enable();
+          sleep_cpu();
+        }
+      }
+    }
+  }
 
 
 
@@ -401,7 +409,7 @@ uint8_t getBatteryReading(void) {
 */
 uint8_t pullBatteryLevel(void) {
   uint8_t mr_avg = getBatteryReading() + getBatteryReading() + getBatteryReading() + getBatteryReading() + getBatteryReading();
-  return (mr_avg/5);
+  return (mr_avg / 5);
 }
 
 
