@@ -30,7 +30,7 @@ int main(int argc, char **argv)
 	// will need a conditional here: output if first loop, dont afterward
 	if (column_flag == 1)
 	{
-		fprintf(out, "Soil Moisture,Barametric Pressure,Ambient Light,Ambient Temperature,Calculated Digital Output,Time Stamp,Node ID\n");                                                                                                                     
+		fprintf(out, "Soil_Moisture,Barametric_Pressure,Ambient_Light,Ambient_Temp,Digital_Output,Time_Stamp,Node_ID\n");                                                                                                                     
 		column_flag = 0;
 	}
 	
