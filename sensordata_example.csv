@@ -1,4 +1,4 @@
-Soil Moisture,Barametric Pressure,Ambient Light,Ambient Temperature,Calculated Digital Output,Time Stamp,Node ID
+Soil_Moisture,Barametric_Pressure,Ambient_Light,Ambient_Temperature,Calculated_Digital_Output,Time_Stamp,Node_ID
 1,2,3,4,5,6,7
 0,0,0,0,0,0,0
 7,6,5,4,3,2,1
