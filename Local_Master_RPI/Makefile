@@ -65,6 +65,6 @@ Local_Master.o: Local_Master.cpp $(OBJ_TARGETS)
 #font12.o: Fonts/font12.c#gcc -D USE_BCM2835_LIB ./bin/font12.o ./bin/font16.o ./bin/font20.o ./bin/font8.o ./bin/font24.o ./bin/ASCII_Font.o ./bin/dev_hardware_i2c.o ./bin/sysfs_gpio.o ./bin/OLED_GFX.o ./bin/main.o ./bin/OLED_Driver.o ./bin/bcm2835.o ./bin/DEV_Config.o ./bin/dev_hardware_SPI.o -o rf_oled_test_main #./bin/bcm2835.o  #-lbcm2835 -lrf24-bcm -lrf24network -lrf24mesh -lm 
 
 clean:
-	$(RM) $(DIR_BIN)/*.* $(TARGET) $(DIR_OBJ)/.*.sw?
-#	rm *.o
-#	rm Local_Master
+	rm Local_Master.o
+	rm Local_Master
+	rm -r Data_Log.txt
