@@ -133,3 +133,10 @@ Soil Moisture,   Ambient Light,   Ambient Temperature,   Barometric Pressure,   
      0.000000,        0.279607,                     0,                     0,             0,                2,         5,                0,       0,       0,       0,
                                                                                                                                                                        Soil Moisture,   Ambient Light,   Ambient Temperature,   Barometric Pressure,   Precip Prob,   Digital Output,   Node ID,   Battery Level,   Hose1,   Hose 2,   Hose3
      0.000000,        0.385353,                     0,                     0,             0,                2,         5,                0,       0,       0,       0,
+Soil Moisture,   Ambient Light,   Ambient Temperature,   Barometric Pressure,   Precip Prob,   Digital Output,   Node ID,   Battery Level,   Hose1,   Hose 2,   Hose3
+     0.000000,        0.083662,                     0,                     0,             0,                2,         5,                0,       0,       0,       0,
+     0.000000,        0.109112,                     0,                  1018,             0,                2,         5,                0,       0,       0,       0,
+     0.000000,        0.106659,                     0,                  1018,             0,                2,         5,                0,       0,       0,       0,
+     0.000000,        0.112047,                     0,                  1018,             0,                2,         5,                0,       1,       0,       0,
+     0.000000,        0.106262,                     0,                  1018,             0,                2,         5,                0,       1,       0,       0,
+     0.000000,        0.107469,                     0,                  1019,             0,                2,         5,                0,       1,       0,       0,

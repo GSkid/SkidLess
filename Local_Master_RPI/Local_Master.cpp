@@ -50,6 +50,7 @@
 
 #define FIVE_SECONDS 5000
 #define MIN_3 180000
+#define MIN_2 120000
 #define ONE_SECOND 1000
 #define PULSE_DURATION 1500
 #define FET_DELAY 5
@@ -194,6 +195,7 @@ uint32_t forecastTimer = 0;
 uint32_t waterDeliveryTimer = 0;
 uint32_t wTimer = 0; //Timer used for driving Water Delivery testing
 uint32_t oledTimer = 0; //Timer used for updating OLED testing
+uint32_t connectionTimer = 0;
 
 // Timer Support
 uint8_t pingFlag = 0;
@@ -352,10 +354,13 @@ int main(int argc, char **argv) {
 
 
     /**** Update List of Nodes ****/
-    if (num_nodes != mesh.addrListTop) {
+    if (Timer(MIN_2, connectionTimer)) {
+      connectionTimer = millis();
+      // Other option is to create a dict after receiving a message
+      if (num_nodes != mesh.addrListTop) {
         num_nodes = mesh.addrListTop;
+        printf("\nConnected nodes: ");
         int i = 0;
-        printf("Connected nodes: ");
         for (i = 0; i < mesh.addrListTop; i++) {
             // Add sensor nodes to the list of sensors mapped to the hose
             Hose[HOSE0].sensors[i] = mesh.addrList[i].nodeID;
@@ -365,7 +370,8 @@ int main(int argc, char **argv) {
               printf("%d, ", mesh.addrList[i].nodeID);
             }
         }
-        Hose[HOSE0].waterLevel = mesh.addrListTop/2;
+        Hose[HOSE0].waterLevel = i/2;
+      }
     }
 
 
