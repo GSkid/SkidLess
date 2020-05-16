@@ -385,13 +385,13 @@ int main(int argc, char **argv) {
 
       /**** Write Data Values to SD Card ****/
       {
-          FILE* out = fopen("Data_Log.txt", "a");
+          FILE* out = fopen("Data_Log.csv", "a");
  
           // prints out main column headers for the data file.
           // conditional here: output if first loop, dont afterward, controlled by column_flag
           if (column_flag == 0)
           {
-              fprintf(out, "Soil Moisture,   Ambient Light,   Ambient Temperature,   Barometric Pressure,   Precip Prob,   Digital Output,   Node ID,   Battery Level,   Hose1,   Hose 2,   Hose3\n");
+              fprintf(out, "Soil_Moisture,Ambient_Light,Ambient_Temp,Barometric_Pressure,Precip_Prob,Digital_Output,Node_ID,Battery_Level,Hose_1,Hose_2,Hose_3\n");
               column_flag = 1;
           }
 
