@@ -243,13 +243,13 @@ void setup(void) {
   Hose[0].control = AUTOMATIC; Hose[1].control = OFF; Hose[2].control = OFF;
   
   //Init the GPIO Library
+  DEV_ModuleInit();
+  Device_Init();
   
   bcm2835_init();
   
   bcm2835_spi_begin();  
   
-  DEV_ModuleInit();
-  Device_Init();
   
   //Set Pins to Output
   DEV_GPIO_Mode(LPMOS_Pin, 1);
@@ -491,6 +491,14 @@ int main(int argc, char **argv) {
 
         pclose(fp);
     }
+    
+    /**** UI Menu Control ****/
+     
+  checkButtons();
+      
+  OLED_SM(WHITE);
+    
+    
   }  // Loop
   
 // Should NEVER get here
