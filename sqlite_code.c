@@ -18,12 +18,12 @@ compile cmd: gcc -o sqlite_code sqlite_code.c -lsqlite3 -std=c99
 
 #define CSVFILENAME "sensordata_example.csv"
 
-void insert_stuff(sqlite3 *mDb, int soil_moisture, int pressure, int light, int temp, int output, int timeStamp, int nodeID)
+void insert_stuff(sqlite3 *mDb, double soil_moisture, int light, int temp, double pressure, double precip_prob, int output, int nodeID, double battery_lvl, int hose1, int hose2, int hose3)
 {
 	char* errorMessage;
 	sqlite3_exec(mDb, "BEGIN TRANSACTION", NULL, NULL, &errorMessage);
  
-	char buffer[] = "INSERT INTO DATA (SOIL_MOISTURE,BARAMETRIC_PRESSURE,Ambient_Light,Ambient_Temp,Digital_Output,Time_Stamp,Node_ID) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)";
+	char buffer[] = "INSERT INTO DATA (Soil_Moisture,Ambient_Light,Ambient_Temp,Barometric_Pressure,Precip_Prob,Digital_Output,Node_ID,Battery_Level,Hose_1,Hose_2,Hose_3) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)";
 	sqlite3_stmt* stmt;
 	sqlite3_prepare_v2(mDb, buffer, strlen(buffer), &stmt, NULL);
  
@@ -31,12 +31,16 @@ void insert_stuff(sqlite3 *mDb, int soil_moisture, int pressure, int light, int 
 	//char id[] = "001";
 	//sqlite3_bind_text(stmt, 1, id, strlen(id), SQLITE_STATIC);
 	sqlite3_bind_double(stmt, 1, soil_moisture);
-	sqlite3_bind_double(stmt, 2, pressure);
-	sqlite3_bind_double(stmt, 3, light);
-	sqlite3_bind_double(stmt, 4, temp);
-	sqlite3_bind_int(stmt, 5, output);
-	sqlite3_bind_double(stmt, 6, timeStamp);
+	sqlite3_bind_int(stmt, 2, light);
+	sqlite3_bind_int(stmt, 3, temp);
+	sqlite3_bind_double(stmt, 4, pressure);
+	sqlite3_bind_double(stmt, 5, precip_prob);
+	sqlite3_bind_int(stmt, 6, output);
 	sqlite3_bind_int(stmt, 7, nodeID);
+	sqlite3_bind_double(stmt, 8, battery_lvl);
+	sqlite3_bind_int(stmt, 9, hose1);
+	sqlite3_bind_int(stmt, 10, hose2);
+	sqlite3_bind_int(stmt, 11, hose3);
 
 	if (sqlite3_step(stmt) != SQLITE_DONE)
 	{
@@ -60,8 +64,9 @@ void insert_stuff(sqlite3 *mDb, int soil_moisture, int pressure, int light, int 
 
   void processCSV(sqlite3 *db)
   {
-	int result, soil_moisture, pressure, light, temp, output, timeStamp, nodeID;
-	char a[10], b[10], c[10], d[10], e[10], f[10], g[10];
+	int result, light, temp, output, nodeID, hose1, hose2, hose3;
+	double soil_moisture, pressure, precip_prob, battery_lvl;
+	char a[10], b[10], c[10], d[10], e[10], f[10], g[10], h[10], i[10], j[10], k[10];
   	char line[256];
   	FILE *fp;
 	fp = fopen(CSVFILENAME,"r");
@@ -73,16 +78,20 @@ void insert_stuff(sqlite3 *mDb, int soil_moisture, int pressure, int light, int 
     fgets(line,sizeof(line)-1,fp);
     while(fgets(line,sizeof(line)-1,fp) != NULL)
     {
-		result = sscanf(line, "%[^','],%[^','],%[^','],%[^','],%[^','],%[^','],%[^',']", a, b, c, d, e, f, g);
-     	soil_moisture  = atoi(a);
-		pressure  = atoi(b);
-		light  = atoi(c);
-		temp  = atoi(d);
-		output  = atoi(e);
-		timeStamp  = atoi(f);
+		result = sscanf(line, "%[^','],%[^','],%[^','],%[^','],%[^','],%[^','],%[^','],%[^','],%[^','],%[^','],%[^',']", a, b, c, d, e, f, g, h, i, j, k);
+     		soil_moisture  = atof(a);
+		light  = atoi(b);
+		temp  = atoi(c);
+		pressure  = atof(d);
+		precip_prob  = atof(e);
+		output  = atoi(f);
 		nodeID  = atoi(g);
+	    	battery_lvl  = atof(h);
+		hose1  = atoi(i);
+		hose2  = atoi(j);
+		hose3  = atoi(k);
      	//printf("%d\n %d\n %d\n %d\n %d\n %d\n %d\n", i, j, k, l, m, n, o);
-     	insert_stuff(db, soil_moisture, pressure, light, temp, output, timeStamp, nodeID);
+     	insert_stuff(db, soil_moisture, light, temp, pressure, precip_prob, output, nodeID, battery_lvl, hose1, hose2, hose3));
 	}
 
 	fclose(fp);
