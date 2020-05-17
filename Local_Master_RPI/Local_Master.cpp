@@ -429,6 +429,7 @@ int main(int argc, char **argv) {
     if (Timer(MIN_1, waterDeliveryTimer)) {
         // reset the timer
         waterDeliveryTimer = millis();
+        printf("Checking Water Delivery\n");
         // Then call WaterDelivery to see if we need to turn on each hose
         if (Hose[0].control == AUTOMATIC) {
             hose_statuses = WaterDelivery(HOSE0);
@@ -536,31 +537,35 @@ int Timer(uint32_t delayThresh, uint32_t prevDelay) {
 uint8_t WaterDelivery(HOSE_NUM HOSE_IN)
 {
     // First reset the hose tally
+    printf("0");
     Hose[HOSE_IN].tally = 0;
     int prevstatus = Hose[HOSE_IN].status;
 
     // Then need to tally up the digital outs on the hose
     int i, j = 0;
     for (i = 0; i <= MAX_SENSORS; i++) {
+        printf("1");
         // This just shuts down the for loop if the list of sensors is exhausted
         if ((Hose[HOSE_IN].sensors[i] <= 0) || (sd_index == -1)) {
+            printf("2");
             break;
         }
         for (j = sd_index; j >= 0; j--) {
+            printf("3");
             // Check if the data item is a sensor mapped to the hose
             if ((sensor_data[j].nodeID == Hose[HOSE_IN].sensors[i]) && (sensor_data[j].nodeID)) {
                 // If it is, increase the tally
+                printf("4");
                 Hose[HOSE_IN].tally += sensor_data[j].digitalOut;
                 break;
             }
         }
     }
-
+    printf("5");
     // Next check if the tally is above the water level threshold
     if (Hose[HOSE_IN].tally > Hose[HOSE_IN].waterLevel) {
         // Check the forecast data
         if (Forecast1.precipProb <= 30) {
-            rainFlag = 0;
             Hose[HOSE_IN].rainFlag = 0;
             // Go ahead and turn on the water
             Hose[HOSE_IN].status = WATER_ON;
@@ -581,7 +586,7 @@ uint8_t WaterDelivery(HOSE_NUM HOSE_IN)
                 // ...Go ahead and turn on the water
                 Hose[HOSE_IN].status = WATER_ON;
                 // Also resets the rain Flag
-                rainFlag = 0;
+                Hose[HOSE_IN].rainFlag = 0;
             }
         }
     }
