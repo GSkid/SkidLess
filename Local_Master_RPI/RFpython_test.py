@@ -8,8 +8,8 @@ import forecastio
 # Example 2: Egypt (lat = 26.8206, lng = 30.8025)
 api_key = "2ef3d37cae4747a0cdc3c75cb4c5b3ad"
 # Santa Cruz
-lat = 36.9655
-lng = -121.9937
+lat = 36.9741
+lng = -122.0308
 
 # Egypt
 #lat = 26.8206
@@ -30,6 +30,7 @@ currentForecast = forecast.currently()
 # this returns a map object, which contains all the weather data
 result = forecast.json
 curr = result.get('currently')
+dail = result.get('daily')
 
 # here we print out the data for testing
 #print (list(result))
@@ -49,10 +50,7 @@ minutes = seconds // 60
 seconds %= 60
 
 # convert humidity to percent
-humidity = curr.get('humidity') * 100
-
-# convert precipProb to percent
-precip = curr.get('precipProbability') * 100
+#humidity = curr.get('humidity') * 100
 
 # wind direction conversion
 #windDirection = curr.get('windBearing') / 22.5
@@ -74,9 +72,9 @@ precip = curr.get('precipProbability') * 100
 #print ("Wind Direction (degrees): %s" % curr.get('windBearing'))
 #print ("Wind Direction: %s" % windDir)
 
-print (precip)
+print (dail.get('data')[0].get('precipProbability'))
 print (curr.get('temperature'))
-print (humidity)
+print (curr.get('humidity'))
 print (curr.get('pressure'))
 print (curr.get('windSpeed'))
 print (curr.get('windBearing'))
