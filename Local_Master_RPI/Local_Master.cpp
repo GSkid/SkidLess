@@ -560,7 +560,7 @@ uint8_t WaterDelivery(HOSE_NUM HOSE_IN)
     // Next check if the tally is above the water level threshold
     if (Hose[HOSE_IN].tally > Hose[HOSE_IN].waterLevel) {
         // Check the forecast data
-        if (Forecast1.precipProb <= 30) {
+        if (Forecast1.precipProb <= 0.3) {
             Hose[HOSE_IN].rainFlag = 0;
             // Go ahead and turn on the water
             Hose[HOSE_IN].status = WATER_ON;
