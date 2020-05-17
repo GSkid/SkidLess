@@ -21,7 +21,6 @@
 #define LED RPI_BPLUS_GPIO_J8_07
 #define pushButton RPI_BPLUS_GPIO_J8_29
 #define SPI_SPEED_2MHZ 2000000
-#define FORECAST_CALL 1800000
 
 #define TRUE  1
 #define FALSE 0
@@ -50,6 +49,7 @@
 #define UP_Pin 21
 
 // Time
+#define FORECAST_CALL 1800000
 #define FIVE_SECONDS 5000
 #define MIN_3 180000
 #define MIN_2 120000
@@ -447,7 +447,7 @@ int main(void) {
 
     /**** Forecast Data API Call ****/
 
-    if (Timer(MIN_1, forecastTimer)) {
+    if (Timer(FORECAST_CALL, forecastTimer)) {
         printf("Opening call to forecast API...\n");
         forecastTimer = millis();
         // Opens and runs the python script in the terminal

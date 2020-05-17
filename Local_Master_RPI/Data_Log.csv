@@ -38,3 +38,8 @@ Soil_Moisture,Ambient_Light,Ambient_Temp,Barometric_Pressure,Precip_Prob,Digital
      0.000000,       23.589191,                     0,                     0,             0,                2,         5,               38,       0,       0,       0,
 Soil_Moisture,Ambient_Light,Ambient_Temp,Barometric_Pressure,Precip_Prob,Digital_Output,Node_ID,Battery_Level,Hose_1,Hose_2,Hose_3
      2.005771,        1.345660,                     0,                  1014,             0,                2,         5,               39,       0,       0,       0,
+Soil_Moisture, Ambient_Light, Ambient_Temp, Barometric_Pressure, Precip_Prob, Digital_Output, Node_ID, Battery_Level, Hose_1, Hose_2, Hose_3
+     0.000000,       13.800371,                     0,                  1012,      0.000000,                2,         5,               39,       0,       0,       0,
+    69.108124,      104.832497,                     0,                  1012,      0.000000,                0,         5,               39,       1,       0,       0,
+    69.148598,      107.020401,                     0,                  1012,      0.000000,                0,         5,               39,       0,       0,       0,
+    69.310814,      107.389061,                     0,                  1012,      0.000000,                0,         5,               39,       0,       0,       0,
