@@ -25,12 +25,12 @@
 
 #define TRUE  1
 #define FALSE 0
-
 #define MAX_ELEMENTS 100
 #define MOISTURE 0
 #define SUNLIGHT 1
 #define TEMP  2
 
+// Water Delivery
 #define WATER_OFF 0
 #define WATER_ON  1
 #define PMOS_ON 0
@@ -43,14 +43,17 @@
 #define RPMOS_Pin 19
 #define RNMOS_Pin 26
 
+// Buttons
 #define ENTER_Pin  16 
 #define BACK_Pin  20
 #define DOWN_Pin 12
 #define UP_Pin 21
 
+// Time
 #define FIVE_SECONDS 5000
 #define MIN_3 180000
 #define MIN_2 120000
+#define MIN_1 60000
 #define ONE_SECOND 1000
 #define PULSE_DURATION 3000
 #define FET_DELAY 10
@@ -127,11 +130,9 @@ typedef enum{
   HOSE_ON_S1,
   HOSE_ON_S2,
   HOSE_ON_S3,
-  HOSE_ON_S4,
   HOSE_OFF_S1,
   HOSE_OFF_S2, 
   HOSE_OFF_S3, 
-  HOSE_OFF_S4,
 } w_State;
 
 //States for OLED SM
@@ -173,7 +174,6 @@ uint8_t dataDat = 1;
 uint8_t column_flag = 0;
 uint8_t sd_index = -1;
 
-D_Struct Test_Data[MAX_ELEMENTS];
 OLED_State oledState = SLEEP;
 static w_State waterState = HOSE_IDLE; //Water Deliver SM state var
 static uint8_t dataType = 0;
@@ -186,19 +186,14 @@ static int lastUpButtonState, lastDownButtonState, lastBackButtonState, lastEnte
        ENTER_PRESSED, UP_PRESSED, DOWN_PRESSED, BACK_PRESSED = 0;
 
 // Timers
-uint32_t dTimer = 0;
-uint32_t frt = 0;
 uint32_t forecastTimer = 0;
 uint32_t waterDeliveryTimer = 0;
 uint32_t wTimer = 0; //Timer used for driving Water Delivery testing
 uint32_t oledTimer = 0; //Timer used for updating OLED testing
 uint32_t connectionTimer = 0;
 
-// Timer Support
-uint8_t pingFlag = 0;
-
 // RF24 Vars
-uint8_t nodeID = 0;    // 0 = master
+const static uint8_t nodeID = 0;    // 0 = master
 uint8_t num_nodes = 0;
 
 // Forecast Support
@@ -206,12 +201,12 @@ Forecast Forecast1;
 char buffer[10];
 double data[6];
 FILE* fp;
-uint8_t rainFlag = 0;
 
 // Water Delivery Support
 Hoses Hose0, Hose1, Hose2;
 Hoses Hose[3];
 uint8_t hose_statuses = 0;
+
 
 
 /**** Helper Fxn Prototypes ****/
@@ -240,34 +235,32 @@ void setup(void) {
   Hose[0].control = AUTOMATIC; Hose[1].control = OFF; Hose[2].control = OFF;
   Hose[0].status = WATER_ON; Hose[1].status = WATER_OFF; Hose[2].status = WATER_OFF;
   
-  //Init the GPIO Library
+  // Init the GPIO Library
   DEV_ModuleInit();
   Device_Init();
-  
   bcm2835_init();
-  
   bcm2835_spi_begin();  
   
   
-  //Set Pins to Output
+  // Set Pins to Output
   DEV_GPIO_Mode(LPMOS_Pin, 1);
   DEV_GPIO_Mode(RPMOS_Pin, 1);
   DEV_GPIO_Mode(LNMOS_Pin, 1);
   DEV_GPIO_Mode(RNMOS_Pin, 1);
   
-  //Set Pins to Input
+  // Set Pins to Input
   DEV_GPIO_Mode(ENTER_Pin, 0);
   DEV_GPIO_Mode(BACK_Pin, 0);
   DEV_GPIO_Mode(DOWN_Pin, 0);
   DEV_GPIO_Mode(UP_Pin, 0);
-    
+  
+  // Turn off the H-Bridge
   LPMOS_Set(PMOS_OFF); //Initial States for MOS devices 
   RPMOS_Set(PMOS_OFF);
-  LNMOS_Set(NMOS_OFF); 
+  LNMOS_Set(NMOS_OFF); // Notice the diff b/t PMOS and NMOS states
   RNMOS_Set(NMOS_OFF);
   
   // Set this node as the master node
-  //printf("I am here \n");
   mesh.setNodeID(nodeID);
   printf("Node ID: %d\n", nodeID);
   radio.setPALevel(RF24_PA_MAX);
@@ -277,7 +270,7 @@ void setup(void) {
  if (mesh.begin()) {
     printf("\nInitialized: %d\n", radio.isChipConnected());
   }
-  
+  // Print out debugging information
   radio.printDetails();
   return;
 }
@@ -344,6 +337,8 @@ int main(int argc, char **argv) {
             break;
         }
       } else {
+        // Generally will never get here
+        // This basically just removes the message from the input buffer
         network.read(header, 0, 0);
       }
     }
@@ -368,6 +363,7 @@ int main(int argc, char **argv) {
               printf("%d, ", mesh.addrList[i].nodeID);
             }
         }
+        // Reset the water level threshold according to the # of sensors
         Hose[HOSE0].waterLevel = i/2;
       }
     }
@@ -430,7 +426,7 @@ int main(int argc, char **argv) {
 
     /**** Water Delivery ****/
 
-    if (Timer(60000, waterDeliveryTimer)) {
+    if (Timer(MIN_1, waterDeliveryTimer)) {
         // reset the timer
         waterDeliveryTimer = millis();
         // Then call WaterDelivery to see if we need to turn on each hose
@@ -491,10 +487,11 @@ int main(int argc, char **argv) {
     }
     
     /**** UI Menu Control ****/
-     
-  checkButtons();
-      
-  OLED_SM(WHITE);
+    
+    // First check the buttons to inform the oled 
+    checkButtons();
+    // Then call the oled function to operate the UI
+    OLED_SM(WHITE);
     
     
   }  // Loop
@@ -515,7 +512,6 @@ return(1);
    This is a non-blocking timer that handles uint32_t overflow,
    it works off the internal function millis() as reference
 */
-
 int Timer(uint32_t delayThresh, uint32_t prevDelay) {
   // Checks if the current time is at or beyond the set timer
   if ((bcm2835_millis() - prevDelay) >= delayThresh) {
@@ -534,6 +530,8 @@ int Timer(uint32_t delayThresh, uint32_t prevDelay) {
 /* @name: WaterDelivery
    @param: HOSE_NUM - an enum that specifies which hose to evaluate
    @return: uint8_t - a bit array of values that indicate which hoses are on/off
+   This function determines if a hose needs to be turned on or off based on sensor data.
+   The function also handles the control of the water delivery SM to turn on/off the H-bridge
  */
 uint8_t WaterDelivery(HOSE_NUM HOSE_IN)
 {
@@ -568,28 +566,48 @@ uint8_t WaterDelivery(HOSE_NUM HOSE_IN)
             Hose[HOSE_IN].status = WATER_ON;
         }
         else {
+            // Checks if the rain flag is set
+            // This prevents the rainTimer from being set more than once
             if (!Hose[HOSE_IN].rainFlag) {
+                // Sets the rain flag
                 Hose[HOSE_IN].rainFlag++;
+                // Then the rain timer
                 Hose[HOSE_IN].rainTimer = millis();
+                // Turns off the hose to wait for the precip prob to take affect
                 Hose[HOSE_IN].status = WATER_OFF;
             }
+            // If it has been more than 36 hours since the rain timer was set...
             else if (Timer(HOURS_36, Hose[HOSE_IN].rainTimer)) {
-                rainFlag = 0;
-                // Go ahead and turn on the water
+                // ...Go ahead and turn on the water
                 Hose[HOSE_IN].status = WATER_ON;
+                // Also resets the rain Flag
+                rainFlag = 0;
             }
         }
-    }// ...If the sensors indicate it is not dry enough to water
+    }
+    // Turn off the hose if the sensors indicate it is not dry enough to water
     else {
       Hose[HOSE_IN].status = WATER_OFF;
     }
     printf("Hose %d Water Delivery:\nHose Status: %d;  Prev State = %d\n\n", HOSE_IN, Hose[HOSE_IN].status, prevstatus);
     // Now we actually turn on or off the Hose
     if (prevstatus != Hose[HOSE_IN].status) {
-        printf("Turning on/off hose...\n");
+        // If statements to control terminal printing
+        if (Hose[HOSE_IN].status == WATER_ON) {
+            printf("Turning ON hose...\n");
+        }
+        else {
+            printf("Turning OFF hose...\n");
+        }
         // Call the state machine to open the solenoid valve
         while (!WaterDeliverySM(Hose[HOSE_IN].status, FET_DELAY, PULSE_DURATION));
-        printf("Hose successfully turned on/off\n\n");
+        // More if statments to control terminal printing
+        if (Hose[HOSE_IN].status == WATER_ON) {
+            printf("Hose successfully turned ON\n\n");
+        }
+        else {
+            printf("Hose successfully turned OFF\n\n");
+        }
     }
     // Create a bit array of hose states to return
     uint8_t hose_status = Hose[2].status * 4 + Hose[1].status * 2 + Hose[0].status;
@@ -642,20 +660,18 @@ void RNMOS_Set(uint8_t status){
 int WaterDeliverySM(uint8_t status, uint32_t delayP_N, uint32_t pulseTime){
   w_State nextState = waterState; //initialize var to current state
   int hoseSet = FALSE; // Set to TRUE(1) once done Driving 
-  //printf("Test Next State1 = %d \r \n", nextState);
-  //printf("Testing State1 = %d \r \n ", waterState);
-
   
   switch(waterState){
     case HOSE_IDLE:
+        // If the hose is supposed to be turned on
       if (status == WATER_ON){
         nextState = HOSE_ON_S1;
         wTimer = bcm2835_millis();
         hoseSet = 0; 
-        //printf("Test Next State2 = %d", nextState);
-        //printf("Test State2 = %d", waterState);
         printf("Leaving Hose Idle: On  \n");
-      } else if (status == WATER_OFF){
+      } 
+      // If the hose is supposed to be turned off
+      else if (status == WATER_OFF){
         nextState = HOSE_OFF_S1;
         wTimer = bcm2835_millis();
         hoseSet = 0; 
@@ -663,8 +679,11 @@ int WaterDeliverySM(uint8_t status, uint32_t delayP_N, uint32_t pulseTime){
       }
       break;
       
+    // Breaks down the function into two parts
+    // This first part handles turning on the H-bridge
     case HOSE_ON_S1:
       LNMOS_Set(NMOS_ON);
+      // Waits for the P_N delay before moving to the next state
       if (Timer(delayP_N, wTimer)){
         wTimer = bcm2835_millis();
         nextState = HOSE_ON_S2;
@@ -674,6 +693,7 @@ int WaterDeliverySM(uint8_t status, uint32_t delayP_N, uint32_t pulseTime){
     
     case HOSE_ON_S2:
       RPMOS_Set(PMOS_ON); 
+      // Waits for the pulse delay before moving to the next state
       if (Timer(pulseTime, wTimer)){
         wTimer = bcm2835_millis();
         nextState = HOSE_ON_S3;
@@ -683,24 +703,21 @@ int WaterDeliverySM(uint8_t status, uint32_t delayP_N, uint32_t pulseTime){
       
     case HOSE_ON_S3:
       RPMOS_Set(PMOS_OFF); 
+      // Waits for the P_N delay before moving to the next state
       if (Timer(delayP_N, wTimer)){
-        wTimer = bcm2835_millis();
-        nextState = HOSE_ON_S4;
         printf("Leaving Hose On S3 \n");
-      }
-      break;
-      
-    case HOSE_ON_S4:
-      LNMOS_Set(NMOS_OFF); 
-      if (Timer(delayP_N, wTimer)){
+        LNMOS_Set(NMOS_OFF);
         nextState = HOSE_IDLE;
-        printf("Leaving Hose On S4 \n");
         hoseSet = 1;
+        printf("Leaving Hose On S4 \n");
       }
       break;
     
+
+    // This second part handles turning off the H-bridge
     case HOSE_OFF_S1:
       RNMOS_Set(NMOS_ON);
+      // Waits for the P_N delay before moving to the next state
       if (Timer(delayP_N, wTimer)){
         wTimer = bcm2835_millis();
         nextState = HOSE_OFF_S2;
@@ -719,27 +736,17 @@ int WaterDeliverySM(uint8_t status, uint32_t delayP_N, uint32_t pulseTime){
       
     case HOSE_OFF_S3:
       LPMOS_Set(PMOS_OFF); 
+      // Waits for the P_N delay before moving to the next state
       if (Timer(delayP_N, wTimer)){
-        wTimer = bcm2835_millis();
-        nextState = HOSE_OFF_S4;
         printf("Leaving Hose Off S3 \n");
-      }
-      break;
-      
-    case HOSE_OFF_S4:
-      RNMOS_Set(NMOS_OFF); 
-      if (Timer(delayP_N, wTimer)){
+        RNMOS_Set(NMOS_OFF);
         nextState = HOSE_IDLE;
         hoseSet = 1;
         printf("Leaving Hose Off S4 \n");
       }
       break;
-    
   }
-    
   waterState = nextState;
-  //printf("State3: %d \r \n", waterState);
-  //printf("Next State3: %d \r \n ", nextState);
   return hoseSet;  //1 if set, 0 if still in S1-4
 
 }
@@ -860,7 +867,7 @@ void OLED_SM(uint16_t color){
     
     case SENSORS_PLOT:
       printGrid(20,120,20,120,10,10);
-      plotSampleData(Test_Data, dataType, MAX_ELEMENTS);
+      plotSampleData(sensor_data, dataType, MAX_ELEMENTS);
       
       if(ENTER_PRESSED){
         if(dataType == MOISTURE){
