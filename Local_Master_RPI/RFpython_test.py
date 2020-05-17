@@ -8,8 +8,8 @@ import forecastio
 # Example 2: Egypt (lat = 26.8206, lng = 30.8025)
 api_key = "2ef3d37cae4747a0cdc3c75cb4c5b3ad"
 # Santa Cruz
-lat = 36.9741
-lng = -122.0308
+lat = 36.9655
+lng = -121.9937
 
 # Egypt
 #lat = 26.8206
@@ -51,6 +51,9 @@ seconds %= 60
 # convert humidity to percent
 humidity = curr.get('humidity') * 100
 
+# convert precipProb to percent
+precip = curr.get('precipProbability') * 100
+
 # wind direction conversion
 #windDirection = curr.get('windBearing') / 22.5
 #windDir = 'F'
@@ -71,7 +74,7 @@ humidity = curr.get('humidity') * 100
 #print ("Wind Direction (degrees): %s" % curr.get('windBearing'))
 #print ("Wind Direction: %s" % windDir)
 
-print (curr.get('precipProbability'))
+print (precip)
 print (curr.get('temperature'))
 print (humidity)
 print (curr.get('pressure'))

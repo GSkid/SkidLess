@@ -1,4 +1,4 @@
-CXXFLAGS = -Ofast -mfpu=vfp -mfloat-abi=hard -march=armv6zk -mtune=arm1176jzf-s -std=c++0x
+CXXFLAGS = -Ofast -mfpu=vfp -mfloat-abi=hard -march=armv6zk -mtune=arm1176jzf-s -std=c++0x -Wall -Wextra
 VPATH = RF24:RF24Network:RF24Mesh
 C++ = gcc
 
@@ -56,7 +56,7 @@ dev_hardware_SPI.o:	$(HEADERS) $(SOURCES)
 		$(C++) -D USE_BCM2835_LIB -c  obj/dev_hardware_SPI.c -o bin/dev_hardware_SPI.o -I ./Fonts $(LIBS) 
 
 Local_Master.o: Local_Master.cpp $(OBJ_TARGETS)
-		g++ -D  USE_BCM2835_LIB -c  Local_Master.cpp $(CXXFLAGS) -Wall -o bin/Local_Master.o -I ./Fonts -I ./obj -I ./bin $(LIBS) 
+		g++ -D  USE_BCM2835_LIB -c  Local_Master.cpp $(CXXFLAGS) -o bin/Local_Master.o -I ./Fonts -I ./obj -I ./bin $(LIBS) 
 		
 # g++ -c Local_Master.cpp  $(CXXFLAGS) -Wall -o -I ./obj ./Fonts -I./ -lrf24-bcm -lbin -lobj -lrf24network -lrf24mesh -pthread	 		
 		 

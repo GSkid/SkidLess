@@ -105,7 +105,7 @@ typedef struct {
 } D_Struct;
 
 typedef struct{
-    int precipProb;
+    float precipProb;
     int temperature;
     int humidity;
     int pressure;
@@ -172,7 +172,7 @@ D_Struct sensor_data[MAX_ELEMENTS];
 uint8_t dFlag = 0;
 uint8_t dataDat = 1;
 uint8_t column_flag = 0;
-uint8_t sd_index = -1;
+int sd_index = -1;
 
 OLED_State oledState = SLEEP;
 static w_State waterState = HOSE_IDLE; //Water Deliver SM state var
@@ -277,7 +277,7 @@ void setup(void) {
 
 
 /********************************************************************************************/
-int main(int argc, char **argv) {
+int main(void) {
   setup();
   while(1) {
     // Keep the network updated
@@ -389,13 +389,13 @@ int main(int argc, char **argv) {
               column_flag = 1;
           }
 
-          printf("%f, %f, %d, %d, %d, %d, %d, %d, %d, %d, %d\n", D_Dat.soilMoisture, D_Dat.lightLevel, D_Dat.temp_C, Forecast1.pressure, Forecast1.precipProb, D_Dat.digitalOut, D_Dat.nodeID, D_Dat.battLevel, Hose[0].status, Hose[1].status, Hose[2].status);
+          printf("%f, %f, %d, %d, %f, %d, %d, %d, %d, %d, %d\n", D_Dat.soilMoisture, D_Dat.lightLevel, D_Dat.temp_C, Forecast1.pressure, Forecast1.precipProb, D_Dat.digitalOut, D_Dat.nodeID, D_Dat.battLevel, Hose[0].status, Hose[1].status, Hose[2].status);
         
           fprintf(out, "%13f,   ", D_Dat.soilMoisture); // prints out 0th member of the data vector to the file.
           fprintf(out, "%13f,   ", D_Dat.lightLevel); // prints out 2nd member of the data vector to the file.
           fprintf(out, "%19d,   ", D_Dat.temp_C); // prints out 3rd member of the data vector to the file.
           fprintf(out, "%19d,   ", Forecast1.pressure);
-          fprintf(out, "%11d,   ", Forecast1.precipProb);
+          fprintf(out, "%11f,   ", Forecast1.precipProb);
           fprintf(out, "%14d,   ", D_Dat.digitalOut); // prints out 4th member of the data vector to the file.
           fprintf(out, "%7d,   ", D_Dat.nodeID); // prints out 6th member of the data vector to the file.
           fprintf(out, "%14d,   ", D_Dat.battLevel);
@@ -447,7 +447,7 @@ int main(int argc, char **argv) {
 
     /**** Forecast Data API Call ****/
 
-    if (Timer(FORECAST_CALL, forecastTimer)) {
+    if (Timer(MIN_1, forecastTimer)) {
         printf("Opening call to forecast API...\n");
         forecastTimer = millis();
         // Opens and runs the python script in the terminal
@@ -471,8 +471,8 @@ int main(int argc, char **argv) {
         }
 
         // moves the extracted data from the array to the struct
-        Forecast1.precipProb = round(data[0]);
-        printf("Forecast1.precipProb = %d.\n", Forecast1.precipProb);
+        Forecast1.precipProb = data[0];
+        printf("Forecast1.precipProb = %f.\n", Forecast1.precipProb);
         Forecast1.temperature = round(data[1]);
         printf("Forecast1.temperature = %d.\n", Forecast1.temperature);
         Forecast1.humidity = round(data[2]);
@@ -482,7 +482,7 @@ int main(int argc, char **argv) {
         Forecast1.windSpeed = round(data[4]);
         printf("Forecast1.windSpeed = %d.\n", Forecast1.windSpeed);
         Forecast1.windBearing = round(data[5]);
-        printf("Forecast1.windBearing = %d.\n", Forecast1.windBearing);
+        printf("Forecast1.windBearing = %d.\n\n", Forecast1.windBearing);
 
         pclose(fp);
     }
@@ -537,35 +537,30 @@ int Timer(uint32_t delayThresh, uint32_t prevDelay) {
 uint8_t WaterDelivery(HOSE_NUM HOSE_IN)
 {
     // First reset the hose tally
-    printf("0");
     Hose[HOSE_IN].tally = 0;
     int prevstatus = Hose[HOSE_IN].status;
 
     // Then need to tally up the digital outs on the hose
     int i, j = 0;
     for (i = 0; i <= MAX_SENSORS; i++) {
-        printf("1");
         // This just shuts down the for loop if the list of sensors is exhausted
         if ((Hose[HOSE_IN].sensors[i] <= 0) || (sd_index == -1)) {
-            printf("2");
             break;
         }
         for (j = sd_index; j >= 0; j--) {
-            printf("3");
             // Check if the data item is a sensor mapped to the hose
             if ((sensor_data[j].nodeID == Hose[HOSE_IN].sensors[i]) && (sensor_data[j].nodeID)) {
                 // If it is, increase the tally
-                printf("4");
                 Hose[HOSE_IN].tally += sensor_data[j].digitalOut;
                 break;
             }
         }
     }
-    printf("5");
+    
     // Next check if the tally is above the water level threshold
     if (Hose[HOSE_IN].tally > Hose[HOSE_IN].waterLevel) {
         // Check the forecast data
-        if (Forecast1.precipProb <= 30) {
+        if (Forecast1.precipProb <= 0.3) {
             Hose[HOSE_IN].rainFlag = 0;
             // Go ahead and turn on the water
             Hose[HOSE_IN].status = WATER_ON;
@@ -710,6 +705,7 @@ int WaterDeliverySM(uint8_t status, uint32_t delayP_N, uint32_t pulseTime){
       RPMOS_Set(PMOS_OFF); 
       // Waits for the P_N delay before moving to the next state
       if (Timer(delayP_N, wTimer)){
+        wTimer = bcm2835_millis();
         printf("Leaving Hose On S3 \n");
         LNMOS_Set(NMOS_OFF);
         nextState = HOSE_IDLE;
@@ -743,6 +739,7 @@ int WaterDeliverySM(uint8_t status, uint32_t delayP_N, uint32_t pulseTime){
       LPMOS_Set(PMOS_OFF); 
       // Waits for the P_N delay before moving to the next state
       if (Timer(delayP_N, wTimer)){
+        wTimer = bcm2835_millis();
         printf("Leaving Hose Off S3 \n");
         RNMOS_Set(NMOS_OFF);
         nextState = HOSE_IDLE;
