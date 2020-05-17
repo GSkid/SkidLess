@@ -289,9 +289,9 @@ void D_Struct_Serial_print(D_Struct sct) {
 }
 
 void initC_Struct(C_Struct* sct) {
-  sct->sM_thresh = 55;
+  sct->sM_thresh = 62;
   sct->sM_thresh_00 = 45;
-  sct->lL_thresh = 25;
+  sct->lL_thresh = 30;
   sct->tC_thresh = 5;
   sct->time_thresh = 30000;
   return;
