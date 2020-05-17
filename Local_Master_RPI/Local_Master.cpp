@@ -385,7 +385,7 @@ int main(void) {
           // conditional here: output if first loop, dont afterward, controlled by column_flag
           if (column_flag == 0)
           {
-              fprintf(out, "Soil_Moisture,Ambient_Light,Ambient_Temp,Barometric_Pressure,Precip_Prob,Digital_Output,Node_ID,Battery_Level,Hose_1,Hose_2,Hose_3\n");
+              fprintf(out, "Soil_Moisture, Ambient_Light, Ambient_Temp, Barometric_Pressure, Precip_Prob, Digital_Output, Node_ID, Battery_Level, Hose_1, Hose_2, Hose_3\n");
               column_flag = 1;
           }
 
