@@ -43,7 +43,7 @@
 #define RNMOS_Pin 26
 
 // Buttons
-#define ENTER_Pin  16 
+#define ENTER_Pin  5 
 #define BACK_Pin  20
 #define DOWN_Pin 12
 #define UP_Pin 21
@@ -177,6 +177,17 @@ int sd_index = -1;
 OLED_State oledState = SLEEP;
 static w_State waterState = HOSE_IDLE; //Water Deliver SM state var
 static uint8_t dataType = 0;
+static uint8_t prev_waterLevel[3];
+static char testBuffer[20];
+static char testBuffer2[100];
+static char testBuffer3[100];
+
+static int tempVal = 0;
+static float testFloat = 64.757065;
+static float temp_wholeVal = 0;
+static int wholeVal = 0;
+static float temp_decimalVal = 0;
+static int decimalVal = 0;
 
 //Button Variables
 static int prevArrowState, arrowState = 0;
@@ -206,6 +217,7 @@ FILE* fp;
 Hoses Hose0, Hose1, Hose2;
 Hoses Hose[3];
 uint8_t hose_statuses = 0;
+uint8_t prev_hose_statuses = 0;
 
 
 
@@ -213,6 +225,7 @@ uint8_t hose_statuses = 0;
 int Timer(uint32_t, uint32_t);
 void setup(void);
 void checkButtons(void);
+void printHoseStatus(int16_t x, int16_t y, uint8_t status);
 int printGrid(int16_t x0, int16_t x1, int16_t y0, int16_t y1, int16_t xtics, int16_t ytics);
 int plotSampleData(D_Struct data[], uint8_t dataType, int16_t size);
 int WaterDeliverySM(uint8_t status, uint32_t delayP_N, uint32_t pulseTime);
@@ -222,6 +235,7 @@ void LPMOS_Set(uint8_t status);
 void RPMOS_Set(uint8_t status);
 void LNMOS_Set(uint8_t status);
 void RNMOS_Set(uint8_t status);
+int convertFloat_String(float in, char buffer[100]); 
 uint8_t WaterDelivery(HOSE_NUM);
 
 
@@ -392,7 +406,9 @@ int main(void) {
           printf("%f, %f, %d, %d, %f, %d, %d, %d, %d, %d, %d\n", D_Dat.soilMoisture, D_Dat.lightLevel, D_Dat.temp_C, Forecast1.pressure, Forecast1.precipProb, D_Dat.digitalOut, D_Dat.nodeID, D_Dat.battLevel, Hose[0].status, Hose[1].status, Hose[2].status);
         
           fprintf(out, "%13f,   ", D_Dat.soilMoisture); // prints out 0th member of the data vector to the file.
+          convertFloat_String(D_Dat.soilMoisture, testBuffer2);
           fprintf(out, "%13f,   ", D_Dat.lightLevel); // prints out 2nd member of the data vector to the file.
+          convertFloat_String(D_Dat.lightLevel, testBuffer3);
           fprintf(out, "%19d,   ", D_Dat.temp_C); // prints out 3rd member of the data vector to the file.
           fprintf(out, "%19d,   ", Forecast1.pressure);
           fprintf(out, "%11f,   ", Forecast1.precipProb);
@@ -899,7 +915,7 @@ void OLED_SM(uint16_t color){
       print_String(0,50, (const uint8_t*)"Remap Sensors ", FONT_5X8);
       
       if(arrowState == 0){
-        OLED_PrintArrow(112, 30);
+        OLED_PrintArrow(114, 30);
       } else if (arrowState == 1) {
         OLED_PrintArrow(80, 40);
       } else {
@@ -922,7 +938,26 @@ void OLED_SM(uint16_t color){
       break;
       
     case HOSES_STATUS: 
+      if (prevArrowState != arrowState){
+        Clear_Screen();
+      }
+    
+      if(hose_statuses != prev_hose_statuses) {
+        Clear_Screen();
+      }
+      
       print_String(0,0, (const uint8_t*)"Hoses Status", FONT_8X16);
+      printHoseStatus(0,40,hose_statuses);
+      prev_hose_statuses = hose_statuses;
+      
+      if(arrowState == 0){
+        OLED_PrintArrow(100, 40);
+      } else if (arrowState == 1) {
+        OLED_PrintArrow(100, 55);
+      } else {
+        OLED_PrintArrow(100, 70);
+      }
+            
       if (ENTER_PRESSED){
         nextPage = SLEEP;
         Clear_Screen();
@@ -933,7 +968,53 @@ void OLED_SM(uint16_t color){
       break;
       
     case HOSES_WATER: 
+      if (prevArrowState != arrowState){
+        Clear_Screen();
+      }
+      
+      if( (prev_waterLevel[0] != Hose0.waterLevel) ||
+          (prev_waterLevel[1] != Hose1.waterLevel) || 
+          (prev_waterLevel[2] != Hose2.waterLevel) )  {
+            
+        Clear_Screen();
+        prev_waterLevel[0] = Hose0.waterLevel;
+        prev_waterLevel[1] = Hose1.waterLevel;
+        prev_waterLevel[2] = Hose2.waterLevel;
+      }
+      
       print_String(0,0, (const uint8_t*)"Watering Log", FONT_8X16);
+      
+      tempVal = Hose0.waterLevel;
+      sprintf(testBuffer,"%d L", tempVal);
+      print_String(0,40, (const uint8_t*)"Hose One:", FONT_5X8);
+      print_String(70,40, (const uint8_t*)testBuffer, FONT_5X8);
+      
+      //tempVal = Hose1.waterLevel;
+      tempVal = 3;
+      sprintf(testBuffer,"%d L", tempVal);
+      print_String(0,55, (const uint8_t*)"Hose Two:", FONT_5X8);
+      print_String(70,55, (const uint8_t*)testBuffer, FONT_5X8);
+      
+      //tempVal = Hose2.waterLevel;
+      tempVal = 5;
+      sprintf(testBuffer,"%d L", tempVal);
+      print_String(0,70, (const uint8_t*)"Hose Three:", FONT_5X8);
+      print_String(70,70, (const uint8_t*)testBuffer, FONT_5X8);
+      
+      //tempVal = Hose2.waterLevel + Hose1.waterLevel + Hose0.waterLevel;
+      tempVal = 8;
+      sprintf(testBuffer,"%d L", tempVal);
+      print_String(0,85, (const uint8_t*)"Total:", FONT_5X8);
+      print_String(70,85, (const uint8_t*)testBuffer, FONT_5X8);
+      
+      if(arrowState == 0){
+        OLED_PrintArrow(100, 40);
+      } else if (arrowState == 1) {
+        OLED_PrintArrow(100, 55);
+      } else {
+        OLED_PrintArrow(100, 70);
+      }
+      
       if (ENTER_PRESSED){
         nextPage = SLEEP;
         Clear_Screen();
@@ -944,7 +1025,8 @@ void OLED_SM(uint16_t color){
       break;
       
     case HOSES_REMAP: 
-      print_String(0,0, (const uint8_t*)"Remap Hoses", FONT_8X16);
+      print_String(0,0, (const uint8_t*)"Remap Sensors", FONT_8X16);
+      
       if (ENTER_PRESSED){
         nextPage = SLEEP;
         Clear_Screen();
@@ -1105,6 +1187,35 @@ void checkButtons(void) {
   }
 }
 
+/* @name: convertFloat_String
+   @param: in - float to be converted to String
+   @param: buffer - char variable used to store float string output
+   @return: 0
+*/
+
+int convertFloat_String(float in, char buffer[100]){
+    temp_wholeVal = in;
+  
+    if (testFloat < 0){
+      temp_wholeVal = -testFloat;
+    } 
+
+    wholeVal = temp_wholeVal;
+
+    temp_decimalVal = temp_wholeVal - wholeVal;
+  
+    decimalVal = trunc(temp_decimalVal*10000);
+    
+    if (testFloat < 0){
+      temp_wholeVal = -testFloat;
+    } else {
+      sprintf(buffer,"%d.%04d", wholeVal, decimalVal );
+    }
+    
+    return 0;
+} 
+
+
 /* @name: printGrid
    @param: x0 - initial x position for grid
    @param: x1 - final x position for grid
@@ -1147,6 +1258,34 @@ int printGrid(int16_t x0, int16_t x1, int16_t y0, int16_t y1, int16_t xtics, int
   
   return 0;
   
+}
+
+/* @name: printHoseStatus
+   @param: x - initial x position for first Hose Print line
+   @param: y - initial y position for first Hose Print line
+   @param: status - current hose status 
+   @return: void
+*/
+
+void printHoseStatus(int16_t x, int16_t y, uint8_t status){
+  if(status & 0x01){
+      print_String(x,y, (const uint8_t*)"Hose One:   ON", FONT_5X8);
+  } else{
+      print_String(x,y, (const uint8_t*)"Hose One:   OFF", FONT_5X8);
+  } 
+      
+  if (status & 0x02){
+      print_String(x,y+15, (const uint8_t*)"Hose Two:   ON", FONT_5X8);
+  } else {
+      print_String(x,y+15, (const uint8_t*)"Hose Two:   OFF", FONT_5X8);
+  } 
+      
+  if (status & 0x04){
+      print_String(x,y+30, (const uint8_t*)"Hose Three: ON", FONT_5X8);
+  } else {
+      print_String(x,y+30, (const uint8_t*)"Hose Three: OFF", FONT_5X8);
+  }
+      
 }
 
 /* @name: plotSampleData 
