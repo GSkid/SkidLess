@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <stdlib.h>		//exit()
 #include <signal.h>     //signal()
+#include <math.h>
 #include <RF24/RF24.h>
 #include <RF24Network/RF24Network.h>
 #include <RF24Mesh/RF24Mesh.h>
@@ -142,12 +143,32 @@ static int HOSE_ONE = WATER_OFF; //flags used to monitor which Hoses are on
 //static int HOSE_TWO = WATER_OFF;
 //static int HOSE_THREE = WATER_OFF;
 static uint8_t dataType = 0;
+static int testVar = 3;
+static char testBuf[9];
+static char testBuf2[100];
+
+static float testFloat = 64.757065;
+
+//static char floatSign[9] = " ";
+
+static float temp_wholeVal = 0;
+  
+static int wholeVal = 0;
+
+static float temp_decimalVal = 0;
+
+static int decimalVal = 0;
+
 
 //Button Variables
 static int prevArrowState, arrowState = 0;
+//static int lastUpButtonState, lastDownButtonState, lastBackButtonState, lastEnterButtonState,
+ //      upButtonValue, downButtonValue, backButtonValue, enterButtonValue,
+ //      upButtonValue2, downButtonValue2, backButtonValue2, enterButtonValue2,
+  //     ENTER_PRESSED, UP_PRESSED, DOWN_PRESSED, BACK_PRESSED = 0;
+  
 static int lastUpButtonState, lastDownButtonState, lastBackButtonState, lastEnterButtonState,
        upButtonValue, downButtonValue, backButtonValue, enterButtonValue,
-       upButtonValue2, downButtonValue2, backButtonValue2, enterButtonValue2,
        ENTER_PRESSED, UP_PRESSED, DOWN_PRESSED, BACK_PRESSED = 0;
 
 uint8_t dFlag = 0;
@@ -179,6 +200,8 @@ void LPMOS_Set(uint8_t status);
 void RPMOS_Set(uint8_t status);
 void LNMOS_Set(uint8_t status);
 void RNMOS_Set(uint8_t status);
+int convertFloat_String(float in, char buffer[100]); 
+
 
 /*
 //  Testing OLED Initialization Code
@@ -206,14 +229,13 @@ void setup(void) {
   Device_Init();
   
   bcm2835_init();
-  
   bcm2835_spi_begin(); 
   
   //Set Pins to Output
-  DEV_GPIO_Mode(LPMOS_Pin, 1);
-  DEV_GPIO_Mode(RPMOS_Pin, 1);
-  DEV_GPIO_Mode(LNMOS_Pin, 1);
-  DEV_GPIO_Mode(RNMOS_Pin, 1);
+  //DEV_GPIO_Mode(LPMOS_Pin, 1);
+  //DEV_GPIO_Mode(RPMOS_Pin, 1);
+  //DEV_GPIO_Mode(LNMOS_Pin, 1);
+  //DEV_GPIO_Mode(RNMOS_Pin, 1);
   
   //Set Pins to Input
   DEV_GPIO_Mode(ENTER_Pin, 0);
@@ -221,11 +243,12 @@ void setup(void) {
   DEV_GPIO_Mode(DOWN_Pin, 0);
   DEV_GPIO_Mode(UP_Pin, 0);
     
-  LPMOS_Set(PMOS_OFF); //Initial States for MOS devices 
-  RPMOS_Set(PMOS_OFF);
-  LNMOS_Set(NMOS_OFF); 
-  RNMOS_Set(NMOS_OFF);
- 
+  //LPMOS_Set(PMOS_OFF); //Initial States for MOS devices 
+  //RPMOS_Set(PMOS_OFF);
+  //LNMOS_Set(NMOS_OFF); 
+  //RNMOS_Set(NMOS_OFF);
+  
+  
     
   oledTimer = bcm2835_millis();  //Initialize Oled Timer 
   // Set this node as the master node
@@ -236,17 +259,42 @@ void setup(void) {
   
 
   // Initialize the mesh and check for proper chip connection
+ 
  if (mesh.begin()) {
     printf("\nInitialized: %d\n", radio.isChipConnected());
   }
   
   radio.printDetails();
+  
+  Clear_Screen();
+  
+  
+ // if (testFloat < 0) {
+  //  floatSign = "-";
+  //} else {
+  //  floatSign = " ";
+  //}
+
+  //temp_wholeVal = testFloat;
+  
+  //if (testFloat < 0){
+  //  temp_wholeVal = -testFloat;
+  //} 
+
+  //wholeVal = temp_wholeVal;
+
+  //temp_decimalVal = temp_wholeVal - wholeVal;
+  
+  //decimalVal = trunc(temp_decimalVal*10000);
+
+  convertFloat_String(testFloat, testBuf2);
 
   return;
 }
 
 int main(int argc, char **argv) {
   setup();
+  
   while(1) {
     
     //Testing for OLED, commented out RF Code 
@@ -352,6 +400,7 @@ int main(int argc, char **argv) {
           //%d, D_Dat.timeStamp, 
 
           fprintf(out, "%13f    ", D_Dat.soilMoisture); // prints out 0th member of the data vector to the file.
+          convertFloat_String(D_Dat.soilMoisture,testBuf2);
           //fprintf(out, "%19d    ", D_Dat.baroPressure); // prints out 1st member of the data vector to the file.
           fprintf(out, "%13f    ", D_Dat.lightLevel); // prints out 2nd member of the data vector to the file.
           fprintf(out, "%19d    ", D_Dat.temp_C); // prints out 3rd member of the data vector to the file.
@@ -486,7 +535,7 @@ int main(int argc, char **argv) {
     
   // plotSampleData(Test_Data, MOISTURE, MAX_ELEMENTS);
       
-      
+        
   OLED_SM(WHITE);
   
 /*      
@@ -559,14 +608,14 @@ void checkButtons(void) {
   backButtonValue = DEV_Digital_Read(BACK_Pin);
   upButtonValue = DEV_Digital_Read(UP_Pin);
 
-  DEV_Delay_ms(5);
+  //DEV_Delay_ms(5);
   
-  enterButtonValue2 = DEV_Digital_Read(ENTER_Pin);
-  downButtonValue2 = DEV_Digital_Read(DOWN_Pin);
-  backButtonValue2 = DEV_Digital_Read(BACK_Pin);
-  upButtonValue2 = DEV_Digital_Read(UP_Pin);
+  //enterButtonValue2 = DEV_Digital_Read(ENTER_Pin);
+  //downButtonValue2 = DEV_Digital_Read(DOWN_Pin);
+  //backButtonValue2 = DEV_Digital_Read(BACK_Pin);
+  //upButtonValue2 = DEV_Digital_Read(UP_Pin);
 
-  if (enterButtonValue == enterButtonValue2) {
+  //if (enterButtonValue == enterButtonValue2) {
     if (enterButtonValue != lastEnterButtonState) { //Change in State
       if (enterButtonValue == LOW) { //Flipped, Low is pressed
         ENTER_PRESSED = TRUE; //set flag TRUE
@@ -576,7 +625,7 @@ void checkButtons(void) {
       }
       lastEnterButtonState = enterButtonValue;
     }
-  } if (downButtonValue == downButtonValue2) {
+  //} if (downButtonValue == downButtonValue2) {
     if (downButtonValue != lastDownButtonState) { //Change in State
       if (downButtonValue == LOW) { //Flipped, Low is pressed
         DOWN_PRESSED = TRUE; //set flag TRUE
@@ -586,7 +635,7 @@ void checkButtons(void) {
       }
       lastDownButtonState = downButtonValue;
     }
-  } if (upButtonValue == upButtonValue2) {
+ // } if (upButtonValue == upButtonValue2) {
     if (upButtonValue != lastUpButtonState) { //Change in State
       if (upButtonValue == LOW) { //Flipped, Low is pressed
         UP_PRESSED = TRUE; //set flag TRUE
@@ -596,7 +645,7 @@ void checkButtons(void) {
       }
       lastUpButtonState = upButtonValue;
     }
-  } if (upButtonValue == upButtonValue2) {
+  //} if (upButtonValue == upButtonValue2) {
     if (backButtonValue != lastBackButtonState) { //Change in State
       if (backButtonValue == LOW) { //Flipped, Low is pressed
         BACK_PRESSED = TRUE; //set flag TRUE
@@ -605,7 +654,7 @@ void checkButtons(void) {
         BACK_PRESSED = FALSE; //set flag FALSE
       }
       lastBackButtonState = backButtonValue;
-    }
+    //}
   }
 }
 
@@ -939,9 +988,16 @@ void OLED_SM(uint16_t color){
 
   switch(oledState){
     case SLEEP:
+      
+      sprintf(testBuf,"%d", testVar);
+      //sprintf(testBuf2,"%d.%04d", wholeVal, decimalVal );
       print_String(35,55, (const uint8_t*)"SLEEPING", FONT_8X16);
+      print_String(35,5, (const uint8_t*)testBuf, FONT_8X16);
+      print_String(10,90, (const uint8_t*)testBuf2, FONT_5X8);
+      
       if (ENTER_PRESSED){
         nextPage = HOME_PAGE;
+        
         Clear_Screen();
       }
       break;
@@ -1175,3 +1231,21 @@ void OLED_SM(uint16_t color){
     
     return;
 }
+
+int convertFloat_String(float in, char buffer[100]){
+    temp_wholeVal = in;
+  
+    //if (testFloat < 0){
+    //  temp_wholeVal = -testFloat;
+    //} 
+
+    wholeVal = temp_wholeVal;
+
+    temp_decimalVal = temp_wholeVal - wholeVal;
+  
+    decimalVal = trunc(temp_decimalVal*10000);
+    
+    sprintf(buffer,"%d.%04d", wholeVal, decimalVal );
+
+    return 0;
+} 
