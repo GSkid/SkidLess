@@ -490,9 +490,9 @@ int main(void) {
     /**** UI Menu Control ****/
     
     // First check the buttons to inform the oled 
-    checkButtons();
+    //checkButtons();
     // Then call the oled function to operate the UI
-    OLED_SM(WHITE);
+    //OLED_SM(WHITE);
     
     
   }  // Loop
