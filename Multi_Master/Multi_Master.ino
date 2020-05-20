@@ -30,12 +30,11 @@ typedef struct {
 // D_Struct stores the relevant sensor data
 typedef struct {
   float soilMoisture;
-  uint16_t baroPressure;
   float lightLevel;
   uint16_t temp_C;
   uint8_t digitalOut;
-  uint32_t timeStamp;
-  uint8_t nodeID;
+  uint8_t node_ID;
+  uint8_t battLevel;
 } D_Struct;
 
 // Data Vars
@@ -169,11 +168,11 @@ void loop() {
 
     /**** 'S' and 'C' Type Message Responses ****/
 
-    Serial.print("Sending Sleep Message Back to: "); Serial.println(D_Dat.nodeID, OCT);
+    Serial.print("Sending Sleep Message Back to: "); Serial.println(D_Dat.node_ID, OCT);
     // Here we condition on if the node should be sent a configure message instead
 
     // Send to the message stored in the fromNode nodeID, message type 'S'
-    RF24NetworkHeader p_header(mesh.getAddress(D_Dat.nodeID), 'S');
+    RF24NetworkHeader p_header(mesh.getAddress(D_Dat.node_ID), 'S');
     // Data_Dat is just a 1 telling the node to go to sleep
     if (network.write(p_header, &dataDat, sizeof(dataDat))) {
       Serial.println("Sleep Message Sent");
@@ -235,14 +234,12 @@ void C_Struct_Serial_print(C_Struct sct) {
 }
 
 void D_Struct_Serial_print(D_Struct sct) {
-  Serial.print("Soil Moisture Level (g%): "); Serial.println(sct.soilMoisture);
-  Serial.print("Barometric Pressure (Pa): "); Serial.println(sct.baroPressure);
-  Serial.print("Ambient Lux Level   (lx): "); Serial.println(sct.lightLevel);
-  Serial.print("Ambient Temperature (C ): "); Serial.println(sct.temp_C);
-  Serial.print("Calucated Digital Output: "); Serial.println(sct.digitalOut);
-  Serial.print("Watering Time Stamp (ms): "); Serial.println(sct.timeStamp);
-  Serial.print("Node ID: "); Serial.println(sct.nodeID);
-  Serial.print("Master Time Stamp (ms): "); Serial.println(millis());
+  Serial.print(F("Soil Moisture Cont. (g%): ")); Serial.println(sct.soilMoisture);
+  Serial.print(F("Ambient Lux Level   (lx): ")); Serial.println(sct.lightLevel);
+  Serial.print(F("Ambient Temperature (C ): ")); Serial.println(sct.temp_C);
+  Serial.print(F("Calucated Digital Output: ")); Serial.println(sct.digitalOut);
+  Serial.print(F("Power Supply Battery(dV): ")); Serial.println(sct.battLevel);
+  Serial.print(F("Node ID: ")); Serial.println(sct.node_ID);
   return;
 }
 

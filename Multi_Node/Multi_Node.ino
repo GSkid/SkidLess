@@ -61,6 +61,7 @@ uint8_t message_Flag = 0;
 
 // Sensor Vars
 Adafruit_BMP085 bmp;
+uint8_t bmpFlag = 0;
 
 // RF24 Vars
 uint8_t sleepFlag = 0;
@@ -96,7 +97,11 @@ void setup() {
 
   // Begin the Barometric Pressure Sensor
   // Pin out: Vin->5V, SCL->A5, SDA->A4
-  bmp.begin();
+  if (bmp.begin()) {
+    bmpFlag = 1;
+  } else {
+    Serial.println(F("BMP Failed to init"));
+  }
 
   // Set this node as the master node
   mesh.setNodeID(nodeID);
@@ -161,7 +166,7 @@ void loop() {
 
 
   /**** Battery Level Check ****/
-  if (Timer(MINS_10, batteryTimer)) {
+  if (Timer(MINS_10, batteryTimer) && bmpFlag) {
     batteryTimer = millis();
     uint8_t batteryVoltage = pullBatteryLevel();
     if (batteryVoltage <= 35) {
@@ -179,6 +184,7 @@ void loop() {
 
 
 
+
   /**** Read Sensors ****/
 
   if (sleepFlag) {
@@ -187,8 +193,10 @@ void loop() {
     // Read all sensors
     Data_Struct.soilMoisture = pullMoistureSensor();
     Data_Struct.lightLevel = pullLightSensor();
-    Data_Struct.temp_C = bmp.readTemperature();
-    Data_Struct.battLevel = pullBatteryLevel();
+    if (bmpFlag) {
+      Data_Struct.temp_C = bmp.readTemperature();
+      Data_Struct.battLevel = pullBatteryLevel();
+    }
     Data_Struct.digitalOut = run_DeepOcean(Data_Struct, Thresholds); // will be replaced by DeepOcean
     Data_Struct.node_ID = nodeID;
 
@@ -460,7 +468,7 @@ int run_DeepOcean(D_Struct D_Struct, C_Struct C_Thresh) {
   }
 
   // Water immediately if soilMoisture goes below a certain level
-  if (D_Struct.soilMoisture < C_Thresh.sM_thresh_00) {
+  if ((D_Struct.soilMoisture < C_Thresh.sM_thresh_00) && bmpFlag) {
     return 2;
   }
 
