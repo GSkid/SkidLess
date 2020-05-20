@@ -195,8 +195,8 @@ void loop() {
     Data_Struct.lightLevel = pullLightSensor();
     if (bmpFlag) {
       Data_Struct.temp_C = bmp.readTemperature();
-      Data_Struct.battLevel = pullBatteryLevel();
     }
+    Data_Struct.battLevel = pullBatteryLevel();
     Data_Struct.digitalOut = run_DeepOcean(Data_Struct, Thresholds); // will be replaced by DeepOcean
     Data_Struct.node_ID = nodeID;
 
