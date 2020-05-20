@@ -43,9 +43,9 @@
 #define RNMOS_Pin 26
 
 // Buttons
-#define ENTER_Pin  5 
-#define BACK_Pin  20
-#define DOWN_Pin 12
+#define ENTER_Pin  12 
+#define BACK_Pin  5
+#define DOWN_Pin 20
 #define UP_Pin 21
 
 // Time
