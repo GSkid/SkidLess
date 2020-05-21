@@ -292,7 +292,7 @@ void setup(void) {
   return;
 }
 
-int main(int argc, char **argv) {
+int main(void) {
   setup();
   
   while(1) {
