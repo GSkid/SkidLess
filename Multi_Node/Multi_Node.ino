@@ -20,7 +20,7 @@ RF24Mesh mesh(radio, network);
 #define time_Thresh Timer(C_Thresh.time_thresh, 10)//D_Struct.timeStamp)
 
 /**** GLOBALS ****/
-#define nodeID 5 // Set this to a different number for each node in the mesh network
+#define nodeID 4 // Set this to a different number for each node in the mesh network
 #define MOISTURE_PIN A1
 #define LIGHT_PIN A2
 #define BATTERY A3
@@ -297,7 +297,7 @@ void D_Struct_Serial_print(D_Struct sct) {
 }
 
 void initC_Struct(C_Struct* sct) {
-  sct->sM_thresh = 62;
+  sct->sM_thresh = 65;
   sct->sM_thresh_00 = 45;
   sct->lL_thresh = 30;
   sct->tC_thresh = 5;
@@ -451,24 +451,22 @@ int Timer(uint32_t delayThresh, uint32_t prevDelay) {
 int run_DeepOcean(D_Struct D_Struct, C_Struct C_Thresh) {
   int HydroHomie = 0;
   // Check for the time threshold
-  if (time_Thresh) {
 
-    // Chcek the soil moisture against the first threshold
-    // If its light, then don't water unless it has been a long time
-    if ((D_Struct.soilMoisture < C_Thresh.sM_thresh) && (D_Struct.lightLevel <= C_Thresh.lL_thresh)) { //
-      HydroHomie = 1;
-    }
+  // Chcek the soil moisture against the first threshold
+  // If its light, then don't water unless it has been a long time
+  if ((D_Struct.soilMoisture < C_Thresh.sM_thresh) && (D_Struct.lightLevel <= C_Thresh.lL_thresh)) { //
+    HydroHomie = 1;
+  }
 
-    // Check temperature to prevent freezing
-    // Also make sure you only water once in a while so water is not
-    // always on when its cold
-    else if (D_Struct.temp_C <= C_Thresh.tC_thresh) {
-      HydroHomie = 1;
-    }
+  // Check temperature to prevent freezing
+  // Also make sure you only water once in a while so water is not
+  // always on when its cold
+  else if ((D_Struct.temp_C <= C_Thresh.tC_thresh) && bmpFlag) {
+    HydroHomie = 1;
   }
 
   // Water immediately if soilMoisture goes below a certain level
-  if ((D_Struct.soilMoisture < C_Thresh.sM_thresh_00) && bmpFlag) {
+  if (D_Struct.soilMoisture < C_Thresh.sM_thresh_00) {
     return 2;
   }
 
