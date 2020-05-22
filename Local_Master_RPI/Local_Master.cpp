@@ -252,6 +252,7 @@ void setup(void) {
   // Init the GPIO Library
   DEV_ModuleInit();
   Device_Init();
+  
   bcm2835_init();
   bcm2835_spi_begin();  
   
