@@ -97,6 +97,7 @@ void setup() {
 
   // Begin the Barometric Pressure Sensor
   // Pin out: Vin->5V, SCL->A5, SDA->A4
+  //BMP not working on sensor nodes
   if (bmp.begin()) {
     bmpFlag = 1;
   } else {
