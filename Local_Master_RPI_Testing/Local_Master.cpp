@@ -26,6 +26,7 @@
 #define TRUE  1
 #define FALSE 0
 #define MAX_ELEMENTS 100
+#define NUM_HOSES 3
 #define MOISTURE 0
 #define SUNLIGHT 1
 #define TEMP  2
@@ -147,6 +148,7 @@ typedef enum{
   SENSORS_PLOT,
   HOSES_HOME, 
   HOSES_STATUS,
+  HOSES_CONTROL,
   HOSES_WATER,
   HOSES_REMAP,
   SETTINGS_HOME,
@@ -183,8 +185,9 @@ OLED_State oledState = SLEEP;
 static w_State waterState = HOSE_IDLE; //Water Deliver SM state var
 static uint8_t dataType = 0;
 static uint8_t prev_waterLevel[3];
+static char timeBuffer[20];
 static char sensorIDBuffer[100];
-static char testBuffer[20];
+static char hoseBuffer[100];
 static char testBuffer2[100];
 static char testBuffer3[100];
 
@@ -316,9 +319,9 @@ int main(void) {
   oledMinute = tm.tm_min;
   
   if(oledHour <= 12){
-    sprintf(testBuffer,"%02d:%02d AM",oledHour,oledMinute );
+    sprintf(timeBuffer,"%02d:%02d AM",oledHour,oledMinute );
   } else {
-    sprintf(testBuffer,"%02d:%02d PM",(oledHour-12), oledMinute );
+    sprintf(timeBuffer,"%02d:%02d PM",(oledHour-12), oledMinute );
   }
   
   //static time_t t = time(NULL);
@@ -334,9 +337,7 @@ int main(void) {
     //    addresses the new nodes
     mesh.DHCP();
     
-
-
-
+    
     /**** Check For Available Network Data ****/
 
     // Check for incoming data from other nodes
@@ -545,9 +546,9 @@ int main(void) {
       oledMinute = tm.tm_min;
   
       if(oledHour <= 12){
-        sprintf(testBuffer,"%02d:%02d AM", oledHour, oledMinute);
+        sprintf(timeBuffer,"%02d:%02d AM", oledHour, oledMinute);
       } else {
-        sprintf(testBuffer,"%02d:%02d PM", (oledHour-12), oledMinute );
+        sprintf(timeBuffer,"%02d:%02d PM", (oledHour-12), oledMinute );
       }
     }
     
@@ -838,6 +839,8 @@ void OLED_SM(uint16_t color){
   OLED_State nextPage = oledState;
   int16_t temp_x,temp_y = 0;
   int i = 0;
+  int element_Changed = FALSE;
+  
   Set_Color(color);
   
   //Toggle Arrow
@@ -859,7 +862,7 @@ void OLED_SM(uint16_t color){
   switch(oledState){
     case SLEEP:
       print_String(35,55, (const uint8_t*)"SLEEPING", FONT_8X16);
-      print_String(35,85, (const uint8_t*)testBuffer, FONT_8X16);
+      print_String(35,85, (const uint8_t*)timeBuffer, FONT_8X16);
       
       if (ENTER_PRESSED){
         nextPage = HOME_PAGE;
@@ -880,7 +883,7 @@ void OLED_SM(uint16_t color){
       if(arrowState == 0){
         OLED_PrintArrow(70, 30);
       } else if (arrowState == 1){
-        OLED_PrintArrow(110, 40);
+        OLED_PrintArrow(113, 40);
       } else {
         OLED_PrintArrow(55, 50);
       } 
@@ -894,9 +897,11 @@ void OLED_SM(uint16_t color){
         } else{
           nextPage = SETTINGS_HOME;
         }
+        arrowState = 0;
         Clear_Screen();
       } else if (BACK_PRESSED){
         nextPage = SLEEP;
+        arrowState = 0;
         Clear_Screen();
       }
       break;
@@ -1087,25 +1092,31 @@ void OLED_SM(uint16_t color){
       print_String(0,0, (const uint8_t*)"Hoses", FONT_8X16);
       
       print_String(0,30, (const uint8_t*)"Current Hose Status", FONT_5X8);
-      print_String(0,40, (const uint8_t*)"Watering Log", FONT_5X8);
-      print_String(0,50, (const uint8_t*)"Remap Sensors ", FONT_5X8);
+      print_String(0,40, (const uint8_t*)"Hose Control", FONT_5X8);
+      print_String(0,50, (const uint8_t*)"Watering Log", FONT_5X8);
+      print_String(0,60, (const uint8_t*)"Remap Sensors ", FONT_5X8);
       
       if(arrowState == 0){
         OLED_PrintArrow(114, 30);
       } else if (arrowState == 1) {
         OLED_PrintArrow(80, 40);
+      } else if (arrowState == 2) {
+        OLED_PrintArrow(80, 50);
       } else {
-        OLED_PrintArrow(85, 50);
+        OLED_PrintArrow(85, 60);
       }
       
       if (ENTER_PRESSED){
         if(arrowState == 0){
           nextPage = HOSES_STATUS;
         } else if (arrowState == 1){
+          nextPage = HOSES_CONTROL;
+        } else if (arrowState == 2) {
           nextPage = HOSES_WATER;
         } else {
           nextPage = HOSES_REMAP;
         }
+        arrowState = 0;
         Clear_Screen();
       } else if (BACK_PRESSED){
         nextPage = HOME_PAGE;
@@ -1142,7 +1153,60 @@ void OLED_SM(uint16_t color){
         Clear_Screen();
       }
       break;
+    
+    case HOSES_CONTROL: 
+      if (prevArrowState != arrowState){
+        Clear_Screen();
+      }
       
+      if (element_Changed == TRUE){
+        Clear_Screen();
+      }
+    
+      
+      print_String(0,0, (const uint8_t*)"Hose Control", FONT_8X16);
+    
+      temp_x = 0;  //Initialize Starting Print Locations
+      temp_y = 40;
+      
+      for (i = 0; i < NUM_HOSES; i++ ){ //Iterate and print hose control status
+        
+        if (Hose[i].control == AUTOMATIC){
+          sprintf(hoseBuffer,"Hose %d: AUTO",i);
+          print_String(temp_x,temp_y, (const uint8_t*)hoseBuffer, FONT_5X8);
+          
+        } else if (Hose[i].control == ON){
+          sprintf(hoseBuffer,"Hose %d: ON",i);
+          print_String(temp_x,temp_y, (const uint8_t*)hoseBuffer, FONT_5X8);
+        } else {
+          sprintf(hoseBuffer,"Hose %d: OFF",i);
+          print_String(temp_x,temp_y, (const uint8_t*)hoseBuffer, FONT_5X8);
+        }
+        
+        temp_y += 15; //Increment 15 to move to next row
+        
+      }
+      
+      
+      if(arrowState == 0){
+        OLED_PrintArrow(100, 40);
+      } else if (arrowState == 1) {
+        OLED_PrintArrow(100, 55);
+      } else {
+        OLED_PrintArrow(100, 70);
+      }
+            
+      if (ENTER_PRESSED){
+        nextPage = SLEEP;
+        arrowState = 0;
+        Clear_Screen();
+      } else if (BACK_PRESSED){
+        nextPage = HOSES_HOME;
+        arrowState = 0;
+        Clear_Screen();
+      }
+      break;  
+        
     case HOSES_WATER: 
       if (prevArrowState != arrowState){
         Clear_Screen();
@@ -1161,27 +1225,27 @@ void OLED_SM(uint16_t color){
       print_String(0,0, (const uint8_t*)"Watering Log", FONT_8X16);
       
       tempVal = Hose0.waterLevel;
-      sprintf(testBuffer,"%d L", tempVal);
+      sprintf(hoseBuffer,"%d L", tempVal);
       print_String(0,40, (const uint8_t*)"Hose One:", FONT_5X8);
-      print_String(70,40, (const uint8_t*)testBuffer, FONT_5X8);
+      print_String(70,40, (const uint8_t*)hoseBuffer, FONT_5X8);
       
       //tempVal = Hose1.waterLevel;
       tempVal = 3;
-      sprintf(testBuffer,"%d L", tempVal);
+      sprintf(hoseBuffer,"%d L", tempVal);
       print_String(0,55, (const uint8_t*)"Hose Two:", FONT_5X8);
-      print_String(70,55, (const uint8_t*)testBuffer, FONT_5X8);
+      print_String(70,55, (const uint8_t*)hoseBuffer, FONT_5X8);
       
       //tempVal = Hose2.waterLevel;
       tempVal = 5;
-      sprintf(testBuffer,"%d L", tempVal);
+      sprintf(hoseBuffer,"%d L", tempVal);
       print_String(0,70, (const uint8_t*)"Hose Three:", FONT_5X8);
-      print_String(70,70, (const uint8_t*)testBuffer, FONT_5X8);
+      print_String(70,70, (const uint8_t*)hoseBuffer, FONT_5X8);
       
       //tempVal = Hose2.waterLevel + Hose1.waterLevel + Hose0.waterLevel;
       tempVal = 8;
-      sprintf(testBuffer,"%d L", tempVal);
+      sprintf(hoseBuffer,"%d L", tempVal);
       print_String(0,85, (const uint8_t*)"Total:", FONT_5X8);
-      print_String(70,85, (const uint8_t*)testBuffer, FONT_5X8);
+      print_String(70,85, (const uint8_t*)hoseBuffer, FONT_5X8);
       
       if(arrowState == 0){
         OLED_PrintArrow(100, 40);
@@ -1193,9 +1257,11 @@ void OLED_SM(uint16_t color){
       
       if (ENTER_PRESSED){
         nextPage = SLEEP;
+        arrowState = 0;
         Clear_Screen();
       } else if (BACK_PRESSED){
         nextPage = HOSES_HOME;
+        arrowState = 0;
         Clear_Screen();
       }
       break;
@@ -1209,9 +1275,11 @@ void OLED_SM(uint16_t color){
       
       if (ENTER_PRESSED){
         nextPage = SLEEP;
+        arrowState = 0;
         Clear_Screen();
       } else if (BACK_PRESSED){
         nextPage = HOSES_HOME;
+        arrowState = 0;
         Clear_Screen();
       }
       break;     
@@ -1250,6 +1318,7 @@ void OLED_SM(uint16_t color){
         }  else {
           nextPage = SETTINGS_RESET;
         }
+        arrowState = 0;
         Clear_Screen();
       } else if (BACK_PRESSED){
         nextPage = HOME_PAGE;
@@ -1299,6 +1368,7 @@ void OLED_SM(uint16_t color){
       }
       
       print_String(0,0, (const uint8_t*)"Color Settings", FONT_8X16);
+      
       print_String(0,30, (const uint8_t*)"White", FONT_5X8);
       print_String(0,40, (const uint8_t*)"Blue", FONT_5X8);
       print_String(0,50, (const uint8_t*)"Green", FONT_5X8);
@@ -1307,13 +1377,13 @@ void OLED_SM(uint16_t color){
       
       
       if(arrowState == 0){
-        OLED_PrintArrow(112, 30);
+        OLED_PrintArrow(60, 30);
       } else if (arrowState == 1) {
-        OLED_PrintArrow(100, 40);
+        OLED_PrintArrow(60, 40);
       } else if(arrowState == 2){
-        OLED_PrintArrow(112, 50);
+        OLED_PrintArrow(60, 50);
       } else{
-        OLED_PrintArrow(85, 60);
+        OLED_PrintArrow(60, 60);
       }
       
       if (ENTER_PRESSED){
