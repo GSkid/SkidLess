@@ -1,1 +1,2 @@
 # SkidLess
+This is the repository that gets run on the Raspberry Pi. The Local_Master.cpp file controls the central hub and uses the RF and OLED libraries. The Makefile compiles all the necessary libraries into object files and then creates the executable, Local_Master. This program runs on a J8 Raspberry Pi header for the Raspberry Pi Zero W. Check out the bcm libraries found in the obj folder and the rf24 folder.
