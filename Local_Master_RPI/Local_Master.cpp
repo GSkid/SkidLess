@@ -373,13 +373,14 @@ int main(void) {
             // Add sensor nodes to the list of sensors mapped to the hose
             Hose[HOSE0].sensors[i] = mesh.addrList[i].nodeID;
             if (i == (mesh.addrListTop - 1)) {
-              printf("%d\n\n", mesh.addrList[i].nodeID);
+              printf("%d\n", mesh.addrList[i].nodeID);
             } else {
               printf("%d, ", mesh.addrList[i].nodeID);
             }
         }
         // Reset the water level threshold according to the # of sensors
         Hose[HOSE0].waterLevel = i/2;
+        printf("Water Level Threshold: %d\n\n", Hose[HOSE0].waterLevel);
       }
     }
 
