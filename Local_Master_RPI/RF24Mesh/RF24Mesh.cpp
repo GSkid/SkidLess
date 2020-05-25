@@ -31,7 +31,7 @@ bool RF24Mesh::begin(uint8_t channel, rf24_datarate_e data_rate, uint32_t timeou
     #if !defined (RF24_TINY) && !defined(MESH_NOMASTER)
 	addrList = (addrListStruct*)malloc(2 * sizeof(addrListStruct));
 	addrListTop = 0;
-	loadDHCP();
+	//loadDHCP(); // Comment this out so we restart the network from scratch on every reset
 	#endif
     mesh_address = 0;
     network.begin(mesh_address);
