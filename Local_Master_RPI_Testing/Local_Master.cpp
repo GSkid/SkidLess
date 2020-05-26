@@ -39,6 +39,9 @@
 #define NMOS_ON 1
 #define NMOS_OFF 0
 
+#define DEMUX_OFF 1 //Set to Low Enable
+#define DEMUX_ON  0
+
 #define LPMOS_Pin 6
 #define LNMOS_Pin 13
 #define RPMOS_Pin 19
@@ -52,8 +55,12 @@
 
 //Flow Sensor Pins 
 #define FLOW_SENSOR_1_Pin  4                                                                   
-#define FLOW_SENSOR_2_Pin  17
-#define FLOW_SENSOR_3_Pin 27
+#define FLOW_SENSOR_2_Pin  3
+#define FLOW_SENSOR_3_Pin 2
+
+//Select Pins
+#define SEL_1_Pin 17
+#define SEL_0_Pin 27
 
 //Flow Sensor Conversions
 #define FS_CAL_A 46.2 //Variables used for Characterized FS Regression
@@ -76,6 +83,7 @@
 #define MAX_SENSORS 20
 #define HOURS_36 129600000
 #define MIN_10 600000
+#define MUX_DELAY 50
 
 /* Avialable Colors
 #define BLACK   0x0000
@@ -224,6 +232,7 @@ static char currentBuffer1[100];
 static char currentBuffer2[100];
 static char currentBuffer3[100];
 static char currentBuffer4[100];
+static char currentBuffer5[100];
 
 
 //Variable Declarations
@@ -260,6 +269,10 @@ static float prev_Liters_FS3 = 0;
 static float water_gal_fs1 = 0;
 static float water_gal_fs2 = 0;
 static float water_gal_fs3 = 0;
+
+static float moisture_thresh_s0 = 0;
+static float moisture_thresh_s1 = 0;
+static float moisture_thresh_s2 = 0;
 
 
 static float testFloat = 64.757065;
@@ -323,6 +336,7 @@ float convertPulse_Liters(int pulseCount);
 float convertLiters_Gals(float liters);
 int convertFloat_String(float in, char buffer[100]); 
 void Reset_System(void);
+void Set_Select(uint8_t hose_selected);
 uint8_t WaterDelivery(HOSE_NUM);
 
 
@@ -352,6 +366,12 @@ void setup(void) {
   DEV_GPIO_Mode(LNMOS_Pin, 1);
   DEV_GPIO_Mode(RNMOS_Pin, 1);
   
+  // Set SELECT Pins to Output
+  DEV_GPIO_Mode(SEL_1_Pin, 1);
+  DEV_GPIO_Mode(SEL_0_Pin, 1);
+  
+  
+  
   // Set Pins to Input
   DEV_GPIO_Mode(ENTER_Pin, 0);
   DEV_GPIO_Mode(BACK_Pin, 0);
@@ -363,11 +383,18 @@ void setup(void) {
   DEV_GPIO_Mode(FLOW_SENSOR_2_Pin, 0);
   DEV_GPIO_Mode(FLOW_SENSOR_3_Pin, 0);
   
+  
+  
   // Turn off the H-Bridge
   LPMOS_Set(PMOS_OFF); //Initial States for MOS devices 
   RPMOS_Set(PMOS_OFF);
   LNMOS_Set(NMOS_OFF); // Notice the diff b/t PMOS and NMOS states
   RNMOS_Set(NMOS_OFF);
+  
+  //LPMOS_Set(DEMUX_OFF);
+  //RPMOS_Set(DEMUX_OFF);
+  //LNMOS_Set(DEMUX_OFF);
+  //RNMOS_Set(DEMUX_OFF);
   
   //Initialize OLED variables 
   oledColor = WHITE; //
@@ -404,6 +431,11 @@ void setup(void) {
   current_Dat_3.lightLevel = 76.3;
   current_Dat_3.temp_C = 85;
   selected_Node = 2;
+  
+  moisture_thresh_s0 = 32.0;
+  moisture_thresh_s1 = 38.0;
+  moisture_thresh_s2 = 34.0;
+  
   
   return;
 }
@@ -639,6 +671,9 @@ int main(void) {
          
           if (Hose[0].status == WATER_OFF){
             // Call the state machine to open the solenoid valve
+            Set_Select(HOSE0);
+            DEV_Delay_ms(MUX_DELAY);
+            printf("Select to Hose 1\n");
             printf("Hose 1 Turned On\n");
             while (!WaterDeliverySM(WATER_ON, FET_DELAY, PULSE_DURATION));
           }
@@ -646,6 +681,9 @@ int main(void) {
           hose_statuses |= 0x01;
         } else {
           if (Hose[0].status == WATER_ON){
+            Set_Select(HOSE0);
+            DEV_Delay_ms(MUX_DELAY);
+            printf("Select to Hose 1\n");
             printf("Hose 1 Turned Off\n");
             // Call the state machine to open the solenoid valve
             while (!WaterDeliverySM(WATER_OFF, FET_DELAY, PULSE_DURATION));
@@ -656,8 +694,12 @@ int main(void) {
         if (Hose[1].control == AUTOMATIC) {
             hose_statuses = WaterDelivery(HOSE1);
         }  else if (Hose[1].control == ON){
+          
           // Call the state machine to open the solenoid valve
           if (Hose[1].status == WATER_OFF){
+            Set_Select(HOSE1);
+            DEV_Delay_ms(MUX_DELAY);
+            printf("Select to Hose 2\n");
             printf("Hose 2 Turned On\n");
             while (!WaterDeliverySM(WATER_ON, FET_DELAY, PULSE_DURATION));
           }
@@ -665,18 +707,25 @@ int main(void) {
           hose_statuses |= 0x02;
         } else {
           if (Hose[1].status == WATER_ON){
+            Set_Select(HOSE1);
+            DEV_Delay_ms(MUX_DELAY);
+            printf("Select to Hose 2\n");
             printf("Hose 2 Turned Off\n");
              // Call the state machine to open the solenoid valve
             while (!WaterDeliverySM(WATER_OFF, FET_DELAY, PULSE_DURATION));
           }
           Hose[1].status = WATER_OFF;
-          hose_statuses &= 0xFC; //Clear Hose Status
+          hose_statuses &= 0xFC; //Clear Hose Statu
+                    
         }
         if (Hose[2].control == AUTOMATIC) {
             hose_statuses = WaterDelivery(HOSE2);
         } else if (Hose[2].control == ON){
          
           if (Hose[2].status == WATER_OFF){
+            Set_Select(HOSE2);
+            DEV_Delay_ms(MUX_DELAY);
+            printf("Select to Hose 3\n");
             printf("Hose 3 Turned On\n");
             // Call the state machine to open the solenoid valve
             while (!WaterDeliverySM(WATER_ON, FET_DELAY, PULSE_DURATION));
@@ -686,6 +735,9 @@ int main(void) {
           hose_statuses |= 0x04;
         } else {
           if (Hose[2].status == WATER_ON){
+            Set_Select(HOSE2);
+            DEV_Delay_ms(MUX_DELAY);
+            printf("Select to Hose 3\n");
             printf("Hose 3 Turned Off\n");
             // Call the state machine to open the solenoid valve
             while (!WaterDeliverySM(WATER_OFF, FET_DELAY, PULSE_DURATION));
@@ -1070,6 +1122,7 @@ int WaterDeliverySM(uint8_t status, uint32_t delayP_N, uint32_t pulseTime){
     // This first part handles turning on the H-bridge
     case HOSE_ON_S1:
       LNMOS_Set(NMOS_ON);
+      //LNMOS_Set(DEMUX_ON);
       // Waits for the P_N delay before moving to the next state
       if (Timer(delayP_N, wTimer)){
         wTimer = bcm2835_millis();
@@ -1080,6 +1133,7 @@ int WaterDeliverySM(uint8_t status, uint32_t delayP_N, uint32_t pulseTime){
     
     case HOSE_ON_S2:
       RPMOS_Set(PMOS_ON); 
+      //RPMOS_Set(DEMUX_ON);
       // Waits for the pulse delay before moving to the next state
       if (Timer(pulseTime, wTimer)){
         wTimer = bcm2835_millis();
@@ -1090,11 +1144,13 @@ int WaterDeliverySM(uint8_t status, uint32_t delayP_N, uint32_t pulseTime){
       
     case HOSE_ON_S3:
       RPMOS_Set(PMOS_OFF); 
+      //RPMOS_Set(DEMUX_OFF);
       // Waits for the P_N delay before moving to the next state
       if (Timer(delayP_N, wTimer)){
         wTimer = bcm2835_millis();
         printf("Leaving Hose On S3 \n");
         LNMOS_Set(NMOS_OFF);
+        //LNMOS_Set(DEMUX_OFF);
         nextState = HOSE_IDLE;
         hoseSet = 1;
         printf("Leaving Hose On S4 \n");
@@ -1105,6 +1161,7 @@ int WaterDeliverySM(uint8_t status, uint32_t delayP_N, uint32_t pulseTime){
     // This second part handles turning off the H-bridge
     case HOSE_OFF_S1:
       RNMOS_Set(NMOS_ON);
+      //RNMOS_Set(DEMUX_ON);
       // Waits for the P_N delay before moving to the next state
       if (Timer(delayP_N, wTimer)){
         wTimer = bcm2835_millis();
@@ -1115,6 +1172,7 @@ int WaterDeliverySM(uint8_t status, uint32_t delayP_N, uint32_t pulseTime){
     
     case HOSE_OFF_S2:
       LPMOS_Set(PMOS_ON); 
+      //LPMOS_Set(DEMUX_ON);
       if (Timer(pulseTime, wTimer)){
         wTimer = bcm2835_millis();
         nextState = HOSE_OFF_S3;
@@ -1124,11 +1182,13 @@ int WaterDeliverySM(uint8_t status, uint32_t delayP_N, uint32_t pulseTime){
       
     case HOSE_OFF_S3:
       LPMOS_Set(PMOS_OFF); 
+      //LPMOS_Set(DEMUX_OFF);
       // Waits for the P_N delay before moving to the next state
       if (Timer(delayP_N, wTimer)){
         wTimer = bcm2835_millis();
         printf("Leaving Hose Off S3 \n");
         RNMOS_Set(NMOS_OFF);
+        //RNMOS_Set(DEMUX_OFF);
         nextState = HOSE_IDLE;
         hoseSet = 1;
         printf("Leaving Hose Off S4 \n");
@@ -1448,10 +1508,12 @@ void OLED_SM(uint16_t color){
       
       if (ENTER_PRESSED){
         Clear_Screen();
-        if(arrowState == 0){
-          dataType = MOISTURE;
-        } else {
+        if(arrowState == 2){
+          dataType =TEMP;
+        } else if (arrowState == 1){
           dataType = SUNLIGHT;
+        } else {
+          dataType = MOISTURE;
         }
         nextPage = SENSORS_PLOT;
         Clear_Screen();
@@ -1963,7 +2025,8 @@ void OLED_SM(uint16_t color){
       }
       print_String(0,0, (const uint8_t*)"Sensor Recal", FONT_8X16);
       print_String(0,30, (const uint8_t*)"Node ID:", FONT_8X16);
-      print_String(0,50, (const uint8_t*)"Moisture(%):", FONT_8X16);
+      print_String(0,50, (const uint8_t*)"Moisture(%):", FONT_5X8);
+      print_String(0,80, (const uint8_t*)"Prev Threshold(%):", FONT_5X8);
       print_String(0,100, (const uint8_t*)"Set as ", FONT_5X8);
       print_String(0,110, (const uint8_t*)"New Threshold ", FONT_5X8);
       
@@ -1972,31 +2035,35 @@ void OLED_SM(uint16_t color){
       if (selected_Node == 2){ //Store Struct Variables as Strings
         convertFloat_String(current_Dat_1.soilMoisture, currentBuffer1);
         sprintf(currentBuffer4, "%d", current_Dat_1.nodeID);
+        convertFloat_String(moisture_thresh_s0, currentBuffer5);
+        
       } else if (selected_Node == 5){
         convertFloat_String(current_Dat_2.soilMoisture, currentBuffer1);
         sprintf(currentBuffer4, "%d", current_Dat_2.nodeID);
+        convertFloat_String(moisture_thresh_s1, currentBuffer5);
       } else if (selected_Node == 4){
         convertFloat_String(current_Dat_3.soilMoisture, currentBuffer1);
         sprintf(currentBuffer4, "%d", current_Dat_3.nodeID);
+        convertFloat_String(moisture_thresh_s2, currentBuffer5);
       }
       
       //Print Variable Strings
       print_String(70,30, (const uint8_t*)currentBuffer4, FONT_8X16);
-      print_String(10,80, (const uint8_t*)currentBuffer1, FONT_8X16);
-
-      if(arrowState == 0){
+      print_String(10,60, (const uint8_t*)currentBuffer1, FONT_5X8);
+      print_String(10,90, (const uint8_t*)currentBuffer5, FONT_5X8);
+      
+      if(arrowState == 0 || arrowState == 2){
         OLED_PrintArrow(95, 33);
-      } else if(arrowState == 1){
+        
+      } else {
         OLED_PrintArrow(85, 110);
-      } else if(arrowState == 2){
-        OLED_PrintArrow(95, 33);
-      } else{
-        OLED_PrintArrow(85, 110);
+        
+        
       } 
       
       
       if (ENTER_PRESSED){
-        if(arrowState == 0){
+        if(arrowState == 0 || arrowState == 2){
           if(selected_Node == 2){
             selected_Node = 5;
           } else if (selected_Node == 5){
@@ -2005,14 +2072,17 @@ void OLED_SM(uint16_t color){
             selected_Node = 2;
           }
           new_Data = TRUE;
-        } else if(arrowState == 1){
-          nextPage = SETTINGS_HOME;
-        } else if(arrowState == 2){
-          nextPage = SETTINGS_HOME;
+          arrowState = 0;
         } else {
-          nextPage = SETTINGS_HOME;
+          if (selected_Node == 2){
+            moisture_thresh_s0 = current_Dat_1.soilMoisture;
+          } else if (selected_Node == 5){
+            moisture_thresh_s1 = current_Dat_2.soilMoisture;
+          } else {
+            moisture_thresh_s2 = current_Dat_3.soilMoisture;
+          }
+          new_Data = TRUE;
         } 
-        arrowState = 0;
         Clear_Screen();
         oledSleepTimer = bcm2835_millis(); //reset sleep timer after each button press
       } else if (BACK_PRESSED){
@@ -2404,6 +2474,17 @@ int plotSampleData( D_Struct TestData[], uint8_t dataType, int16_t size){
   } else if( dataType == TEMP){
     printf("Plotting Temperature \r\n ");
     
+    Set_Color(RED);
+    print_String(20,0, (const uint8_t*)"Temperature", FONT_5X8);
+    print_String(20,10, (const uint8_t*)"Node ", FONT_5X8);
+    
+    
+    Set_Color(RED);
+    print_String(0,60, (const uint8_t*)"Deg(C)", FONT_5X8);
+    print_String(55,120, (const uint8_t*)"Mins Ago", FONT_5X8);
+    
+    x_Increment = 100 / MAX_ELEMENTS;
+    
     for(i = 0; i <= size ; i++){
       
       mapped_y_Value = (int16_t)TestData[i].temp_C;
@@ -2412,7 +2493,7 @@ int plotSampleData( D_Struct TestData[], uint8_t dataType, int16_t size){
       
       //printf("Temp Value: %d \r\n", TestData[i].temp_C);
       
-      Draw_Pixel(mapped_x_Value, mapped_y_Value);
+      Draw_Pixel(mapped_x_Value, 110-mapped_y_Value);
       mapped_x_Value += x_Increment;
       
     }
@@ -2421,6 +2502,10 @@ int plotSampleData( D_Struct TestData[], uint8_t dataType, int16_t size){
     
   } else {
     printf(" No Plot Selected \r\n ");
+    
+    Set_Color(RED);
+    print_String(20,0, (const uint8_t*)"No Plot", FONT_5X8);
+    print_String(20,10, (const uint8_t*)"Selected", FONT_5X8);
     
     gridPlotted = FALSE;
   }  
@@ -2451,8 +2536,25 @@ void Reset_System(void){
   oledColor = WHITE; //Set Oled Color to default
   sleepTime = MIN_3;
   selected_Node = 2;
+  moisture_thresh_s0 = 32.0;
+  moisture_thresh_s1 = 38.0;
+  moisture_thresh_s2 = 34.0;
   
   return;
   
+}
+
+void Set_Select(uint8_t hose_selected){
+  if(hose_selected == HOSE0){
+    DEV_Digital_Write(SEL_0_Pin, LOW);
+    DEV_Digital_Write(SEL_1_Pin, LOW);
+  } else if (hose_selected == HOSE1){
+    DEV_Digital_Write(SEL_0_Pin, HIGH);
+    DEV_Digital_Write(SEL_1_Pin, LOW);
+  } else {
+    DEV_Digital_Write(SEL_0_Pin, LOW);
+    DEV_Digital_Write(SEL_1_Pin, HIGH);
+  }
+  return;
 }
 
