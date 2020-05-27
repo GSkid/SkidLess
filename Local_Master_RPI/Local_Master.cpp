@@ -407,15 +407,15 @@ int main(void) {
 
           printf("%f, %f, %d, %d, %f, %d, %d, %d, %d, %d, %d\n", D_Dat.soilMoisture, D_Dat.lightLevel, D_Dat.temp_C, Forecast1.pressure, Forecast1.precipProb, D_Dat.digitalOut, D_Dat.nodeID, D_Dat.battLevel, Hose[0].status, Hose[1].status, Hose[2].status);
         
-          fprintf(out, "%13f,   ", D_Dat.soilMoisture); // prints out 0th member of the data vector to the file.
+          fprintf(out, "%13f,   ", D_Dat.soilMoisture);
           convertFloat_String(D_Dat.soilMoisture, testBuffer2);
-          fprintf(out, "%13f,   ", D_Dat.lightLevel); // prints out 2nd member of the data vector to the file.
+          fprintf(out, "%13f,   ", D_Dat.lightLevel);
           convertFloat_String(D_Dat.lightLevel, testBuffer3);
-          fprintf(out, "%19d,   ", D_Dat.temp_C); // prints out 3rd member of the data vector to the file.
+          fprintf(out, "%19d,   ", D_Dat.temp_C); 
           fprintf(out, "%19d,   ", Forecast1.pressure);
           fprintf(out, "%11f,   ", Forecast1.precipProb);
-          fprintf(out, "%14d,   ", D_Dat.digitalOut); // prints out 4th member of the data vector to the file.
-          fprintf(out, "%7d,   ", D_Dat.nodeID); // prints out 6th member of the data vector to the file.
+          fprintf(out, "%14d,   ", D_Dat.digitalOut); 
+          fprintf(out, "%7d,   ", D_Dat.nodeID); 
           fprintf(out, "%14d,   ", D_Dat.battLevel);
           fprintf(out, "%5d,   ", Hose[0].status);
           fprintf(out, "%5d,   ", Hose[1].status);
