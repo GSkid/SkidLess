@@ -73,6 +73,9 @@
 #define WHITE   0xFFFF
 */
 
+// CSV Files
+#define CSVFILENAME "Data_Log_to_db.csv"
+
 
 /**** Configure the Radio ****/
 /* Radio Pins:
@@ -294,6 +297,10 @@ void setup(void) {
 /********************************************************************************************/
 int main(void) {
   setup();
+  
+  sqlite3 *db;
+  int rc;
+  
   while(1) {
     // Keep the network updated
     mesh.update();
@@ -395,6 +402,7 @@ int main(void) {
 
       /**** Write Data Values to SD Card ****/
       {
+		  // create/open the file to append to (this is the file that stores all the sensor data)
           FILE* out = fopen("Data_Log.csv", "a");
  
           // prints out main column headers for the data file.
@@ -404,24 +412,79 @@ int main(void) {
               fprintf(out, "Soil_Moisture, Ambient_Light, Ambient_Temp, Barometric_Pressure, Precip_Prob, Digital_Output, Node_ID, Battery_Level, Hose_1, Hose_2, Hose_3\n");
               column_flag = 1;
           }
-
-          printf("%f, %f, %d, %d, %f, %d, %d, %d, %d, %d, %d\n", D_Dat.soilMoisture, D_Dat.lightLevel, D_Dat.temp_C, Forecast1.pressure, Forecast1.precipProb, D_Dat.digitalOut, D_Dat.nodeID, D_Dat.battLevel, Hose[0].status, Hose[1].status, Hose[2].status);
+		
+		  
+          //printf("%f, %f, %d, %d, %f, %d, %d, %d, %d, %d, %d\n", D_Dat.soilMoisture, D_Dat.lightLevel, D_Dat.temp_C, Forecast1.pressure, Forecast1.precipProb, D_Dat.digitalOut, D_Dat.nodeID, D_Dat.battLevel, Hose[0].status, Hose[1].status, Hose[2].status);
         
-          fprintf(out, "%13f,   ", D_Dat.soilMoisture);
-          convertFloat_String(D_Dat.soilMoisture, testBuffer2);
-          fprintf(out, "%13f,   ", D_Dat.lightLevel);
-          convertFloat_String(D_Dat.lightLevel, testBuffer3);
-          fprintf(out, "%19d,   ", D_Dat.temp_C); 
-          fprintf(out, "%19d,   ", Forecast1.pressure);
+		  // prints out elements of the sensor data struct to the file
+          fprintf(out, "%13f,   ", D_Dat.soilMoisture); 
+          convertFloat_String(D_Dat.soilMoisture, testBuffer2); 
+          fprintf(out, "%13f,   ", D_Dat.lightLevel); 
+          convertFloat_String(D_Dat.lightLevel, testBuffer3); 
+          fprintf(out, "%19d,   ", D_Dat.temp_C);
+          fprintf(out, "%19d,   ", Forecast1.pressure); 
           fprintf(out, "%11f,   ", Forecast1.precipProb);
           fprintf(out, "%14d,   ", D_Dat.digitalOut); 
-          fprintf(out, "%7d,   ", D_Dat.nodeID); 
+          fprintf(out, "%7d,   ", D_Dat.nodeID);
           fprintf(out, "%14d,   ", D_Dat.battLevel);
           fprintf(out, "%5d,   ", Hose[0].status);
           fprintf(out, "%5d,   ", Hose[1].status);
-          fprintf(out, "%5d,\n", Hose[2].status);
+          fprintf(out, "%5d\n", Hose[2].status);
+		  
+		  // close the file
+          fclose(out);
+		  
+		  
+		  // create/open the file to write to (this is the file that stores only the last dataset, which is then transferred to the database)
+		  FILE* out = fopen("Data_Log_to_db.csv", "w");
+ 
+          // prints out main column headers for the data file.
+          fprintf(out, "Soil_Moisture,Ambient_Light,Ambient_Temp,Barometric_Pressure, Precip_Prob, Digital_Output, Node_ID, Battery_Level, Hose_1, Hose_2, Hose_3\n");
+
+          //printf("%f, %f, %d, %d, %f, %d, %d, %d, %d, %d, %d\n", D_Dat.soilMoisture, D_Dat.lightLevel, D_Dat.temp_C, Forecast1.pressure, Forecast1.precipProb, D_Dat.digitalOut, D_Dat.nodeID, D_Dat.battLevel, Hose[0].status, Hose[1].status, Hose[2].status);
+		
+          // prints out elements of the sensor data struct to the file
+          fprintf(out, "%13f,", D_Dat.soilMoisture); 
+          convertFloat_String(D_Dat.soilMoisture, testBuffer2); 
+          fprintf(out, "%13f,", D_Dat.lightLevel); 
+          convertFloat_String(D_Dat.lightLevel, testBuffer3); 
+          fprintf(out, "%19d,", D_Dat.temp_C);
+          fprintf(out, "%19d,", Forecast1.pressure); 
+          fprintf(out, "%11f,", Forecast1.precipProb);
+          fprintf(out, "%14d,", D_Dat.digitalOut); 
+          fprintf(out, "%7d,", D_Dat.nodeID);
+          fprintf(out, "%14d,", D_Dat.battLevel);
+          fprintf(out, "%5d,", Hose[0].status);
+          fprintf(out, "%5d,", Hose[1].status);
+          fprintf(out, "%5d\n", Hose[2].status);
+		  
+		  // close the file
           fclose(out);
       }
+	  
+	/**** SQLite Database ****/
+
+	// creates and opens database
+	rc = sqlite3_open("sensordata.db", &db);
+   
+	if( rc ) 
+	{
+		fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
+	} 
+	else 
+	{
+		fprintf(stdout, "Opened database successfully\n");
+	}
+
+	// creates the table in the database
+	createTable(db);
+
+	// takes in the data from the csv file (ignores the first line of headers), and places the data into the table
+	processCSV(db);
+
+	/* Close database */
+	rc = sqlite3_close(db);
+
       
       /**** 'S' and 'C' Type Message Responses ****/
 
@@ -435,11 +498,8 @@ int main(void) {
     }
 
 
-
-
     /**** UI Menu Control ****/
 
-   
 
 
     /**** Water Delivery ****/
@@ -544,6 +604,150 @@ int Timer(uint32_t delayThresh, uint32_t prevDelay) {
   return 0;
 }
 
+/*
+Name: insert_into_database
+Purpose: This function takes in the tokenized values from .csv file, binds each one to a prepare statement, and executes every statement.
+Arguments: The tokenized values from the .csv file
+*/
+void insert_into_database(sqlite3 *mDb, double soil_moisture, int light, int temp, double pressure, double precip_prob, int output, int nodeID, double battery_lvl, int hose1, int hose2, int hose3)
+{
+	char* errorMessage;
+	sqlite3_exec(mDb, "BEGIN TRANSACTION", NULL, NULL, &errorMessage);
+ 
+	char buffer[] = "INSERT INTO DATA (Soil_Moisture,Ambient_Light,Ambient_Temp,Barometric_Pressure,Precip_Prob,Digital_Output,Node_ID,Battery_Level,Hose_1,Hose_2,Hose_3) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)";
+	sqlite3_stmt* stmt;
+	sqlite3_prepare_v2(mDb, buffer, strlen(buffer), &stmt, NULL);
+ 
+	char *id;
+	// binds the values to the prepare statement
+	sqlite3_bind_double(stmt, 1, soil_moisture);
+	sqlite3_bind_int(stmt, 2, light);
+	sqlite3_bind_int(stmt, 3, temp);
+	sqlite3_bind_double(stmt, 4, pressure);
+	sqlite3_bind_double(stmt, 5, precip_prob);
+	sqlite3_bind_int(stmt, 6, output);
+	sqlite3_bind_int(stmt, 7, nodeID);
+	sqlite3_bind_double(stmt, 8, battery_lvl);
+	sqlite3_bind_int(stmt, 9, hose1);
+	sqlite3_bind_int(stmt, 10, hose2);
+	sqlite3_bind_int(stmt, 11, hose3);
+
+	// error checking to ensure the command was committed to the database
+	if (sqlite3_step(stmt) != SQLITE_DONE)
+	{
+    	printf("Commit Failed!\n");
+		printf("Error: %s.\n",sqlite3_errmsg(mDb));
+	}
+	else
+	{
+		printf("Commit Successful.\n");
+	}
+
+	sqlite3_reset(stmt);
+ 
+	// execute the prepared statements
+	sqlite3_exec(mDb, "COMMIT TRANSACTION", NULL, NULL, &errorMessage);
+	if (errorMessage != NULL)
+    {
+        printf("Error: %s\n",errorMessage);
+    }
+	sqlite3_finalize(stmt);
+}
+
+/*
+Name: processCSV
+Purpose: This function opens and reads the .csv file, tokenizes the values from line 2 inside the csv file, changes the datatypes of the values to 
+their proper type, and calls the insert_into_database function, and closes the file.
+Arguments: the database where data is transferred to
+*/
+void processCSV(sqlite3 *db)
+  {
+	int result, light, temp, output, nodeID, hose1, hose2, hose3;
+	double soil_moisture, pressure, precip_prob, battery_lvl;
+	char a[10], b[10], c[10], d[10], e[10], f[10], g[10], h[10], i[10], j[10], k[10];
+  	char line[256];
+  	FILE *fp;
+	fp = fopen(CSVFILENAME,"r");
+
+    if(fp == NULL)
+    {
+		fprintf(stderr,"File not found.\n");
+	}
+    fgets(line,sizeof(line)-1,fp);
+    while(fgets(line,sizeof(line)-1,fp) != NULL)
+    {
+		result = sscanf(line, "%[^','],%[^','],%[^','],%[^','],%[^','],%[^','],%[^','],%[^','],%[^','],%[^','],%[^',']", a, b, c, d, e, f, g, h, i, j, k);
+     		soil_moisture  = atof(a);
+		light  = atoi(b);
+		temp  = atoi(c);
+		pressure  = atof(d);
+		precip_prob  = atof(e);
+		output  = atoi(f);
+		nodeID  = atoi(g);
+	    	battery_lvl  = atof(h);
+		hose1  = atoi(i);
+		hose2  = atoi(j);
+		hose3  = atoi(k);
+     	//printf("%d\n %d\n %d\n %d\n %d\n %d\n %d\n", i, j, k, l, m, n, o);
+     	insert_into_database(db, soil_moisture, light, temp, pressure, precip_prob, output, nodeID, battery_lvl, hose1, hose2, hose3));
+	}
+
+	fclose(fp);
+  }
+
+/*
+Name: createTable
+Purpose: To create the table in the database where the data is stored
+Arguments: the database where the table is created
+*/
+int createTable(sqlite3 *db)
+{
+	int rc;
+	char *sql;
+	char *zErrMsg = 0;
+	
+	/* Create SQL statement */
+	sql = "CREATE TABLE DATA(\n" 
+	"ID INTEGER PRIMARY KEY AUTOINCREMENT,\n" 
+	"SOIL_MOISTURE REAL,\n"
+	"AMBIENT_LIGHT REAL,\n"
+	"AMBIENT_TEMP REAL,\n"
+	"BAROMETRIC_PRESSURE REAL,\n" 
+	"PRECIP_PROB REAL,\n"
+	"DIGITAL_OUTPUT INT,\n" 
+	"Node_ID INT,\n"
+	"Battery_Level REAL,\n"
+	"Hose_1 INT,\n"
+	"Hose_2 INT,\n"
+	"Hose_3 INT);"; 
+
+	//fprintf(stdout,"sql: %s \n",sql);
+
+	/* Execute SQL statement */
+	rc = sqlite3_exec(db, sql, callback, 0, &zErrMsg);
+
+	// error checking
+	if( rc != SQLITE_OK ){
+		fprintf(stderr, "SQL error: %s\n", zErrMsg);
+		sqlite3_free(zErrMsg);
+	}   
+	
+	return 0;
+}
+
+/*
+Name: callback
+*/
+static int callback(void *NotUsed, int argc, char **argv, char **azColName) 
+{
+	int i;
+	for(i = 0; i<argc; i++) 
+	{
+		printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
+	}
+	printf("\n");
+	return 0;
+}
 
 
 /* @name: WaterDelivery
