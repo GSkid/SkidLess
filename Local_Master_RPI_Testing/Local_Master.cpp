@@ -249,6 +249,7 @@ static int hose1_elements = 0;
 static int hose2_elements = 0;
 static int new_Data = FALSE; //Flag set when new data received
 static int selected_Node = 0;
+static int nodeMapState = 0; 
 
 //Flow Sensor Support 
 static int tach_fs1 = 1;  //Used for individually tracking flow rates 
@@ -278,6 +279,7 @@ static float moisture_thresh_s2 = 0;
 static float testFloat = 64.757065;
 static float temp_wholeVal = 0;
 static float temp_decimalVal = 0;
+static float test_Moisture = 0;
 
 
 
@@ -437,6 +439,21 @@ void setup(void) {
   moisture_thresh_s2 = 34.0;
   
   
+  int i = 0;
+  test_Moisture = 60; 
+  
+  for(i=0;i<MAX_ELEMENTS; i++){
+    sensor2_data[i].soilMoisture = test_Moisture;
+    if( ((i > 30) && ( i < 35)) || ((i > 60) && ( i < 65)) ){
+      test_Moisture += 3;
+    } else if (((i > 36) && ( i < 40)) || ((i > 66) && ( i < 70))){
+      test_Moisture -= 0.8;
+    } else {
+      test_Moisture -= 0.3;
+    }
+  }
+  
+  
   return;
 }
 
@@ -454,12 +471,15 @@ int main(void) {
   oledMinute = tm.tm_min;
   
   //Store Time variables into strings for printing
-  if(oledHour < 12){
-    sprintf(timeBuffer,"%02d:%02d AM",oledHour,oledMinute );
+  if(oledMinute){
+    sprintf(timeBuffer,"%02d:%02d PM",6,oledMinute );
+    
+  } else if(oledHour < 12){
+      sprintf(timeBuffer,"%02d:%02d PM", 6,oledMinute );
   } else if(oledHour == 12){         //Takes care of prev error w/ 12:00 PM
-    sprintf(timeBuffer,"%02d:%02d PM",oledHour,oledMinute );
+      sprintf(timeBuffer,"%02d:%02d PM",oledHour,oledMinute );
   } else {
-    sprintf(timeBuffer,"%02d:%02d PM",(oledHour-12), oledMinute );
+      sprintf(timeBuffer,"%02d:%02d PM",(oledHour-12), oledMinute );
   }
   
   printf("now: %d-%02d-%02d %02d:%02d:%02d\n", tm.tm_year +1900, tm.tm_mon+1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec );
@@ -826,8 +846,9 @@ int main(void) {
     if (tm.tm_min != oledMinute){ //if new minute, update time
       oledHour = tm.tm_hour;
       oledMinute = tm.tm_min;
-  
-      if(oledHour < 12){
+      if(oledHour == 0){
+        sprintf(timeBuffer,"%02d:%02d PM",6,oledMinute );
+      } else if(oledHour < 12){
         sprintf(timeBuffer,"%02d:%02d AM",oledHour,oledMinute );
       } else if(oledHour == 12){         //Takes care of prev error w/ 12:00 PM
         sprintf(timeBuffer,"%02d:%02d PM",oledHour,oledMinute );
@@ -1387,6 +1408,9 @@ void OLED_SM(uint16_t color){
             }
             temp_y += 15;
         }
+        
+      print_String(0,45, (const uint8_t*)"Sensor Node 5", FONT_5X8);
+      print_String(0,60, (const uint8_t*)"Sensor Node 4", FONT_5X8);
       
       if(arrowState == 0){
         OLED_PrintArrow(110, 30);
@@ -1509,7 +1533,7 @@ void OLED_SM(uint16_t color){
       if (ENTER_PRESSED){
         Clear_Screen();
         if(arrowState == 2){
-          dataType =TEMP;
+          dataType = TEMP;
         } else if (arrowState == 1){
           dataType = SUNLIGHT;
         } else {
@@ -1530,7 +1554,18 @@ void OLED_SM(uint16_t color){
     case SENSORS_PLOT:
       printGrid(20,120,20,120,10,10);
       printAxesLabels(0,115);
-      plotSampleData(sensor_data, dataType, MAX_ELEMENTS);
+      
+      if(selected_Node == 2){
+        plotSampleData(sensor2_data, dataType, MAX_ELEMENTS);
+      } else if (selected_Node == 5){
+        plotSampleData(sensor2_data, dataType, MAX_ELEMENTS);
+      } else if (selected_Node == 4){
+        plotSampleData(sensor2_data, dataType, MAX_ELEMENTS);
+      } else {
+        plotSampleData(sensor2_data, dataType, MAX_ELEMENTS);
+      }
+      
+      
       
       if(ENTER_PRESSED){
         if(dataType == MOISTURE){
@@ -1612,6 +1647,7 @@ void OLED_SM(uint16_t color){
       temp_x = 90;
       temp_y = 40;
       
+      
       for (i = 0; i < hose0_elements; i++){
         sprintf(intBuffer , "%d", Hose[HOSE0].sensors[hose0_elements]);
         print_String(temp_x,temp_y, (const uint8_t*)intBuffer, FONT_5X8);
@@ -1625,8 +1661,8 @@ void OLED_SM(uint16_t color){
         OLED_PrintArrow(100, 55);
       } else {
         OLED_PrintArrow(100, 70);
-      }
-            
+      }  
+      
       if (ENTER_PRESSED){
         nextPage = HOSES_CONTROL;
         Clear_Screen();
@@ -1690,15 +1726,15 @@ void OLED_SM(uint16_t color){
         }
         
         if (Hose[i].control == AUTOMATIC){
-          Hose[i].control = ON;
-          
-        } else if (Hose[i].control == ON){
           Hose[i].control = OFF;
+          
+        } else if (Hose[i].control == OFF){
+          Hose[i].control = ON;
         } else {
           Hose[i].control = AUTOMATIC;
         }
       
-        arrowState = 0;
+        
         Clear_Screen();
         oledSleepTimer = bcm2835_millis(); //reset sleep timer after each button press
       } else if (BACK_PRESSED){
@@ -1787,6 +1823,7 @@ void OLED_SM(uint16_t color){
       temp_x = 0;
       temp_y = 30;
       
+      /*
       for (i = 0; i < mesh.addrListTop; i++) {
             // Add sensor nodes to the list of sensors mapped to the hose
             //Hose[HOSE0].sensors[i] = mesh.addrList[i].nodeID;
@@ -1803,7 +1840,35 @@ void OLED_SM(uint16_t color){
             }
             temp_y += 15;
         }
+        */
       
+      if (nodeMapState == 0){
+        print_String(0,45, (const uint8_t*)"Sensor Node 2", FONT_5X8);
+        print_String(0,60, (const uint8_t*)"Sensor Node 5", FONT_5X8);
+        print_String(0,75, (const uint8_t*)"Sensor Node 4", FONT_5X8);
+      } else if (nodeMapState == 1){
+        print_String(0,45, (const uint8_t*)"Sensor Node 5", FONT_5X8);
+        print_String(0,60, (const uint8_t*)"Sensor Node 4", FONT_5X8);
+      } else if (nodeMapState == 2){
+        print_String(0,45, (const uint8_t*)"Sensor Node 5", FONT_5X8);
+      } else {
+        print_String(0,60, (const uint8_t*)"Back", FONT_5X8);
+        print_String(0,45, (const uint8_t*)"No Sensors to Map", FONT_5X8);
+      }
+        
+      if (nodeMapState < 3){
+        if(arrowState == 0){
+          OLED_PrintArrow(90, 45);
+        } else if(arrowState == 1){
+          OLED_PrintArrow(90, 60);
+        } else {
+          OLED_PrintArrow(90, 75);
+        } 
+      } else {
+          OLED_PrintArrow(50, 60);
+      }
+      
+      /*
     if (mesh.addrListTop == 1) { //Adjust Arrow Selection based on # of sensors
        OLED_PrintArrow(110, 30);
     } else if (mesh.addrListTop == 2){
@@ -1831,8 +1896,10 @@ void OLED_SM(uint16_t color){
         OLED_PrintArrow(110, 75);
       } 
     }
+    * */
       
       if (ENTER_PRESSED){
+        /*
         if (mesh.addrListTop == 1) { //Accomodate for arrow selection
           j = 0; //save array index
         } else if (mesh.addrListTop == 2){
@@ -1860,7 +1927,14 @@ void OLED_SM(uint16_t color){
             j = 3;
           } 
         }
+        */
+        
         nextPage = HOSES_MAP_SELECT;
+        
+        if(nodeMapState >2){
+          nextPage = HOSES_HOME;
+        }
+        
         arrowState = 0;
         Clear_Screen();
         oledSleepTimer = bcm2835_millis(); //reset sleep timer after each button press
@@ -1879,18 +1953,24 @@ void OLED_SM(uint16_t color){
       
       print_String(0,0, (const uint8_t*)"Select Hose", FONT_8X16);
       
-      print_String(0,30, (const uint8_t*)"Hose 1", FONT_5X8);
-      print_String(0,45, (const uint8_t*)"Hose 2", FONT_5X8);
-      print_String(0,60, (const uint8_t*)"Hose 3", FONT_5X8);
+      print_String(0,45, (const uint8_t*)"Hose 1", FONT_5X8);
+      print_String(0,60, (const uint8_t*)"Hose 2", FONT_5X8);
+      print_String(0,75, (const uint8_t*)"Hose 3", FONT_5X8);
       
-      
+      if(nodeMapState == 0){
+        print_String(45,30, (const uint8_t*)"(Node 2)", FONT_5X8);
+      } else if(nodeMapState == 1){
+        print_String(45,30, (const uint8_t*)"(Node 4)", FONT_5X8);
+      } else {
+        print_String(45,30, (const uint8_t*)"(Node 5)", FONT_5X8);
+      }
     
       if(arrowState == 0){
-        OLED_PrintArrow(110, 30);
+        OLED_PrintArrow(50, 45);
       } else if (arrowState == 1) {
-        OLED_PrintArrow(110, 45);
+        OLED_PrintArrow(50, 60);
       } else {
-        OLED_PrintArrow(110, 60);
+        OLED_PrintArrow(50, 75);
       } 
     
       if (ENTER_PRESSED){
@@ -1904,9 +1984,9 @@ void OLED_SM(uint16_t color){
           Hose[HOSE2].sensors[hose2_elements] = mesh.addrList[j].nodeID;
           hose2_elements++;
         } 
-  
+        nodeMapState += 1;
         arrowState = 0;
-        nextPage = HOSES_HOME;
+        nextPage = HOSES_MAP;
         Clear_Screen();
         oledSleepTimer = bcm2835_millis(); //reset sleep timer after each button press
         
@@ -2418,7 +2498,7 @@ int plotSampleData( D_Struct TestData[], uint8_t dataType, int16_t size){
     
     Set_Color(RED);
     print_String(10,0, (const uint8_t*)"Moisture Level", FONT_5X8);
-    print_String(10,10, (const uint8_t*)"(Node 1)", FONT_5X8);
+    print_String(10,10, (const uint8_t*)"(Node 2)", FONT_5X8);
     
     Set_Color(BLUE);
     print_String(0,60, (const uint8_t*)"Water%", FONT_5X8);
@@ -2447,7 +2527,7 @@ int plotSampleData( D_Struct TestData[], uint8_t dataType, int16_t size){
     
     Set_Color(RED);
     print_String(10,0, (const uint8_t*)"Light Level", FONT_5X8);
-    print_String(10,10, (const uint8_t*)"(Node 1)", FONT_5X8);
+    print_String(10,10, (const uint8_t*)"(Node 2)", FONT_5X8);
     
     
     Set_Color(YELLOW);
@@ -2539,6 +2619,7 @@ void Reset_System(void){
   moisture_thresh_s0 = 32.0;
   moisture_thresh_s1 = 38.0;
   moisture_thresh_s2 = 34.0;
+  nodeMapState = 0;
   
   return;
   
