@@ -3,10 +3,10 @@
 #endif
 
 // ********** INCLUDES ***********
-#include "RF24/RF24.h"
-#include "RF24Network/RF24Network.h"
-#include "RF24Mesh/RF24Mesh.h"
-#include "RF24/utility/RPi/bcm2835.h"
+#include <RF24/RF24.h>
+#include <RF24Network/RF24Network.h>
+#include <RF24Mesh/RF24Mesh.h>
+#include <RF24/utility/RPi/bcm2835.h>
 #include <iostream>
 #include <cstdio>
 #include <vector>
@@ -494,7 +494,7 @@ int main(void) {
       /**** 'S' and 'C' Type Message Responses ****/
 
       // Here we condition on if the node should be sent a configure message instead
-      // Send to the message stored in the fromNode nodeID, message type 'S'
+      // Send to the message stored in the fromNode nodeID, megirtt ssage type 'S'
       RF24NetworkHeader p_header(mesh.getAddress(D_Dat.nodeID), 'S');
       // Data_Dat is just a 1 telling the node to go to sleep
       if (network.write(p_header, &dataDat, sizeof(dataDat))) {
