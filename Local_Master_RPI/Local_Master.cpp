@@ -16,6 +16,7 @@
 #include <stdlib.h>		//exit()
 #include <signal.h>     //signal()
 #include <math.h>
+#include <sqlite3.h> 
 
 /**** GLOBALS ****/
 #define LED RPI_BPLUS_GPIO_J8_07
@@ -240,6 +241,11 @@ void LNMOS_Set(uint8_t status);
 void RNMOS_Set(uint8_t status);
 int convertFloat_String(float in, char buffer[100]); 
 uint8_t WaterDelivery(HOSE_NUM);
+void insert_into_database(sqlite3 *mDb, double soil_moisture, int light, int temp, double pressure, double precip_prob, int output, int nodeID, double battery_lvl, int hose1, int hose2, int hose3);
+insert_into_database(sqlite3 *mDb, double soil_moisture, int light, int temp, double pressure, double precip_prob, int output, int nodeID, double battery_lvl, int hose1, int hose2, int hose3);
+int createTable(sqlite3 *db);
+static int callback(void *NotUsed, int argc, char **argv, char **azColName) ;
+
 
 
 
@@ -403,7 +409,7 @@ int main(void) {
       /**** Write Data Values to SD Card ****/
       {
 		  // create/open the file to append to (this is the file that stores all the sensor data)
-          FILE* out = fopen("Data_Log.csv", "a");
+          FILE* out1 = fopen("Data_Log.csv", "a");
  
           // prints out main column headers for the data file.
           // conditional here: output if first loop, dont afterward, controlled by column_flag
@@ -432,11 +438,11 @@ int main(void) {
           fprintf(out, "%5d\n", Hose[2].status);
 		  
 		  // close the file
-          fclose(out);
+          fclose(out1);
 		  
 		  
 		  // create/open the file to write to (this is the file that stores only the last dataset, which is then transferred to the database)
-		  FILE* out = fopen("Data_Log_to_db.csv", "w");
+		  FILE* out2 = fopen("Data_Log_to_db.csv", "w");
  
           // prints out main column headers for the data file.
           fprintf(out, "Soil_Moisture,Ambient_Light,Ambient_Temp,Barometric_Pressure, Precip_Prob, Digital_Output, Node_ID, Battery_Level, Hose_1, Hose_2, Hose_3\n");
@@ -459,7 +465,7 @@ int main(void) {
           fprintf(out, "%5d\n", Hose[2].status);
 		  
 		  // close the file
-          fclose(out);
+          fclose(out2);
       }
 	  
 	/**** SQLite Database ****/
