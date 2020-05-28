@@ -13,7 +13,7 @@ LIBS = -lrf24-bcm -lrf24network -lrf24mesh -pthread #-lbcm2835 -lm
 TARGET = Local_Master
 
 ${TARGET}: $(OBJ_TARGETS)
-	g++ $(OBJECTS) -o $(TARGET)
+	g++ $(OBJECTS) -lsqlite3 -o $(TARGET) 
 
 
 font12.o: $(HEADERS) $(SOURCES)

@@ -3,10 +3,10 @@
 #endif
 
 // ********** INCLUDES ***********
-#include <RF24/RF24.h>
-#include <RF24Network/RF24Network.h>
-#include <RF24Mesh/RF24Mesh.h>
-#include <RF24/utility/RPi/bcm2835.h>
+#include "RF24/RF24.h"
+#include "RF24Network/RF24Network.h"
+#include "RF24Mesh/RF24Mesh.h"
+#include "RF24/utility/RPi/bcm2835.h"
 #include <iostream>
 #include <cstdio>
 #include <vector>
@@ -16,7 +16,8 @@
 #include <stdlib.h>		//exit()
 #include <signal.h>     //signal()
 #include <math.h>
-#include <sqlite3.h> 
+#include <sqlite3.h>
+
 
 /**** GLOBALS ****/
 #define LED RPI_BPLUS_GPIO_J8_07
@@ -242,10 +243,9 @@ void RNMOS_Set(uint8_t status);
 int convertFloat_String(float in, char buffer[100]); 
 uint8_t WaterDelivery(HOSE_NUM);
 void insert_into_database(sqlite3 *mDb, double soil_moisture, int light, int temp, double pressure, double precip_prob, int output, int nodeID, double battery_lvl, int hose1, int hose2, int hose3);
-int createTable(sqlite3 *db);
-static int callback(void *NotUsed, int argc, char **argv, char **azColName) ;
 void processCSV(sqlite3 *db);
-
+int createTable(sqlite3 *db);
+static int callback(void *NotUsed, int argc, char **argv, char **azColName);
 
 
 /*********************************************************************************************/
@@ -408,13 +408,13 @@ int main(void) {
       /**** Write Data Values to SD Card ****/
       {
 		  // create/open the file to append to (this is the file that stores all the sensor data)
-          FILE* out1 = fopen("Data_Log.csv", "a");
+          FILE* dataLog_fp = fopen("Data_Log.csv", "a");
  
           // prints out main column headers for the data file.
           // conditional here: output if first loop, dont afterward, controlled by column_flag
           if (column_flag == 0)
           {
-              fprintf(out1, "Soil_Moisture, Ambient_Light, Ambient_Temp, Barometric_Pressure, Precip_Prob, Digital_Output, Node_ID, Battery_Level, Hose_1, Hose_2, Hose_3\n");
+              fprintf(dataLog_fp, "Soil_Moisture, Ambient_Light, Ambient_Temp, Barometric_Pressure, Precip_Prob, Digital_Output, Node_ID, Battery_Level, Hose_1, Hose_2, Hose_3\n");
               column_flag = 1;
           }
 		
@@ -422,49 +422,49 @@ int main(void) {
           //printf("%f, %f, %d, %d, %f, %d, %d, %d, %d, %d, %d\n", D_Dat.soilMoisture, D_Dat.lightLevel, D_Dat.temp_C, Forecast1.pressure, Forecast1.precipProb, D_Dat.digitalOut, D_Dat.nodeID, D_Dat.battLevel, Hose[0].status, Hose[1].status, Hose[2].status);
         
 		  // prints out elements of the sensor data struct to the file
-          fprintf(out1, "%13f,   ", D_Dat.soilMoisture); 
+          fprintf(dataLog_fp, "%13f,   ", D_Dat.soilMoisture); 
           convertFloat_String(D_Dat.soilMoisture, testBuffer2); 
-          fprintf(out1, "%13f,   ", D_Dat.lightLevel); 
+          fprintf(dataLog_fp, "%13f,   ", D_Dat.lightLevel); 
           convertFloat_String(D_Dat.lightLevel, testBuffer3); 
-          fprintf(out1, "%19d,   ", D_Dat.temp_C);
-          fprintf(out1, "%19d,   ", Forecast1.pressure); 
-          fprintf(out1, "%11f,   ", Forecast1.precipProb);
-          fprintf(out1, "%14d,   ", D_Dat.digitalOut); 
-          fprintf(out1, "%7d,   ", D_Dat.nodeID);
-          fprintf(out1, "%14d,   ", D_Dat.battLevel);
-          fprintf(out1, "%5d,   ", Hose[0].status);
-          fprintf(out1, "%5d,   ", Hose[1].status);
-          fprintf(out1, "%5d\n", Hose[2].status);
+          fprintf(dataLog_fp, "%19d,   ", D_Dat.temp_C);
+          fprintf(dataLog_fp, "%19d,   ", Forecast1.pressure); 
+          fprintf(dataLog_fp, "%11f,   ", Forecast1.precipProb);
+          fprintf(dataLog_fp, "%14d,   ", D_Dat.digitalOut); 
+          fprintf(dataLog_fp, "%7d,   ", D_Dat.nodeID);
+          fprintf(dataLog_fp, "%14d,   ", D_Dat.battLevel);
+          fprintf(dataLog_fp, "%5d,   ", Hose[0].status);
+          fprintf(dataLog_fp, "%5d,   ", Hose[1].status);
+          fprintf(dataLog_fp, "%5d\n", Hose[2].status);
 		  
 		  // close the file
-          fclose(out1);
+          fclose(dataLog_fp);
 		  
 		  
 		  // create/open the file to write to (this is the file that stores only the last dataset, which is then transferred to the database)
-		  FILE* out2 = fopen("Data_Log_to_db.csv", "w");
+		  FILE* dataLogToDb_fp = fopen("Data_Log_to_db.csv", "w");
  
           // prints out main column headers for the data file.
-          fprintf(out2, "Soil_Moisture,Ambient_Light,Ambient_Temp,Barometric_Pressure, Precip_Prob, Digital_Output, Node_ID, Battery_Level, Hose_1, Hose_2, Hose_3\n");
+          fprintf(dataLogToDb_fp, "Soil_Moisture,Ambient_Light,Ambient_Temp,Barometric_Pressure, Precip_Prob, Digital_Output, Node_ID, Battery_Level, Hose_1, Hose_2, Hose_3\n");
 
           //printf("%f, %f, %d, %d, %f, %d, %d, %d, %d, %d, %d\n", D_Dat.soilMoisture, D_Dat.lightLevel, D_Dat.temp_C, Forecast1.pressure, Forecast1.precipProb, D_Dat.digitalOut, D_Dat.nodeID, D_Dat.battLevel, Hose[0].status, Hose[1].status, Hose[2].status);
 		
           // prints out elements of the sensor data struct to the file
-          fprintf(out2, "%13f,", D_Dat.soilMoisture); 
+          fprintf(dataLogToDb_fp, "%13f,", D_Dat.soilMoisture); 
           convertFloat_String(D_Dat.soilMoisture, testBuffer2); 
-          fprintf(out2, "%13f,", D_Dat.lightLevel); 
+          fprintf(dataLogToDb_fp, "%13f,", D_Dat.lightLevel); 
           convertFloat_String(D_Dat.lightLevel, testBuffer3); 
-          fprintf(out2, "%19d,", D_Dat.temp_C);
-          fprintf(out2, "%19d,", Forecast1.pressure); 
-          fprintf(out2, "%11f,", Forecast1.precipProb);
-          fprintf(out2, "%14d,", D_Dat.digitalOut); 
-          fprintf(out2, "%7d,", D_Dat.nodeID);
-          fprintf(out2, "%14d,", D_Dat.battLevel);
-          fprintf(out2, "%5d,", Hose[0].status);
-          fprintf(out2, "%5d,", Hose[1].status);
-          fprintf(out2, "%5d\n", Hose[2].status);
+          fprintf(dataLogToDb_fp, "%19d,", D_Dat.temp_C);
+          fprintf(dataLogToDb_fp, "%19d,", Forecast1.pressure); 
+          fprintf(dataLogToDb_fp, "%11f,", Forecast1.precipProb);
+          fprintf(dataLogToDb_fp, "%14d,", D_Dat.digitalOut); 
+          fprintf(dataLogToDb_fp, "%7d,", D_Dat.nodeID);
+          fprintf(dataLogToDb_fp, "%14d,", D_Dat.battLevel);
+          fprintf(dataLogToDb_fp, "%5d,", Hose[0].status);
+          fprintf(dataLogToDb_fp, "%5d,", Hose[1].status);
+          fprintf(dataLogToDb_fp, "%5d\n", Hose[2].status);
 		  
 		  // close the file
-          fclose(out2);
+          fclose(dataLogToDb_fp);
       }
 	  
 	/**** SQLite Database ****/
@@ -623,7 +623,6 @@ void insert_into_database(sqlite3 *mDb, double soil_moisture, int light, int tem
 	sqlite3_stmt* stmt;
 	sqlite3_prepare_v2(mDb, buffer, strlen(buffer), &stmt, NULL);
  
-	char *id;
 	// binds the values to the prepare statement
 	sqlite3_bind_double(stmt, 1, soil_moisture);
 	sqlite3_bind_int(stmt, 2, light);
@@ -669,7 +668,7 @@ void processCSV(sqlite3 *db)
   {
 	int result, light, temp, output, nodeID, hose1, hose2, hose3;
 	double soil_moisture, pressure, precip_prob, battery_lvl;
-	char a[10], b[10], c[10], d[10], e[10], f[10], g[10], h[10], i[10], j[10], k[10];
+	char data_param1[10], data_param2[10], data_param3[10], data_param4[10], data_param5[10], data_param6[10], data_param7[10], data_param8[10], data_param9[10], data_param10[10], data_param11[10];
   	char line[256];
   	FILE *fp;
 	fp = fopen(CSVFILENAME,"r");
@@ -678,24 +677,26 @@ void processCSV(sqlite3 *db)
     {
 		fprintf(stderr,"File not found.\n");
 	}
+    // bypasses the first line of headers
     fgets(line,sizeof(line)-1,fp);
     while(fgets(line,sizeof(line)-1,fp) != NULL)
     {
-		result = sscanf(line, "%[^','],%[^','],%[^','],%[^','],%[^','],%[^','],%[^','],%[^','],%[^','],%[^','],%[^',']", a, b, c, d, e, f, g, h, i, j, k);
-     		soil_moisture  = atof(a);
-		light  = atoi(b);
-		temp  = atoi(c);
-		pressure  = atof(d);
-		precip_prob  = atof(e);
-		output  = atoi(f);
-		nodeID  = atoi(g);
-	    	battery_lvl  = atof(h);
-		hose1  = atoi(i);
-		hose2  = atoi(j);
-		hose3  = atoi(k);
+      result = sscanf(line, "%[^','],%[^','],%[^','],%[^','],%[^','],%[^','],%[^','],%[^','],%[^','],%[^','],%[^',']", 
+        data_param1, data_param2, data_param3, data_param4, data_param5, data_param6, data_param7, data_param8, data_param9, data_param10, data_param11);
+      soil_moisture  = atof(data_param1);
+      light  = atoi(data_param2);
+      temp  = atoi(data_param3);
+      pressure  = atof(data_param4);
+      precip_prob  = atof(data_param5);
+      output  = atoi(data_param6);
+      nodeID  = atoi(data_param7);
+      battery_lvl  = atof(data_param8);
+      hose1  = atoi(data_param9);
+      hose2  = atoi(data_param10);
+      hose3  = atoi(data_param11);
      	//printf("%d\n %d\n %d\n %d\n %d\n %d\n %d\n", i, j, k, l, m, n, o);
      	insert_into_database(db, soil_moisture, light, temp, pressure, precip_prob, output, nodeID, battery_lvl, hose1, hose2, hose3);
-	}
+    }
 
 	fclose(fp);
   }
