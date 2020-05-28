@@ -242,7 +242,6 @@ void RNMOS_Set(uint8_t status);
 int convertFloat_String(float in, char buffer[100]); 
 uint8_t WaterDelivery(HOSE_NUM);
 void insert_into_database(sqlite3 *mDb, double soil_moisture, int light, int temp, double pressure, double precip_prob, int output, int nodeID, double battery_lvl, int hose1, int hose2, int hose3);
-insert_into_database(sqlite3 *mDb, double soil_moisture, int light, int temp, double pressure, double precip_prob, int output, int nodeID, double battery_lvl, int hose1, int hose2, int hose3);
 int createTable(sqlite3 *db);
 static int callback(void *NotUsed, int argc, char **argv, char **azColName) ;
 void processCSV(sqlite3 *db);
