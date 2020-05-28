@@ -34,6 +34,7 @@
 // Water Delivery
 #define WATER_OFF 0
 #define WATER_ON  1
+
 #define PMOS_ON 0
 #define PMOS_OFF 1
 #define NMOS_ON 1
@@ -181,7 +182,7 @@ typedef enum{
   SETTINGS_RESET,
 } OLED_State;
 
-// Enum for hsoe specification
+// Enum for hose specification
 typedef enum {
     HOSE0,
     HOSE1,
@@ -198,13 +199,17 @@ enum {
 
 // Data Vars
 D_Struct D_Dat;
-D_Struct current_Dat_1;
+D_Struct current_Dat_1;   //Most recent Sensor Data
 D_Struct current_Dat_2;
 D_Struct current_Dat_3;
-D_Struct sensor_data[MAX_ELEMENTS];
-D_Struct sensor1_data[MAX_ELEMENTS];
+//D_Struct current_Dat_4;
+//D_Struct current_Dat_5;
+D_Struct sensor_data[MAX_ELEMENTS]; 
+D_Struct sensor1_data[MAX_ELEMENTS];  //Recent Sensor Data for Plotting
 D_Struct sensor2_data[MAX_ELEMENTS];
 D_Struct sensor3_data[MAX_ELEMENTS];
+//D_Struct sensor4_data[MAX_ELEMENTS];
+//D_Struct sensor5_data[MAX_ELEMENTS]
 
 uint8_t dFlag = 0;
 uint8_t dataDat = 1;
@@ -221,14 +226,16 @@ OLED_State nextPage = WELCOME_PAGE;
 static w_State waterState = HOSE_IDLE; //Water Deliver SM state var
 
 //Array Declarations
+static int mappedSensors[MAX_SENSORS]; //Intialize Mapping Variables 
+static int unmappedSensors[MAX_SENSORS]; 
 //static uint8_t prev_waterLevel[3];
-static char timeBuffer[20];
+static char timeBuffer[20];   //Buffers used for format Variables into strings
 static char intBuffer[20];
 static char sensorIDBuffer[100];
 static char hoseBuffer[100];
 //static char testBuffer2[100];
 //static char testBuffer3[100];
-static char currentBuffer1[100];
+static char currentBuffer1[100];  //Used for printing current sensor readings 
 static char currentBuffer2[100];
 static char currentBuffer3[100];
 static char currentBuffer4[100];
@@ -236,47 +243,35 @@ static char currentBuffer5[100];
 
 
 //Variable Declarations
-static uint8_t dataType = 0;
+static uint8_t dataType = 0;    //Determines type of data to be  printed
 static uint16_t oledColor;
 
-static int oledHour;
+static int oledHour;    //Store System Time
 static int oledMinute;
 //static int tempVal = 0;
-static int wholeVal = 0;
+static int wholeVal = 0;    //Converting 
 static int decimalVal = 0;
 static int hose0_elements = 0;  //keeps track of number of sensors mapped to hose
 static int hose1_elements = 0;
 static int hose2_elements = 0;
-static int new_Data = FALSE; //Flag set when new data received
-static int selected_Node = 0;
-static int nodeMapState = 0; 
+static int new_Data = FALSE; //Flag set when new data received to update OLED
+static int selected_Node = 0; //Determine which set of Sensor node Data to plot
+static int nodeUnmapped = TRUE; // Set True if at least one unmapped sensor
+static int sensorToMap = 0; // Var keeping track of which sensor to map
 
 //Flow Sensor Support 
-static int tach_fs1 = 1;  //Used for individually tracking flow rates 
-static int tach_fs2 = 1;
-static int tach_fs3 = 1;
-static int prevTach_fs1 = 1;
-static int prevTach_fs2 = 1;
-static int prevTach_fs3 = 1;
-static int pulseCount_fs1 = 0;
-static int pulseCount_fs2 = 0;
-static int pulseCount_fs3 = 0;
-static float water_liters_fs1 = 0;
-static float water_liters_fs2 = 0;
-static float water_liters_fs3 = 0;
-static float prev_Liters_FS1 = 0;
-static float prev_Liters_FS2 = 0;
-static float prev_Liters_FS3 = 0;
-static float water_gal_fs1 = 0;
-static float water_gal_fs2 = 0;
-static float water_gal_fs3 = 0;
+static int tach_fs[4];  //Used for individually tracking flow rates 
+static int prevTach_fs[4];  //and Water Output using YF-S201 Flow Sensors
 
-static float moisture_thresh_s0 = 0;
-static float moisture_thresh_s1 = 0;
-static float moisture_thresh_s2 = 0;
+static int pulseCount_fs[4];
+static float water_liters_fs[4];
+static float prev_Liters_fs[4];
+static float water_gal_fs[4];
+
+static float moisture_s_thresh[MAX_SENSORS]; //Moisture Thresholds
 
 
-static float testFloat = 64.757065;
+//static float testFloat = 64.757065;
 static float temp_wholeVal = 0;
 static float temp_decimalVal = 0;
 static float test_Moisture = 0;
@@ -331,9 +326,7 @@ void LPMOS_Set(uint8_t status);
 void RPMOS_Set(uint8_t status);
 void LNMOS_Set(uint8_t status);
 void RNMOS_Set(uint8_t status);
-void recordPulses_FS1(void);
-void recordPulses_FS2(void);
-void recordPulses_FS3(void);
+void recordPulses_FS(int i);
 float convertPulse_Liters(int pulseCount);
 float convertLiters_Gals(float liters);
 int convertFloat_String(float in, char buffer[100]); 
@@ -359,8 +352,6 @@ void setup(void) {
   bcm2835_init();
   bcm2835_spi_begin();  
   
-  
-
   
   // Set Pins to Output
   DEV_GPIO_Mode(LPMOS_Pin, 1);
@@ -391,10 +382,11 @@ void setup(void) {
   LPMOS_Set(PMOS_OFF); //Initial States for MOS devices 
   RPMOS_Set(PMOS_OFF);
   LNMOS_Set(NMOS_OFF); // Notice the diff b/t PMOS and NMOS states
-  RNMOS_Set(NMOS_OFF);
+  RNMOS_Set(NMOS_OFF);  //PMOS_OFF = 1, NMOS_OFF = 0
   
-  //LPMOS_Set(DEMUX_OFF);
-  //RPMOS_Set(DEMUX_OFF);
+  
+  //LPMOS_Set(DEMUX_OFF);   //Driving with De-Mux, Active Low
+  //RPMOS_Set(DEMUX_OFF);     //DeMux_OFF = 1
   //LNMOS_Set(DEMUX_OFF);
   //RNMOS_Set(DEMUX_OFF);
   
@@ -434,14 +426,16 @@ void setup(void) {
   current_Dat_3.temp_C = 85;
   selected_Node = 2;
   
-  moisture_thresh_s0 = 32.0;
-  moisture_thresh_s1 = 38.0;
-  moisture_thresh_s2 = 34.0;
   
+  moisture_s_thresh[0] = 42;
+  moisture_s_thresh[1] = 32;
+  moisture_s_thresh[2] = 55;
+
   
   int i = 0;
   test_Moisture = 60; 
   
+  //Plotting Moisture Testing 
   for(i=0;i<MAX_ELEMENTS; i++){
     sensor2_data[i].soilMoisture = test_Moisture;
     if( ((i > 30) && ( i < 35)) || ((i > 60) && ( i < 65)) ){
@@ -471,11 +465,10 @@ int main(void) {
   oledMinute = tm.tm_min;
   
   //Store Time variables into strings for printing
-  if(oledMinute){
-    sprintf(timeBuffer,"%02d:%02d PM",6,oledMinute );
-    
+  if(oledHour  == 0){ //Takes Care of 12:00 AM Error
+    sprintf(timeBuffer,"%02d:%02d PM",(oledHour+12),oledMinute );
   } else if(oledHour < 12){
-      sprintf(timeBuffer,"%02d:%02d PM", 6,oledMinute );
+      sprintf(timeBuffer,"%02d:%02d PM",oledHour,oledMinute );
   } else if(oledHour == 12){         //Takes care of prev error w/ 12:00 PM
       sprintf(timeBuffer,"%02d:%02d PM",oledHour,oledMinute );
   } else {
@@ -560,7 +553,7 @@ int main(void) {
         int i = 0;
         for (i = 0; i < mesh.addrListTop; i++) {
             // Add sensor nodes to the list of sensors mapped to the hose
-            Hose[HOSE0].sensors[i] = mesh.addrList[i].nodeID;
+            Hose[HOSE0].sensors[i] = mesh.addrList[i].nodeID; //Hard-coded for Testing
             if (i == (mesh.addrListTop - 1)) {
               printf("%d\n\n", mesh.addrList[i].nodeID);
             } else {
@@ -609,7 +602,7 @@ int main(void) {
           fclose(out);
       }
       
-      //Update Struct Variables
+      //Update Struct Variables for Data
       if (D_Dat.nodeID == 2){  // Update Recent Sensor Node Value
         if (sd_index_1 >= MAX_ELEMENTS) { // checks if the index is at the max # of elements
                 int i, j = 0;
@@ -735,7 +728,7 @@ int main(void) {
             while (!WaterDeliverySM(WATER_OFF, FET_DELAY, PULSE_DURATION));
           }
           Hose[1].status = WATER_OFF;
-          hose_statuses &= 0xFC; //Clear Hose Statu
+          hose_statuses &= 0xFC; //Clear Hose Status
                     
         }
         if (Hose[2].control == AUTOMATIC) {
@@ -812,23 +805,19 @@ int main(void) {
         pclose(fp);
     }
     
+    
+    
     /** Flow Sensor Management ****/
-    recordPulses_FS1(); //Record Pulse Signals
-    recordPulses_FS2();
-    recordPulses_FS3();
     
+    
+    int i;
     // pulseCount_fs2 = 100; // for testing
-    water_liters_fs1 = convertPulse_Liters(pulseCount_fs1);
-    water_liters_fs2 = convertPulse_Liters(pulseCount_fs2);
-    water_liters_fs3 = convertPulse_Liters(pulseCount_fs3);
-    
-    water_gal_fs1 = convertLiters_Gals(water_liters_fs1);
-    water_gal_fs2 = convertLiters_Gals(water_liters_fs2);
-    water_gal_fs3 = convertLiters_Gals(water_liters_fs3);
-    
-    prev_Liters_FS1 = water_liters_fs1;
-    prev_Liters_FS2 = water_liters_fs2;
-    prev_Liters_FS3 = water_liters_fs3;
+    for(i = 0; i > 3 ;i++){
+      recordPulses_FS(i); //Record Flow Sensor Tach Signals 
+      water_liters_fs[i] = convertPulse_Liters(pulseCount_fs[i]);
+      water_gal_fs[i] = convertLiters_Gals(water_liters_fs[i]);
+      prev_Liters_fs[i] = water_liters_fs[i];
+    }
   
     /* Testing Current Data Plotting*/
     //convertFloat_String(76.5, currentBuffer1);
@@ -846,8 +835,8 @@ int main(void) {
     if (tm.tm_min != oledMinute){ //if new minute, update time
       oledHour = tm.tm_hour;
       oledMinute = tm.tm_min;
-      if(oledHour == 0){
-        sprintf(timeBuffer,"%02d:%02d PM",6,oledMinute );
+      if(oledHour == 0){ //Takes care of error w/ 12:00AM
+        sprintf(timeBuffer,"%02d:%02d AM",(oledHour+12),oledMinute );
       } else if(oledHour < 12){
         sprintf(timeBuffer,"%02d:%02d AM",oledHour,oledMinute );
       } else if(oledHour == 12){         //Takes care of prev error w/ 12:00 PM
@@ -902,8 +891,7 @@ int Timer(uint32_t delayThresh, uint32_t prevDelay) {
    This function determines if a hose needs to be turned on or off based on sensor data.
    The function also handles the control of the water delivery SM to turn on/off the H-bridge
  */
-uint8_t WaterDelivery(HOSE_NUM HOSE_IN)
-{
+uint8_t WaterDelivery(HOSE_NUM HOSE_IN){
     // First reset the hose tally
     Hose[HOSE_IN].tally = 0;
     int prevstatus = Hose[HOSE_IN].status;
@@ -1020,58 +1008,33 @@ void RNMOS_Set(uint8_t status){
 
 
 
-/* @name: recordPulses_FS1
-   * Updates Flow Sensor 1 Pulse Count  
+/* @name: recordPulses_FS
+ * @param: i, determines which flow Sensor to Record 
+   * Updates Flow Sensor Pulse Count  
    @return: return
 */
-void recordPulses_FS1(void){
-  tach_fs1 = DEV_Digital_Read(FLOW_SENSOR_1_Pin);
+void recordPulses_FS(int i){
   
-  if (tach_fs1 != prevTach_fs1 && tach_fs1 == 1){
-    pulseCount_fs1+=1;
-    prevTach_fs1 = tach_fs1;
+  if (i == 0){
+  tach_fs[i] = DEV_Digital_Read(FLOW_SENSOR_1_Pin);
+  } else if (i == 1){
+    tach_fs[i] = DEV_Digital_Read(FLOW_SENSOR_2_Pin);
+  } else if (i == 2){
+    tach_fs[i] = DEV_Digital_Read(FLOW_SENSOR_3_Pin);
+  } else{
+    printf("Error, Improper Flow Sensor Recorded");
+  }
+  
+  if (tach_fs[i] != prevTach_fs[i] && tach_fs[i] == 1){
+    pulseCount_fs[i]+=1;
+    prevTach_fs[i] = tach_fs[i];
     printf(" Pulse Trigger 1 \n ");
   }
-  prevTach_fs1 = tach_fs1;
+  prevTach_fs[i] = tach_fs[i];
   
   return;
 }
 
-/* @name: recordPulses_FS2
-   * Updates Flow Sensor 2 Pulse Count  
-   @return: return
-*/
-void recordPulses_FS2(void){
-  tach_fs2 = DEV_Digital_Read(FLOW_SENSOR_2_Pin);
-  
-  if (tach_fs2 != prevTach_fs2 && tach_fs2 == 1){
-    pulseCount_fs2 += 1;
-    prevTach_fs2 = tach_fs2;
-    printf(" Pulse Trigger 2 \n ");
-  }
-  prevTach_fs2 = tach_fs2;
-  
-  return;
-}
-
-/* @name: recordPulses_FS3
-   * Updates Flow Sensor 3 Pulse Count  
-   @return: return
-*/
-void recordPulses_FS3(void){
-  tach_fs3 = DEV_Digital_Read(FLOW_SENSOR_3_Pin);
-  
-  if (tach_fs3 != prevTach_fs3 && tach_fs3 == 1){
-    pulseCount_fs3 += 1;
-    prevTach_fs3 = tach_fs3;
-    printf(" Pulse Trigger 3 \n ");
-    
-    printf("Pulses: %d liters 3: %f \n", pulseCount_fs3 ,water_liters_fs3);
-  }
-  prevTach_fs3 = tach_fs3;
-  
-  return;
-}
   
 
 /* @name: convertPulse_Liters
@@ -1244,6 +1207,8 @@ void OLED_SM(uint16_t color){
   int16_t temp_x,temp_y = 0;
   int i, j = 0;
   int element_Changed = FALSE;
+  int arrowOptions = 0;
+
   
   
   Set_Color(color);
@@ -1277,13 +1242,14 @@ void OLED_SM(uint16_t color){
 
 
   switch(oledState){
-    case WELCOME_PAGE:
-      print_String(24,25, (const uint8_t*)"Welcome To ", FONT_8X16);
+    case WELCOME_PAGE: 
+      print_String(24,25, (const uint8_t*)"Welcome To ", FONT_8X16);  //Print Home Page
       print_String(30,55, (const uint8_t*)"Intuitive", FONT_8X16);
       print_String(8,85, (const uint8_t*)"Auto Irrigation", FONT_8X16);
       
+      
       if (Timer(EIGHT_SECONDS, oledSleepTimer) || ENTER_PRESSED) { //If Sleep Timer Expires, return to SLEEP
-        arrowState = 0;
+        arrowState = 0; //Reset Arrow State
         nextPage = HOME_PAGE;
         Clear_Screen();
         oledSleepTimer = bcm2835_millis(); //reset sleep timer after transition to Sleep
@@ -1297,14 +1263,14 @@ void OLED_SM(uint16_t color){
       
       if (ENTER_PRESSED){
         nextPage = HOME_PAGE;
-        arrowState = 0;
+        arrowState = 0; //Reset Arrow State
         Clear_Screen();
         oledSleepTimer = bcm2835_millis(); //reset sleep timer after each button press
       }
       break;
     
     case HOME_PAGE:
-      if (prevArrowState != arrowState){
+      if (prevArrowState != arrowState){  //Update Screen if arrowState changes
         Clear_Screen();
       }  
         
@@ -1314,6 +1280,7 @@ void OLED_SM(uint16_t color){
       print_String(0,60, (const uint8_t*)"Settings", FONT_5X8);
       print_String(35,95, (const uint8_t*)timeBuffer, FONT_8X16);
       
+      //Update Oled Printing
       if(arrowState == 0){
         OLED_PrintArrow(70, 30);
       } else if (arrowState == 1){
@@ -1323,7 +1290,7 @@ void OLED_SM(uint16_t color){
       } 
       
       
-      if (ENTER_PRESSED){
+      if (ENTER_PRESSED){ //Enter Page Corresponding to Arrow State
         if(arrowState == 0){
           nextPage = SENSORS_HOME;
         } else if(arrowState == 1){
@@ -1331,20 +1298,20 @@ void OLED_SM(uint16_t color){
         } else{
           nextPage = SETTINGS_HOME;
         }
-        arrowState = 0;
+        arrowState = 0; //Reset Arrow State
         Clear_Screen();
         oledSleepTimer = bcm2835_millis(); //reset sleep timer after each button press
         
       } else if (BACK_PRESSED){
         nextPage = SLEEP;
-        arrowState = 0;
+        arrowState = 0;//Reset Arrow State
         Clear_Screen();
         oledSleepTimer = bcm2835_millis(); //reset sleep timer after each button press
       }
       break;
     
     case SENSORS_HOME:
-      if (prevArrowState != arrowState){
+      if (prevArrowState != arrowState){  //Update Screen if arrowState changes
         Clear_Screen();
       }
       
@@ -1385,7 +1352,7 @@ void OLED_SM(uint16_t color){
       break;
       
       case SENSORS_LIST:
-      if (prevArrowState != arrowState){
+      if (prevArrowState != arrowState){  //Update Screen if arrowState changes
         Clear_Screen();
       }
       
@@ -1394,39 +1361,29 @@ void OLED_SM(uint16_t color){
       temp_x = 0;
       temp_y = 30;
       
-      for (i = 0; i < mesh.addrListTop; i++) {
+      for (i = 0; i < mesh.addrListTop; i++) {  //Prints all Connected Sensors
             // Add sensor nodes to the list of sensors mapped to the hose
-            //Hose[HOSE0].sensors[i] = mesh.addrList[i].nodeID;
-            if (i == (mesh.addrListTop - 1)) {
-              sprintf(sensorIDBuffer,"Sensor Node %d", mesh.addrList[i].nodeID);
-              print_String(temp_x,temp_y, (const uint8_t*)sensorIDBuffer, FONT_5X8);
-
-            } else {
-              sprintf(sensorIDBuffer,"Sensor Node %d, ", mesh.addrList[i].nodeID);
-              print_String(temp_x,temp_y, (const uint8_t*)sensorIDBuffer, FONT_5X8);
-              
-            }
+            sprintf(sensorIDBuffer,"Sensor Node %d", mesh.addrList[i].nodeID);
+            print_String(temp_x,temp_y, (const uint8_t*)sensorIDBuffer, FONT_5X8); 
             temp_y += 15;
         }
-        
-      print_String(0,45, (const uint8_t*)"Sensor Node 5", FONT_5X8);
-      print_String(0,60, (const uint8_t*)"Sensor Node 4", FONT_5X8);
       
-      if(arrowState == 0){
+      
+      if(arrowState == 0){    //Update Arrow State 
         OLED_PrintArrow(110, 30);
       } else {
         OLED_PrintArrow(110, 45);
       } 
       
       if (ENTER_PRESSED){
-        nextPage = SENSORS_CURRENT;
-        selected_Node = 2;
+        nextPage = SENSORS_CURRENT; //Go into Current Sensors Menu
+        selected_Node = 2;  //Set selected Node for printing
         arrowState = 0;
         Clear_Screen();
         oledSleepTimer = bcm2835_millis(); //reset sleep timer after each button press
         
       } else if (BACK_PRESSED){
-        nextPage = SENSORS_HOME;
+        nextPage = SENSORS_HOME; 
         Clear_Screen();
         oledSleepTimer = bcm2835_millis(); //reset sleep timer after each button press
       }
@@ -1552,27 +1509,33 @@ void OLED_SM(uint16_t color){
     
 
     case SENSORS_PLOT:
+      
+      //Set Up Grid for Printing
       printGrid(20,120,20,120,10,10);
       printAxesLabels(0,115);
       
+      
+      //Plot Corresponding to Sensor Node
       if(selected_Node == 2){
-        plotSampleData(sensor2_data, dataType, MAX_ELEMENTS);
+        plotSampleData(sensor1_data, dataType, MAX_ELEMENTS);
       } else if (selected_Node == 5){
         plotSampleData(sensor2_data, dataType, MAX_ELEMENTS);
       } else if (selected_Node == 4){
-        plotSampleData(sensor2_data, dataType, MAX_ELEMENTS);
+        plotSampleData(sensor3_data, dataType, MAX_ELEMENTS);
       } else {
-        plotSampleData(sensor2_data, dataType, MAX_ELEMENTS);
+        plotSampleData(sensor_data, dataType, MAX_ELEMENTS);
       }
+    
       
-      
-      
-      if(ENTER_PRESSED){
-        if(dataType == MOISTURE){
-          dataType = SUNLIGHT;
+      if(ENTER_PRESSED){  //Update Sensor Struct for Plotting
+        if(selected_Node == 2){
+          selected_Node = 5;
+        } else if(selected_Node == 5){
+          selected_Node = 4;
         } else {
-          dataType = MOISTURE;
+          selected_Node = 2;
         }
+        
         Clear_Screen();
         oledSleepTimer = bcm2835_millis(); //reset sleep timer after each button press
       } else if (BACK_PRESSED){
@@ -1598,7 +1561,7 @@ void OLED_SM(uint16_t color){
       print_String(0,75, (const uint8_t*)"Map Sensors ", FONT_5X8);
       print_String(35,95, (const uint8_t*)timeBuffer, FONT_8X16);
       
-      if(arrowState == 0){
+      if(arrowState == 0){  //Update Arrow
         OLED_PrintArrow(115, 30);
       } else if (arrowState == 1) {
         OLED_PrintArrow(80, 45);
@@ -1608,7 +1571,7 @@ void OLED_SM(uint16_t color){
         OLED_PrintArrow(85, 75);
       }
       
-      if (ENTER_PRESSED){
+      if (ENTER_PRESSED){   //Menu traversal based on Arrowstate
         if(arrowState == 0){
           nextPage = HOSES_STATUS;
         } else if (arrowState == 1){
@@ -1638,23 +1601,44 @@ void OLED_SM(uint16_t color){
       }
       
       print_String(0,0, (const uint8_t*)"Hoses Status", FONT_8X16);
-      printHoseStatus(0,40,hose_statuses);
-      prev_hose_statuses = hose_statuses;
+      printHoseStatus(0,40,hose_statuses);  //Print OFF/ON for each hose
+      prev_hose_statuses = hose_statuses; //Store statuses for OLED updating
       
-      
-      
+    
       // Print Connected Sensors
       temp_x = 90;
       temp_y = 40;
       
       
-      for (i = 0; i < hose0_elements; i++){
+      
+      //Update Hose 0 Nodes
+      for (i = 0; i < hose0_elements; i++){   //Iterate and print connected node IDs
         sprintf(intBuffer , "%d", Hose[HOSE0].sensors[hose0_elements]);
         print_String(temp_x,temp_y, (const uint8_t*)intBuffer, FONT_5X8);
         temp_x += 10;
       }
       
+      temp_x = 90;
+      temp_y = 55;
       
+      //Update Hose 1 Nodes
+      for (i = 0; i < hose1_elements; i++){   //Iterate and print connected node IDs
+        sprintf(intBuffer , "%d", Hose[HOSE1].sensors[hose1_elements]);
+        print_String(temp_x,temp_y, (const uint8_t*)intBuffer, FONT_5X8);
+        temp_x += 10;
+      }
+      
+      temp_x = 90;
+      temp_y = 70;
+      
+      //Update Hose 2 Nodes
+      for (i = 0; i < hose2_elements; i++){   //Iterate and print connected node IDs
+        sprintf(intBuffer , "%d", Hose[HOSE2].sensors[hose2_elements]);
+        print_String(temp_x,temp_y, (const uint8_t*)intBuffer, FONT_5X8);
+        temp_x += 10;
+      }
+      
+
       if(arrowState == 0){
         OLED_PrintArrow(100, 40);
       } else if (arrowState == 1) {
@@ -1663,7 +1647,7 @@ void OLED_SM(uint16_t color){
         OLED_PrintArrow(100, 70);
       }  
       
-      if (ENTER_PRESSED){
+      if (ENTER_PRESSED){ 
         nextPage = HOSES_CONTROL;
         Clear_Screen();
         oledSleepTimer = bcm2835_millis(); //reset sleep timer after each button press
@@ -1750,22 +1734,25 @@ void OLED_SM(uint16_t color){
         Clear_Screen();
       }
       
-      if ( (prev_Liters_FS1 != water_liters_fs1) || (prev_Liters_FS2 != water_liters_fs2) 
-            || (prev_Liters_FS3 != water_liters_fs3)){ // If any value has changed, updated
-        Clear_Screen();
+      
+      for(i=0; i>3; i++){ //Update Screen if new data received
+        if(prev_Liters_fs[i] != water_liters_fs[i]){
+          Clear_Screen();
+        }
       }
-    
+      
       print_String(0,0, (const uint8_t*)"Watering Log", FONT_8X16);
       
+      //Convert Floats containing amount of water in liters into strings
       //tempVal = Hose0.waterLevel;
-      convertFloat_String(water_liters_fs1, hoseBuffer);
+      convertFloat_String(water_liters_fs[0], hoseBuffer);
       print_String(0,40, (const uint8_t*)"Hose 1:", FONT_5X8);
       print_String(50,40, (const uint8_t*)hoseBuffer, FONT_5X8);
       print_String(90,40, (const uint8_t*)"L", FONT_5X8);
       
       //tempVal = Hose1.waterLevel;
       //tempVal = 3;
-      convertFloat_String(water_liters_fs2, hoseBuffer);
+      convertFloat_String(water_liters_fs[1], hoseBuffer);
       print_String(0,55, (const uint8_t*)"Hose 2:", FONT_5X8);
       print_String(50,55, (const uint8_t*)hoseBuffer, FONT_5X8);
       print_String(90,55, (const uint8_t*)"L", FONT_5X8);
@@ -1773,7 +1760,7 @@ void OLED_SM(uint16_t color){
       //tempVal = 5; //used for testing
       // sprintf(hoseBuffer,"%d L", tempVal);
       
-      convertFloat_String(water_liters_fs3, hoseBuffer);
+      convertFloat_String(water_liters_fs[2], hoseBuffer);
       print_String(0,70, (const uint8_t*)"Hose 3:", FONT_5X8);
       print_String(50,70, (const uint8_t*)hoseBuffer, FONT_5X8);
       print_String(90,70, (const uint8_t*)"L", FONT_5X8);
@@ -1782,17 +1769,16 @@ void OLED_SM(uint16_t color){
       //tempVal = 8; //used for testing
       //sprintf(hoseBuffer,"%d L", tempVal);
       
-      convertFloat_String((water_liters_fs1+water_liters_fs2+water_liters_fs3), hoseBuffer);
+      convertFloat_String((water_liters_fs[0]+water_liters_fs[1]+water_liters_fs[2]), hoseBuffer);
       print_String(0,85, (const uint8_t*)"Total:", FONT_5X8);
       print_String(50,85, (const uint8_t*)hoseBuffer, FONT_5X8);
       print_String(90,85, (const uint8_t*)"L", FONT_5X8);
       
+      for(i=0; i<3; i++){
+        prev_Liters_fs[i] = water_liters_fs[i]; //Save previous readings
+      }
       
-      prev_Liters_FS1 = water_liters_fs1; //Save previous readings
-      prev_Liters_FS2 = water_liters_fs2;
-      prev_Liters_FS3 = water_liters_fs3;
-      
-      if(arrowState == 0){
+      if(arrowState == 0){    //Update Arrow State
         OLED_PrintArrow(100, 40);
       } else if (arrowState == 1) {
         OLED_PrintArrow(100, 55);
@@ -1823,25 +1809,29 @@ void OLED_SM(uint16_t color){
       temp_x = 0;
       temp_y = 30;
       
-      /*
+
+      arrowOptions = 0; //Initialize Arrow Options
+      nodeUnmapped = FALSE; //Initialize flag
+      j = 0; //Initialize Secondary Index
+      
       for (i = 0; i < mesh.addrListTop; i++) {
             // Add sensor nodes to the list of sensors mapped to the hose
-            //Hose[HOSE0].sensors[i] = mesh.addrList[i].nodeID;
-            if (i == (mesh.addrListTop - 1)) {
-              //for(j = 0; (Hose[HOSE0].sensors[j] != mesh.addrList[j].nodeID || ; j++){ 
-              //Hose[HOSE0].sensors[hose0_elements]
+            if (mesh.addrList[i].nodeID != mappedSensors[i]){ //Check if mapped
               sprintf(sensorIDBuffer,"Sensor Node %d", mesh.addrList[i].nodeID);
               print_String(temp_x,temp_y, (const uint8_t*)sensorIDBuffer, FONT_5X8);
-
-            } else {
-              sprintf(sensorIDBuffer,"Sensor Node %d, ", mesh.addrList[i].nodeID);
-              print_String(temp_x,temp_y, (const uint8_t*)sensorIDBuffer, FONT_5X8);
-              
+              unmappedSensors[j] = i; //Save Array Index for Selected Sensor
+              arrowOptions += 1; // Increment amount of arrow options
+              nodeUnmapped = TRUE; //Set Flag to true
+              temp_y += 15; //Increment to new line
+              j += 1; //Increment to next element
             }
-            temp_y += 15;
         }
-        */
-      
+        
+        if(!nodeUnmapped){ //if no Sensors left to map
+          print_String(0,45, (const uint8_t*)"No Sensors to Map", FONT_5X8);
+        }
+        
+      /*
       if (nodeMapState == 0){
         print_String(0,45, (const uint8_t*)"Sensor Node 2", FONT_5X8);
         print_String(0,60, (const uint8_t*)"Sensor Node 5", FONT_5X8);
@@ -1855,87 +1845,62 @@ void OLED_SM(uint16_t color){
         print_String(0,60, (const uint8_t*)"Back", FONT_5X8);
         print_String(0,45, (const uint8_t*)"No Sensors to Map", FONT_5X8);
       }
-        
-      if (nodeMapState < 3){
+      
+      */
+      
+      if(arrowOptions == 4){  //Update Arrow State Corresponding to # of connected sensors
+        if(arrowState == 0){
+          OLED_PrintArrow(90, 45);
+        } else if(arrowState == 1){
+          OLED_PrintArrow(90, 60);
+        } else if(arrowState == 2){
+          OLED_PrintArrow(90, 75);
+        } else {
+          OLED_PrintArrow(50, 90);
+        }
+      } else if(arrowOptions == 3){
         if(arrowState == 0){
           OLED_PrintArrow(90, 45);
         } else if(arrowState == 1){
           OLED_PrintArrow(90, 60);
         } else {
-          OLED_PrintArrow(90, 75);
-        } 
-      } else {
+          OLED_PrintArrow(50, 75);
+        }
+      } else if(arrowOptions == 2){
+        if(arrowState == 0){
+          OLED_PrintArrow(90, 45);
+        } else if(arrowState == 1){
+          OLED_PrintArrow(90, 60);
+        } else {
+          OLED_PrintArrow(50, 75);
+        }
+      } else if(arrowOptions == 3){
+        if(arrowState == 0){
+          OLED_PrintArrow(90, 45);
+        } else if(arrowState == 1){
+          OLED_PrintArrow(90, 60);
+        } else {
+          OLED_PrintArrow(50, 75);
+        }
+      } else if(arrowOptions == 3){
+        if(arrowState == 0 || arrowState == 2){
+          OLED_PrintArrow(90, 45);
+        } else {
           OLED_PrintArrow(50, 60);
+        }
+      } else if(arrowOptions == 1){
+          OLED_PrintArrow(90, 45);
       }
       
-      /*
-    if (mesh.addrListTop == 1) { //Adjust Arrow Selection based on # of sensors
-       OLED_PrintArrow(110, 30);
-    } else if (mesh.addrListTop == 2){
-       if(arrowState == 0){
-        OLED_PrintArrow(110, 30);
-      } else {
-        OLED_PrintArrow(110, 45);
-      } 
-    } else if (mesh.addrListTop == 3){
-        if(arrowState == 0){
-        OLED_PrintArrow(110, 30);
-      } else if(arrowState == 1){
-        OLED_PrintArrow(110, 45);
-      } else {
-        OLED_PrintArrow(110, 60);
-      } 
-    } else {
-       if(arrowState == 0){
-        OLED_PrintArrow(110, 30);
-      } else if(arrowState == 1){
-        OLED_PrintArrow(110, 45);
-      } else if(arrowState == 2){
-        OLED_PrintArrow(110, 60);
-      } else {
-        OLED_PrintArrow(110, 75);
-      } 
-    }
-    * */
-      
       if (ENTER_PRESSED){
-        /*
-        if (mesh.addrListTop == 1) { //Accomodate for arrow selection
-          j = 0; //save array index
-        } else if (mesh.addrListTop == 2){
-          if(arrowState == 0){
-            j = 0; //save array index
-          } else {
-            j = 1;
-          } 
-        } else if (mesh.addrListTop == 3){
-          if(arrowState == 0){
-            j = 0; //save array index
-          } else if(arrowState == 1){
-            j = 1;
-          } else {
-            j = 2;
-          }  
-        } else {
-          if(arrowState == 0){
-            j = 0;
-          } else if(arrowState == 1){
-            j = 1;
-          } else if(arrowState == 2){
-            j = 2;
-          } else {
-            j = 3;
-          } 
-        }
-        */
+        sensorToMap = unmappedSensors[arrowState]; //Transition to corresponding arrowState
+        nextPage = HOSES_MAP_SELECT; //Transition to Map Select 
         
-        nextPage = HOSES_MAP_SELECT;
-        
-        if(nodeMapState >2){
+        if(!nodeUnmapped){ //If There are no more nodes to map
           nextPage = HOSES_HOME;
-        }
+        } 
         
-        arrowState = 0;
+        arrowState = 0; //reset arrow State
         Clear_Screen();
         oledSleepTimer = bcm2835_millis(); //reset sleep timer after each button press
         
@@ -1957,9 +1922,9 @@ void OLED_SM(uint16_t color){
       print_String(0,60, (const uint8_t*)"Hose 2", FONT_5X8);
       print_String(0,75, (const uint8_t*)"Hose 3", FONT_5X8);
       
-      if(nodeMapState == 0){
+      if(mesh.addrList[sensorToMap].nodeID == 2){
         print_String(45,30, (const uint8_t*)"(Node 2)", FONT_5X8);
-      } else if(nodeMapState == 1){
+      } else if(mesh.addrList[sensorToMap].nodeID == 2){
         print_String(45,30, (const uint8_t*)"(Node 4)", FONT_5X8);
       } else {
         print_String(45,30, (const uint8_t*)"(Node 5)", FONT_5X8);
@@ -1973,18 +1938,21 @@ void OLED_SM(uint16_t color){
         OLED_PrintArrow(50, 75);
       } 
     
-      if (ENTER_PRESSED){
+      if (ENTER_PRESSED){ //If Enter Pressed, Save Hose Sensors within Struct
         if(arrowState == 0){
-          Hose[HOSE0].sensors[hose0_elements] = mesh.addrList[j].nodeID;
+          Hose[HOSE0].sensors[hose0_elements] = mesh.addrList[sensorToMap].nodeID;
           hose0_elements++;
         } else if (arrowState == 1) {
-          Hose[HOSE1].sensors[hose1_elements] = mesh.addrList[j].nodeID;
+          Hose[HOSE1].sensors[hose1_elements] = mesh.addrList[sensorToMap].nodeID;
           hose1_elements++;
         } else {
-          Hose[HOSE2].sensors[hose2_elements] = mesh.addrList[j].nodeID;
+          Hose[HOSE2].sensors[hose2_elements] = mesh.addrList[sensorToMap].nodeID;
           hose2_elements++;
         } 
-        nodeMapState += 1;
+        
+        //Store List of Mapped Sensor Node ID's corresponding to Mesh Array Index
+        mappedSensors[sensorToMap] = mesh.addrList[sensorToMap].nodeID;  
+                                          
         arrowState = 0;
         nextPage = HOSES_MAP;
         Clear_Screen();
@@ -2004,6 +1972,7 @@ void OLED_SM(uint16_t color){
         Clear_Screen();
       }
       
+      //Print Settings Menu
       print_String(0,0, (const uint8_t*)"Settings", FONT_8X16);
       
       print_String(0,30, (const uint8_t*)"Adjust Sleep Timer", FONT_5X8);
@@ -2012,7 +1981,8 @@ void OLED_SM(uint16_t color){
       print_String(0,75, (const uint8_t*)"Reset System", FONT_5X8);
       print_String(35,95, (const uint8_t*)timeBuffer, FONT_8X16);
       
-      if(arrowState == 0){
+       //Update Arrow Print statements depending on arrowState
+      if(arrowState == 0){   
         OLED_PrintArrow(112, 30);
       } else if (arrowState == 1) {
         OLED_PrintArrow(105, 45);
@@ -2022,7 +1992,7 @@ void OLED_SM(uint16_t color){
         OLED_PrintArrow(85, 75);
       }
       
-      if (ENTER_PRESSED){
+      if (ENTER_PRESSED){ //Traversal to Page
         if(arrowState == 0){
           nextPage = SETTINGS_SLEEP;
         } else if (arrowState == 1){
@@ -2035,7 +2005,7 @@ void OLED_SM(uint16_t color){
         arrowState = 0;
         Clear_Screen();
         oledSleepTimer = bcm2835_millis(); //reset sleep timer after each button press
-      } else if (BACK_PRESSED){
+      } else if (BACK_PRESSED){ // Return to Home
         nextPage = HOME_PAGE;
         arrowState = 0;
         Clear_Screen();
@@ -2050,19 +2020,22 @@ void OLED_SM(uint16_t color){
       
       print_String(0,0, (const uint8_t*)"Sleep Settings", FONT_8X16);
       
+      //Print out current Sleep TIme 
       print_String(0,30, (const uint8_t*)"Current:", FONT_5X8);
       if(sleepTime == 1){
         sprintf(intBuffer,"%d Min",(sleepTime/MIN_1));
       } else{
         sprintf(intBuffer,"%d Mins",(sleepTime/MIN_1));
       }
+      
+      //Sleep Menu Options
       print_String(70,30, (const uint8_t*)intBuffer, FONT_5X8);
       print_String(0,50, (const uint8_t*)"1 Minute", FONT_5X8);
-      print_String(0,65, (const uint8_t*)"2 Minutes", FONT_5X8);
+      print_String(0,65, (const uint8_t*)"3 Minutes", FONT_5X8);
       print_String(0,80, (const uint8_t*)"5 Minutes", FONT_5X8);
       print_String(0,95, (const uint8_t*)"SLEEP", FONT_5X8);
       
-      
+      //Update Oled States 
       if(arrowState == 0){
         OLED_PrintArrow(65, 50);
       } else if (arrowState == 1) {
@@ -2073,11 +2046,11 @@ void OLED_SM(uint16_t color){
         OLED_PrintArrow(50, 95);
       }
       
-      if (ENTER_PRESSED){
+      if (ENTER_PRESSED){  //Set Timers corresponding to arrowState
         if(arrowState == 0){
           sleepTime = MIN_1;
         } else if (arrowState == 1){
-          sleepTime = MIN_2;
+          sleepTime = MIN_3;
         }  else if(arrowState == 2){
           sleepTime = MIN_5;
         }  else {
@@ -2099,10 +2072,12 @@ void OLED_SM(uint16_t color){
         Clear_Screen();
       }
       
-      if (new_Data){
+      if (new_Data){ //Updates each time a message is received 
         Clear_Screen();
         new_Data = FALSE;
       }
+      
+      //Menu Used for Calibration
       print_String(0,0, (const uint8_t*)"Sensor Recal", FONT_8X16);
       print_String(0,30, (const uint8_t*)"Node ID:", FONT_8X16);
       print_String(0,50, (const uint8_t*)"Moisture(%):", FONT_5X8);
@@ -2111,20 +2086,21 @@ void OLED_SM(uint16_t color){
       print_String(0,110, (const uint8_t*)"New Threshold ", FONT_5X8);
       
       
-      
+      //Check corresponding node Ids
+      //Print current soil Moisture reading 
       if (selected_Node == 2){ //Store Struct Variables as Strings
         convertFloat_String(current_Dat_1.soilMoisture, currentBuffer1);
         sprintf(currentBuffer4, "%d", current_Dat_1.nodeID);
-        convertFloat_String(moisture_thresh_s0, currentBuffer5);
+        convertFloat_String(moisture_s_thresh[0], currentBuffer5);
         
       } else if (selected_Node == 5){
         convertFloat_String(current_Dat_2.soilMoisture, currentBuffer1);
         sprintf(currentBuffer4, "%d", current_Dat_2.nodeID);
-        convertFloat_String(moisture_thresh_s1, currentBuffer5);
+        convertFloat_String(moisture_s_thresh[1], currentBuffer5);
       } else if (selected_Node == 4){
         convertFloat_String(current_Dat_3.soilMoisture, currentBuffer1);
         sprintf(currentBuffer4, "%d", current_Dat_3.nodeID);
-        convertFloat_String(moisture_thresh_s2, currentBuffer5);
+        convertFloat_String(moisture_s_thresh[2], currentBuffer5);
       }
       
       //Print Variable Strings
@@ -2141,7 +2117,7 @@ void OLED_SM(uint16_t color){
         
       } 
       
-      
+      //Update Selected Node on Enter being pressed 
       if (ENTER_PRESSED){
         if(arrowState == 0 || arrowState == 2){
           if(selected_Node == 2){
@@ -2155,11 +2131,11 @@ void OLED_SM(uint16_t color){
           arrowState = 0;
         } else {
           if (selected_Node == 2){
-            moisture_thresh_s0 = current_Dat_1.soilMoisture;
+            moisture_s_thresh[0] = current_Dat_1.soilMoisture;
           } else if (selected_Node == 5){
-            moisture_thresh_s1 = current_Dat_2.soilMoisture;
+            moisture_s_thresh[1] = current_Dat_2.soilMoisture;
           } else {
-            moisture_thresh_s2 = current_Dat_3.soilMoisture;
+            moisture_s_thresh[2] = current_Dat_3.soilMoisture;
           }
           new_Data = TRUE;
         } 
@@ -2178,6 +2154,8 @@ void OLED_SM(uint16_t color){
         Clear_Screen();
       }
       
+      
+      //Present Color Settings with available options 
       print_String(0,0, (const uint8_t*)"Color Settings", FONT_8X16);
       
       print_String(0,30, (const uint8_t*)"White", FONT_5X8);
@@ -2197,6 +2175,7 @@ void OLED_SM(uint16_t color){
         OLED_PrintArrow(40, 75);
       }
       
+      //Change color corresponding to arrowState on Enter Press
       if (ENTER_PRESSED){
         if(arrowState == 0){
           oledColor = WHITE;
@@ -2210,7 +2189,7 @@ void OLED_SM(uint16_t color){
         Clear_Screen();
         oledSleepTimer = bcm2835_millis(); //reset sleep timer after each button press
       } else if (BACK_PRESSED){
-        nextPage = SETTINGS_HOME;
+        nextPage = SETTINGS_HOME; //Return to Settings Page
         arrowState = 0;
         Clear_Screen();
         oledSleepTimer = bcm2835_millis(); //reset sleep timer after each button press
@@ -2222,6 +2201,7 @@ void OLED_SM(uint16_t color){
         Clear_Screen();
       }  
       
+      //Print Reset Statement 
       print_String(0,0, (const uint8_t*)"System Reset", FONT_8X16);
       
       print_String(0,30, (const uint8_t*)"This will reset all ", FONT_5X8);
@@ -2271,7 +2251,7 @@ void OLED_SM(uint16_t color){
    @Function checkButtons(void)
    @param None
    @return None
-   @brief This function checksButtons and sets appropriate flag
+   @brief This function uses debouncing to checksButtons and sets appropriate flag
    @note
    @author Brian Naranjo, 1/25/20
    @editor   */
@@ -2345,19 +2325,20 @@ void checkButtons(void) {
 */
 
 int convertFloat_String(float in, char buffer[100]){
-    temp_wholeVal = in;
+    temp_wholeVal = in; //Store float into temporary float variable
   
-    if (testFloat < 0){
-      temp_wholeVal = -testFloat;
-    } 
+    if (in < 0){
+      temp_wholeVal = -in; //Store positive value if negative
+    }                     //Minus sign taken care of in print statement 
 
-    wholeVal = temp_wholeVal;
+    wholeVal = temp_wholeVal; //Store Whole Integer Value
 
-    temp_decimalVal = temp_wholeVal - wholeVal;
+    temp_decimalVal = temp_wholeVal - wholeVal; //Obtain remainder as float
   
-    decimalVal = trunc(temp_decimalVal*10000);
+    decimalVal = trunc(temp_decimalVal*10000); //Store decimal value as whole int
     
-    if (testFloat < 0){
+    //Store Int Values into string to format as a float value
+    if (in < 0){
       sprintf(buffer,"-%d.%01d", wholeVal, decimalVal );
     } else {
       sprintf(buffer,"%d.%01d", wholeVal, decimalVal );
@@ -2392,6 +2373,7 @@ int printGrid(int16_t x0, int16_t x1, int16_t y0, int16_t y1, int16_t xtics, int
   
   xTic = x0 + incrementX;
   
+  //Print Tic Marks on X Axis 
   for(i=0;i <= xtics-1; i++){
     Write_Line(xTic, y1-2, xTic, y1+2 );
     xTic += incrementX;
@@ -2402,6 +2384,7 @@ int printGrid(int16_t x0, int16_t x1, int16_t y0, int16_t y1, int16_t xtics, int
   
   yTic = y1 - incrementY; 
   
+  //Print Tic Marks on Y Axis
   for(i=0;i <= ytics-1; i++){
     Write_Line(x0-2, yTic, x0+2, yTic );
     yTic -= incrementY;
@@ -2452,19 +2435,22 @@ void printHoseStatus(int16_t x, int16_t y, uint8_t status){
 int printAxesLabels(int16_t x0, int16_t y0){
   int x_Axis = 80;
   int y_Axis = 0;
-  int temp_x = x0+5;
+  int temp_x = x0+5;  //Initialize Index variables
   int temp_y = y0;
   int i = 0;
     
+  //Print X Value Axes Values
   for (i = 0; i < 6; i++ ){
     sprintf(intBuffer,"%d", y_Axis);
     print_String(temp_x,temp_y, (const uint8_t*)intBuffer, FONT_5X8);
     y_Axis += 20;
     temp_y -= 20;
   }
-  
-  temp_y = y0;
+
+  temp_y = y0;    //Initialize Index variables 
   temp_x += x0+35;
+  
+  //Print Y Value Axes Values
   for (i = 0; i < 5; i++ ){
     sprintf(intBuffer,"%d", x_Axis);
     print_String(temp_x,temp_y, (const uint8_t*)intBuffer, FONT_5X8);
@@ -2492,7 +2478,8 @@ int plotSampleData( D_Struct TestData[], uint8_t dataType, int16_t size){
   int16_t x_Value = 0;
   int16_t mapped_x_Value = x_Value + 20; //start X at Left Side of Grid 
   
-  if( dataType == MOISTURE){
+  //Print Corresponding to selecetd DataType 
+  if( dataType == MOISTURE){  
     
     printf("Plotting Moisture \r\n ");
     
@@ -2504,12 +2491,13 @@ int plotSampleData( D_Struct TestData[], uint8_t dataType, int16_t size){
     print_String(0,60, (const uint8_t*)"Water%", FONT_5X8);
     print_String(55,120, (const uint8_t*)"Mins Ago", FONT_5X8);
     
+    //Set number 
+    x_Increment = 100 / MAX_ELEMENTS; //100 indicates the number of pixels
+                                      //vertically on the OLED module
     
-    x_Increment = 100 / MAX_ELEMENTS;
+    for(i = 0; i <= (size-1) ; i++){ //Plot Data Points 
     
-    for(i = 0; i <= (size-1) ; i++){
-      
-      mapped_y_Value = (int16_t)(110-TestData[i].soilMoisture);
+      mapped_y_Value = (int16_t)(110-TestData[i].soilMoisture); //110 is bottom of OLED
    
       //printf("Element: %d \r\n", i); //Testing Struct Elements
       
@@ -2534,11 +2522,11 @@ int plotSampleData( D_Struct TestData[], uint8_t dataType, int16_t size){
     print_String(0,60, (const uint8_t*)"Light%", FONT_5X8);
     print_String(55,120, (const uint8_t*)"Mins Ago", FONT_5X8);
     
-    x_Increment = 100 / MAX_ELEMENTS;
+    x_Increment = 100 / MAX_ELEMENTS; //Determine number points to increment in x-range
     
-    for(i = 0; i <= (size-1) ; i++){
+    for(i = 0; i <= (size-1) ; i++){ //Plot Data Points 
       
-      mapped_y_Value = (int16_t)(110-TestData[i].lightLevel);
+      mapped_y_Value = (int16_t)(110-TestData[i].lightLevel); //110 is bottom of OLED
    
       //printf("Element: %d \r\n", i);  //Testing Struct Elements
       
@@ -2563,11 +2551,11 @@ int plotSampleData( D_Struct TestData[], uint8_t dataType, int16_t size){
     print_String(0,60, (const uint8_t*)"Deg(C)", FONT_5X8);
     print_String(55,120, (const uint8_t*)"Mins Ago", FONT_5X8);
     
-    x_Increment = 100 / MAX_ELEMENTS;
+    x_Increment = 100 / MAX_ELEMENTS; //Determine number points to increment in x-range
     
-    for(i = 0; i <= size ; i++){
+    for(i = 0; i <= size ; i++){ //Plot data points 
       
-      mapped_y_Value = (int16_t)TestData[i].temp_C;
+      mapped_y_Value = (int16_t)TestData[i].temp_C; //110 is bottom of OLED
    
       //printf("Element: %d \r\n", i); //Testing Struct Elements
       
@@ -2581,7 +2569,7 @@ int plotSampleData( D_Struct TestData[], uint8_t dataType, int16_t size){
     gridPlotted = TRUE;
     
   } else {
-    printf(" No Plot Selected \r\n ");
+    printf(" No Plot Selected \r\n "); //Print error message if invalid dataType 
     
     Set_Color(RED);
     print_String(20,0, (const uint8_t*)"No Plot", FONT_5X8);
@@ -2602,6 +2590,7 @@ int plotSampleData( D_Struct TestData[], uint8_t dataType, int16_t size){
    @return: TRUE/FALSE depending if data was successfully printed
 */
 void Reset_System(void){
+  int i;
   //Reset Hose Variables
   Hose[0] = Hose0; Hose[1] = Hose1; Hose[2] = Hose2;
   Hose[0].waterLevel = 1; Hose[1].waterLevel = 1; Hose[2].waterLevel = 1; 
@@ -2610,29 +2599,27 @@ void Reset_System(void){
   
   
   //Reset Flow Sensor Variables
-  pulseCount_fs1 = 0;
-  pulseCount_fs2 = 0;
-  pulseCount_fs3 = 0;
-  oledColor = WHITE; //Set Oled Color to default
-  sleepTime = MIN_3;
-  selected_Node = 2;
-  moisture_thresh_s0 = 32.0;
-  moisture_thresh_s1 = 38.0;
-  moisture_thresh_s2 = 34.0;
-  nodeMapState = 0;
+  for(i=0; i<3; i++){
+    pulseCount_fs[i] = 0;
+    moisture_s_thresh[i] = 45.0;
+  }
   
+  oledColor = WHITE; //Set Oled Color to default
+  sleepTime = MIN_3; //Reset Sleep Timer
+  selected_Node = 2; //Reset Selected Node for Testing 
+
   return;
   
 }
 
 void Set_Select(uint8_t hose_selected){
-  if(hose_selected == HOSE0){
+  if(hose_selected == HOSE0){ //Set Select to 0x00
     DEV_Digital_Write(SEL_0_Pin, LOW);
     DEV_Digital_Write(SEL_1_Pin, LOW);
-  } else if (hose_selected == HOSE1){
+  } else if (hose_selected == HOSE1){ //Set Select to 0x01
     DEV_Digital_Write(SEL_0_Pin, HIGH);
     DEV_Digital_Write(SEL_1_Pin, LOW);
-  } else {
+  } else {                            //Set Select to 0x10
     DEV_Digital_Write(SEL_0_Pin, LOW);
     DEV_Digital_Write(SEL_1_Pin, HIGH);
   }
