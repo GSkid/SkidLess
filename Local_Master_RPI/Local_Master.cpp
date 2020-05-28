@@ -422,19 +422,19 @@ int main(void) {
           //printf("%f, %f, %d, %d, %f, %d, %d, %d, %d, %d, %d\n", D_Dat.soilMoisture, D_Dat.lightLevel, D_Dat.temp_C, Forecast1.pressure, Forecast1.precipProb, D_Dat.digitalOut, D_Dat.nodeID, D_Dat.battLevel, Hose[0].status, Hose[1].status, Hose[2].status);
         
 		  // prints out elements of the sensor data struct to the file
-          fprintf(out, "%13f,   ", D_Dat.soilMoisture); 
+          fprintf(out1, "%13f,   ", D_Dat.soilMoisture); 
           convertFloat_String(D_Dat.soilMoisture, testBuffer2); 
-          fprintf(out, "%13f,   ", D_Dat.lightLevel); 
+          fprintf(out1, "%13f,   ", D_Dat.lightLevel); 
           convertFloat_String(D_Dat.lightLevel, testBuffer3); 
-          fprintf(out, "%19d,   ", D_Dat.temp_C);
-          fprintf(out, "%19d,   ", Forecast1.pressure); 
-          fprintf(out, "%11f,   ", Forecast1.precipProb);
-          fprintf(out, "%14d,   ", D_Dat.digitalOut); 
-          fprintf(out, "%7d,   ", D_Dat.nodeID);
-          fprintf(out, "%14d,   ", D_Dat.battLevel);
-          fprintf(out, "%5d,   ", Hose[0].status);
-          fprintf(out, "%5d,   ", Hose[1].status);
-          fprintf(out, "%5d\n", Hose[2].status);
+          fprintf(out1, "%19d,   ", D_Dat.temp_C);
+          fprintf(out1, "%19d,   ", Forecast1.pressure); 
+          fprintf(out1, "%11f,   ", Forecast1.precipProb);
+          fprintf(out1, "%14d,   ", D_Dat.digitalOut); 
+          fprintf(out1, "%7d,   ", D_Dat.nodeID);
+          fprintf(out1, "%14d,   ", D_Dat.battLevel);
+          fprintf(out1, "%5d,   ", Hose[0].status);
+          fprintf(out1, "%5d,   ", Hose[1].status);
+          fprintf(out1, "%5d\n", Hose[2].status);
 		  
 		  // close the file
           fclose(out1);
@@ -449,19 +449,19 @@ int main(void) {
           //printf("%f, %f, %d, %d, %f, %d, %d, %d, %d, %d, %d\n", D_Dat.soilMoisture, D_Dat.lightLevel, D_Dat.temp_C, Forecast1.pressure, Forecast1.precipProb, D_Dat.digitalOut, D_Dat.nodeID, D_Dat.battLevel, Hose[0].status, Hose[1].status, Hose[2].status);
 		
           // prints out elements of the sensor data struct to the file
-          fprintf(out, "%13f,", D_Dat.soilMoisture); 
+          fprintf(out2, "%13f,", D_Dat.soilMoisture); 
           convertFloat_String(D_Dat.soilMoisture, testBuffer2); 
-          fprintf(out, "%13f,", D_Dat.lightLevel); 
+          fprintf(out2, "%13f,", D_Dat.lightLevel); 
           convertFloat_String(D_Dat.lightLevel, testBuffer3); 
-          fprintf(out, "%19d,", D_Dat.temp_C);
-          fprintf(out, "%19d,", Forecast1.pressure); 
-          fprintf(out, "%11f,", Forecast1.precipProb);
-          fprintf(out, "%14d,", D_Dat.digitalOut); 
-          fprintf(out, "%7d,", D_Dat.nodeID);
-          fprintf(out, "%14d,", D_Dat.battLevel);
-          fprintf(out, "%5d,", Hose[0].status);
-          fprintf(out, "%5d,", Hose[1].status);
-          fprintf(out, "%5d\n", Hose[2].status);
+          fprintf(out2, "%19d,", D_Dat.temp_C);
+          fprintf(out2, "%19d,", Forecast1.pressure); 
+          fprintf(out2, "%11f,", Forecast1.precipProb);
+          fprintf(out2, "%14d,", D_Dat.digitalOut); 
+          fprintf(out2, "%7d,", D_Dat.nodeID);
+          fprintf(out2, "%14d,", D_Dat.battLevel);
+          fprintf(out2, "%5d,", Hose[0].status);
+          fprintf(out2, "%5d,", Hose[1].status);
+          fprintf(out2, "%5d\n", Hose[2].status);
 		  
 		  // close the file
           fclose(out2);
