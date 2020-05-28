@@ -245,7 +245,7 @@ void insert_into_database(sqlite3 *mDb, double soil_moisture, int light, int tem
 insert_into_database(sqlite3 *mDb, double soil_moisture, int light, int temp, double pressure, double precip_prob, int output, int nodeID, double battery_lvl, int hose1, int hose2, int hose3);
 int createTable(sqlite3 *db);
 static int callback(void *NotUsed, int argc, char **argv, char **azColName) ;
-
+void processCSV(sqlite3 *db);
 
 
 
@@ -695,7 +695,7 @@ void processCSV(sqlite3 *db)
 		hose2  = atoi(j);
 		hose3  = atoi(k);
      	//printf("%d\n %d\n %d\n %d\n %d\n %d\n %d\n", i, j, k, l, m, n, o);
-     	insert_into_database(db, soil_moisture, light, temp, pressure, precip_prob, output, nodeID, battery_lvl, hose1, hose2, hose3));
+     	insert_into_database(db, soil_moisture, light, temp, pressure, precip_prob, output, nodeID, battery_lvl, hose1, hose2, hose3);
 	}
 
 	fclose(fp);
