@@ -562,6 +562,7 @@ int main(void) {
         }
         // Reset the water level threshold according to the # of sensors
         Hose[HOSE0].waterLevel = i/2;
+        printf("Water Level Threshold: %d\n\n", Hose[HOSE0].waterLevel);
       }
     }
 
