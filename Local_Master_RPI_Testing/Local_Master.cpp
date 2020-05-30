@@ -1,5 +1,6 @@
 #ifndef __cplusplus
-#define __cplusplus# endif
+#define __cplusplus
+#endif
 
 // **********INCLUDES ***********
 #include <RF24/RF24.h>
@@ -13,7 +14,7 @@
 #include "OLED_Driver.h"
 #include <stdio.h>
 #include <stdlib.h>		//exit()
-#include <signal.h >    	//signal()
+#include <signal.h>    	//signal()
 #include <math.h>
 #include <time.h>
 #include <sqlite3.h>
