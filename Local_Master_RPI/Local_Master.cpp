@@ -18,6 +18,7 @@
 #include <math.h>
 #include <time.h>
 #include <sqlite3.h>
+#include "obj/Debug.h"
 
 /****GLOBALS ****/
 #define LED RPI_BPLUS_GPIO_J8_07
@@ -89,6 +90,7 @@
 // MISC
 #define DEBUG_ON 1
 #define DATA_PARAM_SIZE 10
+#define DATA_PARAM_NUM 11
 
 /*Avialable Colors
 #define BLACK   0x0000
@@ -346,11 +348,15 @@ void insert_into_database(sqlite3 *mDb, double soil_moisture, int light,
 void processCSV(sqlite3 *db);
 int createTable(sqlite3 *db);
 static int callback(void *NotUsed, int argc, char **argv, char **azColName);
+void DEBUG_LOG(const char*);
 
 /******************************************************************************/
 /****Void Setup ****/
 void setup(void)
 {
+    DEBUG_LOG("Starting setup");
+    //DEBUG("Starting setup.\n");
+    
    	// Initialize the Hose array
     Hose[0] = Hose0;
     Hose[1] = Hose1;
@@ -366,13 +372,16 @@ void setup(void)
     Hose[2].status = WATER_OFF;
 
    	// Init the GPIO Library
+	DEBUG_LOG("Initializing the GPIO Library");
+	
     DEV_ModuleInit();
     Device_Init();
-
     bcm2835_init();
     bcm2835_spi_begin();
 
    	// Set Pins to Output
+	DEBUG_LOG("Setting GPIO Pin Modes");
+	
     DEV_GPIO_Mode(LPMOS_Pin, 1);
     DEV_GPIO_Mode(RPMOS_Pin, 1);
     DEV_GPIO_Mode(LNMOS_Pin, 1);
@@ -458,7 +467,9 @@ void setup(void)
             test_Moisture -= 0.3;
         }
     }
-
+    
+    DEBUG_LOG("Setup Complete");
+    
     return;
 }
 
@@ -500,6 +511,7 @@ int main(void)
     printf("now: %d-%02d-%02d %02d:%02d:%02d\n", tm.tm_year + 1900, tm.tm_mon 
 		+ 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
 
+	DEBUG_LOG("Begin Loop");
     while (1)
     {
        	// Keep the network updated
@@ -510,7 +522,8 @@ int main(void)
         mesh.DHCP();
 
         /****Check For Available Network Data ****/
-
+		DEBUG_LOG("Checking for Available Network Data");
+		
        	// Check for incoming data from other nodes
         if (network.available())
         {
@@ -566,8 +579,10 @@ int main(void)
                 network.read(header, 0, 0);
             }
         }
+		DEBUG_LOG("Checking for Available Network Data Complete");
 
         /****Update List of Nodes ****/
+		DEBUG_LOG("Updating Node List");
 
         if (Timer(MIN_2, connectionTimer))
         {
@@ -596,6 +611,7 @@ int main(void)
                 printf("Water Level Threshold: %d\n\n", Hose[HOSE0].waterLevel);
             }
         }
+		DEBUG_LOG("Finished Updating List of Nodes");
 
         /****Data Logging ****/
 
@@ -605,6 +621,8 @@ int main(void)
             dFlag = 0;
 
             /****Write Data Values to SD Card ****/
+			DEBUG_LOG("Begin Logging Data");
+			
            	/* create/open the file to append to (this is the file that stores 
 				all the sensor data) */
             FILE *dataLog_fp = fopen("Data_Log.csv", "a");
@@ -661,9 +679,12 @@ int main(void)
 
            	// close the file
             fclose(dataLogToDb_fp);
+			
+			DEBUG_LOG("Data Logging Completed");
 
             /****SQLite Database ****/
 
+			DEBUG_LOG("Accessing Database");
            	// creates and opens database
             rc = sqlite3_open("sensordata.db", &db);
 
@@ -679,6 +700,8 @@ int main(void)
            	// creates the table in the database
             createTable(db);
 
+			DEBUG_LOG("Updating Database.");
+					
            	/* takes in the data from the csv file (ignores the first line of 
 			headers), and places the data into the table */
             processCSV(db);
@@ -686,6 +709,8 @@ int main(void)
             /*Close database */
             rc = sqlite3_close(db);
 
+			DEBUG_LOG("Database Update Complete.");
+			
            	//Update Struct Variables for Data
             if (D_Dat.nodeID == 2)
             {
@@ -879,7 +904,7 @@ int main(void)
 
         if (Timer(FORECAST_CALL, forecastTimer))
         {
-            printf("Opening call to forecast API...\n");
+            DEBUG_LOG("Opening call to forecast API...");
             forecastTimer = millis();
            	// Opens and runs the python script in the terminal
             fp = popen("python RFpython_test.py", "r");
@@ -891,7 +916,7 @@ int main(void)
                 break;
             }
 
-            printf("Call to forecast API success.\n");
+            DEBUG_LOG("Call to forecast API success");
             int tmp = 0;
 
            	// loop that extracts the outputted data from the shell and places it in an array
@@ -979,6 +1004,14 @@ int main(void)
 
 /******************************************************************************/
 /**** HELPER FXNS ****/
+void DEBUG_LOG(const char* msg)
+{
+    if (DEBUG_ON)
+    {
+        fprintf(stdout,"%s.\n", msg);
+    }
+}
+
 
 /*@name: Timer
    @param: delayThresh - timer duration
@@ -1112,7 +1145,7 @@ void processCSV(sqlite3 *db)
             fprintf(stdout, "Result: %d.\n", result);
         }
 
-        if (result == 11)
+        if (result == DATA_PARAM_NUM)
         {
             fprintf(stdout, "Line correctly read from csv.\n");
         }
