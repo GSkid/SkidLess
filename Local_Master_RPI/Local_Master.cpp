@@ -401,11 +401,15 @@ int main(void) {
           // conditional here: output if first loop, dont afterward, controlled by column_flag
           if (column_flag == 0)
           {
-              fprintf(out, "Soil_Moisture, Ambient_Light, Ambient_Temp, Barometric_Pressure, Precip_Prob, Digital_Output, Node_ID, Battery_Level, Hose_1, Hose_2, Hose_3\n");
+              fprintf(out, "Soil_Moisture, Ambient_Light, Ambient_Temp, Barometric_Pressure, \
+                 Precip_Prob, Digital_Output, Node_ID, Battery_Level, Hose_1, Hose_2, Hose_3\n");
               column_flag = 1;
           }
 
-          printf("%f, %f, %d, %d, %f, %d, %d, %d, %d, %d, %d\n", D_Dat.soilMoisture, D_Dat.lightLevel, D_Dat.temp_C, Forecast1.pressure, Forecast1.precipProb, D_Dat.digitalOut, D_Dat.nodeID, D_Dat.battLevel, Hose[0].status, Hose[1].status, Hose[2].status);
+          printf("%f, %f, %d, %d, %f, %d, %d, %d, %d, %d, %d\n", D_Dat.soilMoisture, \
+              D_Dat.lightLevel, D_Dat.temp_C, Forecast1.pressure, Forecast1.precipProb, \
+              D_Dat.digitalOut, D_Dat.nodeID, D_Dat.battLevel, Hose[0].status, \
+              Hose[1].status, Hose[2].status);
         
           fprintf(out, "%13f,   ", D_Dat.soilMoisture);
           convertFloat_String(D_Dat.soilMoisture, testBuffer2);
@@ -520,7 +524,7 @@ return(1);
 }
 
 
-/**************************************************************************************************/
+/************************************************************************************************/
 /****  HELPER FXNS ****/
 
 
@@ -607,7 +611,8 @@ uint8_t WaterDelivery(HOSE_NUM HOSE_IN)
     else {
       Hose[HOSE_IN].status = WATER_OFF;
     }
-    printf("Hose %d Water Delivery:\nHose Status: %d;  Prev State = %d\n\n", HOSE_IN, Hose[HOSE_IN].status, prevstatus);
+    printf("Hose %d Water Delivery:\nHose Status: %d;  Prev State = %d\n\n", \
+        HOSE_IN, Hose[HOSE_IN].status, prevstatus);
     // Now we actually turn on or off the Hose
     if (prevstatus != Hose[HOSE_IN].status) {
         // If statements to control terminal printing

@@ -173,7 +173,8 @@ void loop() {
     if (batteryVoltage <= 35) {
       batteryVoltage = pullBatteryLevel();
       if (batteryVoltage <= 35) {
-        printf("Battery Level Low: %d\n\n--------------- Reset Device To Continue ---------------", batteryVoltage);
+        printf("Battery Level Low: %d\n\n------- Reset Device To Continue -------",\
+          batteryVoltage);
         set_sleep_mode(SLEEP_MODE_PWR_DOWN);
         while (1) {
           sleep_enable();
@@ -198,7 +199,7 @@ void loop() {
       Data_Struct.temp_C = bmp.readTemperature();
     }
     Data_Struct.battLevel = pullBatteryLevel();
-    Data_Struct.digitalOut = run_DeepOcean(Data_Struct, Thresholds); // will be replaced by DeepOcean
+    Data_Struct.digitalOut = run_DeepOcean(Data_Struct, Thresholds); 
     Data_Struct.node_ID = nodeID;
 
 
@@ -405,8 +406,10 @@ uint8_t getBatteryReading(void) {
   float rawVoltageDivider10 = ((float)analogRead(BATTERY) * 50.5) / 1023.0;
   delayMicroseconds(10);
   float rawVoltageDivider11 = ((float)analogRead(BATTERY) * 50.5) / 1023.0;
-  float battAvg = rawVoltageDivider2 + rawVoltageDivider3 + rawVoltageDivider4 + rawVoltageDivider5 + rawVoltageDivider6;
-  battAvg =  battAvg + rawVoltageDivider7 + rawVoltageDivider8 + rawVoltageDivider9 + rawVoltageDivider10 + rawVoltageDivider11;
+  float battAvg = rawVoltageDivider2 + rawVoltageDivider3 + rawVoltageDivider4 +\
+    rawVoltageDivider5 + rawVoltageDivider6;
+  battAvg =  battAvg + rawVoltageDivider7 + rawVoltageDivider8 + rawVoltageDivider9 +\
+    rawVoltageDivider10 + rawVoltageDivider11;
   uint8_t bat_soup = (uint8_t)battAvg;
   return bat_soup;
 }
@@ -417,7 +420,8 @@ uint8_t getBatteryReading(void) {
    @return: mapped battery voltage in dV
 */
 uint8_t pullBatteryLevel(void) {
-  uint8_t mr_avg = getBatteryReading() + getBatteryReading() + getBatteryReading() + getBatteryReading() + getBatteryReading();
+  uint8_t mr_avg = getBatteryReading() + getBatteryReading() + getBatteryReading() +\
+    getBatteryReading() + getBatteryReading();
   return (mr_avg / 5);
 }
 
@@ -455,7 +459,8 @@ int run_DeepOcean(D_Struct D_Struct, C_Struct C_Thresh) {
 
   // Chcek the soil moisture against the first threshold
   // If its light, then don't water unless it has been a long time
-  if ((D_Struct.soilMoisture < C_Thresh.sM_thresh) && (D_Struct.lightLevel <= C_Thresh.lL_thresh)) { //
+  if ((D_Struct.soilMoisture < C_Thresh.sM_thresh) && \
+    (D_Struct.lightLevel <= C_Thresh.lL_thresh)) { //
     HydroHomie = 1;
   }
 
