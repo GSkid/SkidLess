@@ -346,7 +346,6 @@ void DEBUG_LOG(const char*);
 void setup(void)
 {
     DEBUG_LOG("Starting setup");
-    //DEBUG("Starting setup.\n");
     
    	// Initialize the Hose array
     Hose[0] = Hose0;
@@ -362,16 +361,16 @@ void setup(void)
     Hose[1].status = WATER_OFF;
     Hose[2].status = WATER_OFF;
 
-   	// Init the GPIO Library
-	DEBUG_LOG("Initializing the GPIO Library");
+    // Init the GPIO Library
+    DEBUG_LOG("Initializing the GPIO Library");
 	
     DEV_ModuleInit();
     Device_Init();
     bcm2835_init();
     bcm2835_spi_begin();
 
-   	// Set Pins to Output
-	DEBUG_LOG("Setting GPIO Pin Modes");
+    // Set Pins to Output
+    DEBUG_LOG("Setting GPIO Pin Modes");
 	
     DEV_GPIO_Mode(LPMOS_Pin, 1);
     DEV_GPIO_Mode(RPMOS_Pin, 1);
@@ -570,10 +569,10 @@ int main(void)
                 network.read(header, 0, 0);
             }
         }
-		DEBUG_LOG("Checking for Available Network Data Complete");
+	DEBUG_LOG("Checking for Available Network Data Complete");
 
         /****Update List of Nodes ****/
-		DEBUG_LOG("Updating Node List");
+	DEBUG_LOG("Updating Node List");
 
         if (Timer(MIN_2, connectionTimer))
         {
@@ -936,60 +935,7 @@ int main(void)
 
         /**Flow Sensor Management ****/
 
-<<<<<<< HEAD
-    /**** Data Logging ****/
-  
-    if (dFlag) {
-        // This should be the last thing that gets done when data is received
-      dFlag = 0;
-
-      /**** Write Data Values to SD Card ****/
-      {
-          FILE* out = fopen("Data_Log.csv", "a");
- 
-          // prints out main column headers for the data file.
-          // conditional here: output if first loop, dont afterward, controlled by column_flag
-          if (column_flag == 0)
-          {
-              fprintf(out, "Soil_Moisture, Ambient_Light, Ambient_Temp, Barometric_Pressure, \
-                 Precip_Prob, Digital_Output, Node_ID, Battery_Level, Hose_1, Hose_2, Hose_3\n");
-              column_flag = 1;
-          }
-
-          printf("%f, %f, %d, %d, %f, %d, %d, %d, %d, %d, %d\n", D_Dat.soilMoisture, \
-              D_Dat.lightLevel, D_Dat.temp_C, Forecast1.pressure, Forecast1.precipProb, \
-              D_Dat.digitalOut, D_Dat.nodeID, D_Dat.battLevel, Hose[0].status, \
-              Hose[1].status, Hose[2].status);
-        
-          fprintf(out, "%13f,   ", D_Dat.soilMoisture);
-          convertFloat_String(D_Dat.soilMoisture, testBuffer2);
-          fprintf(out, "%13f,   ", D_Dat.lightLevel);
-          convertFloat_String(D_Dat.lightLevel, testBuffer3);
-          fprintf(out, "%19d,   ", D_Dat.temp_C); 
-          fprintf(out, "%19d,   ", Forecast1.pressure);
-          fprintf(out, "%11f,   ", Forecast1.precipProb);
-          fprintf(out, "%14d,   ", D_Dat.digitalOut); 
-          fprintf(out, "%7d,   ", D_Dat.nodeID); 
-          fprintf(out, "%14d,   ", D_Dat.battLevel);
-          fprintf(out, "%5d,   ", Hose[0].status);
-          fprintf(out, "%5d,   ", Hose[1].status);
-          fprintf(out, "%5d,\n", Hose[2].status);
-          fclose(out);
-      }
-      
-      /**** 'S' and 'C' Type Message Responses ****/
-
-      // Here we condition on if the node should be sent a configure message instead
-      // Send to the message stored in the fromNode nodeID, message type 'S'
-      RF24NetworkHeader p_header(mesh.getAddress(D_Dat.nodeID), 'S');
-      // Data_Dat is just a 1 telling the node to go to sleep
-      if (network.write(p_header, &dataDat, sizeof(dataDat))) {
-        printf("Message Returned to %d\n\n", D_Dat.nodeID);
-      }
-    }
-=======
         int i;
-       	// pulseCount_fs2 = 100;	// for testing
         for (i = 0; i > 3; i++)
         {
             recordPulses_FS(i);	//Record Flow Sensor Tach Signals 
@@ -997,14 +943,6 @@ int main(void)
             water_gal_fs[i] = convertLiters_Gals(water_liters_fs[i]);
             prev_Liters_fs[i] = water_liters_fs[i];
         }
->>>>>>> b6404dbb3e92c49404928b43588609d803cfe1b0
-
-        /*Testing Current Data Plotting*/
-       	//convertFloat_String(76.5, currentBuffer1);
-       	//convertFloat_String(23.75, currentBuffer2);
-       	//sprintf(currentBuffer3, "%d", 45);
-       	//sprintf(currentBuffer4, "%d", 2);
-       	//new_Data = TRUE;
 
         /****UI Menu Control ****/
        	//Continously Update System Time each loop
@@ -1212,27 +1150,6 @@ void processCSV(sqlite3 *db)
        	//printf("%d\n %d\n %d\n %d\n %d\n %d\n %d\n", i, j, k, l, m, n, o);
         insert_into_database(db, soil_moisture, light, temp, pressure, precip_prob, output, nodeID, battery_lvl, hose1, hose2, hose3);
     }
-<<<<<<< HEAD
-    
-    /**** UI Menu Control ****/
-    
-    // First check the buttons to inform the oled 
-    checkButtons();
-    // Then call the oled function to operate the UI
-    OLED_SM(WHITE);
-    
-    
-  }  // Loop
-  
-// Should NEVER get here
-return(1);
-}
-
-
-/************************************************************************************************/
-/****  HELPER FXNS ****/
-=======
->>>>>>> b6404dbb3e92c49404928b43588609d803cfe1b0
 
     fclose(fp);
 }
@@ -1365,14 +1282,6 @@ uint8_t WaterDelivery(HOSE_NUM HOSE_IN)
     {
         Hose[HOSE_IN].status = WATER_OFF;
     }
-<<<<<<< HEAD
-    printf("Hose %d Water Delivery:\nHose Status: %d;  Prev State = %d\n\n", \
-        HOSE_IN, Hose[HOSE_IN].status, prevstatus);
-    // Now we actually turn on or off the Hose
-    if (prevstatus != Hose[HOSE_IN].status) {
-        // If statements to control terminal printing
-        if (Hose[HOSE_IN].status == WATER_ON) {
-=======
     printf("Hose %d Water Delivery:\nHose Status: %d;  Prev State = %d\n\n", HOSE_IN, Hose[HOSE_IN].status, prevstatus);
    	// Now we actually turn on or off the Hose
     if (prevstatus != Hose[HOSE_IN].status)
@@ -1380,7 +1289,6 @@ uint8_t WaterDelivery(HOSE_NUM HOSE_IN)
        	// If statements to control terminal printing
         if (Hose[HOSE_IN].status == WATER_ON)
         {
->>>>>>> b6404dbb3e92c49404928b43588609d803cfe1b0
             printf("Turning ON hose...\n");
         }
         else
@@ -2511,7 +2419,6 @@ void OLED_SM(uint16_t color)
               print_String(0,60, (const uint8_t*)"Back", FONT_5X8);
               print_String(0,45, (const uint8_t*)"No Sensors to Map", FONT_5X8);
             }
-
             */
 
             if (arrowOptions == 4)
@@ -3371,7 +3278,6 @@ int printAxesLabels(int16_t x0, int16_t y0)
    @param: TestData - array of structs used for plotting
    @param: dataType - type of sensor data to display
    @param: size - # of elements in array
-
    @return: TRUE/FALSE depending if data was successfully printed
 */
 
@@ -3512,7 +3418,6 @@ int plotSampleData(D_Struct TestData[], uint8_t dataType, int16_t size)
    @param: TestData - array of structs used for plotting
    @param: dataType - type of sensor data to display
    @param: size - # of elements in array
-
    @return: TRUE/FALSE depending if data was successfully printed
 */
 void Reset_System(void)
