@@ -221,14 +221,10 @@ D_Struct D_Dat;
 D_Struct current_Dat_1;	//Most recent Sensor Data
 D_Struct current_Dat_2;
 D_Struct current_Dat_3;
-//D_Struct current_Dat_4;
-//D_Struct current_Dat_5;
 D_Struct sensor_data[MAX_ELEMENTS];
 D_Struct sensor1_data[MAX_ELEMENTS];	//Recent Sensor Data for Plotting
 D_Struct sensor2_data[MAX_ELEMENTS];
 D_Struct sensor3_data[MAX_ELEMENTS];
-//D_Struct sensor4_data[MAX_ELEMENTS];
-//D_Struct sensor5_data[MAX_ELEMENTS]
 uint8_t dFlag = 0;
 uint8_t dataDat = 1;
 uint8_t column_flag = 0;
@@ -245,13 +241,10 @@ static w_State waterState = HOSE_IDLE;	//Water Deliver SM state var
 //Array Declarations
 static int mappedSensors[MAX_SENSORS];	//Intialize Mapping Variables 
 static int unmappedSensors[MAX_SENSORS];
-//static uint8_t prev_waterLevel[3];
 static char timeBuffer[20];	//Buffers used for format Variables into strings
 static char intBuffer[20];
 static char sensorIDBuffer[100];
 static char hoseBuffer[100];
-//static char testBuffer2[100];
-//static char testBuffer3[100];
 static char currentBuffer1[100];	//Used for printing current sensor readings 
 static char currentBuffer2[100];
 static char currentBuffer3[100];
@@ -264,7 +257,6 @@ static uint16_t oledColor;
 
 static int oledHour;	//Store System Time
 static int oledMinute;
-//static int tempVal = 0;
 static int wholeVal = 0;	//Converting 
 static int decimalVal = 0;
 static int hose0_elements = 0;	//keeps track of number of sensors mapped to hose
@@ -283,7 +275,6 @@ static float water_liters_fs[4];
 static float prev_Liters_fs[4];
 static float water_gal_fs[4];
 static float moisture_s_thresh[MAX_SENSORS];	//Moisture Thresholds
-//static float testFloat = 64.757065;
 static float temp_wholeVal = 0;
 static float temp_decimalVal = 0;
 static float test_Moisture = 0;
