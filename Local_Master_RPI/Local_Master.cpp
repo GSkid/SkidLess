@@ -69,6 +69,8 @@
 #define LITERS_TO_GAL 0.264172
 
 // Time
+// These times are given in terms of milliseconds since the timer function
+// uses the bcm2835 built-in millis() timer as reference
 #define FORECAST_CALL 1800000
 #define HOURS_36 129600000
 #define MIN_10 600000
@@ -254,7 +256,6 @@ static char currentBuffer5[100];
 //Variable Declarations
 static uint8_t dataType = 0;	//Determines type of data to be  printed
 static uint16_t oledColor;
-
 static int oledHour;	//Store System Time
 static int oledMinute;
 static int wholeVal = 0;	//Converting 
@@ -347,7 +348,7 @@ void setup(void)
 {
     DEBUG_LOG("Starting setup");
     
-   	// Initialize the Hose array
+   	// Initialize the Hose arrays
     Hose[0] = Hose0;
     Hose[1] = Hose1;
     Hose[2] = Hose2;
@@ -441,19 +442,14 @@ void setup(void)
     test_Moisture = 60;
 
    	//Plotting Moisture Testing 
-    for (i = 0; i < MAX_ELEMENTS; i++)
-    {
+    //This is disabled for actual implementation
+    for (i = 0; i < MAX_ELEMENTS; i++) {
         sensor2_data[i].soilMoisture = test_Moisture;
-        if (((i > 30) && (i < 35)) || ((i > 60) && (i < 65)))
-        {
+        if (((i > 30) && (i < 35)) || ((i > 60) && (i < 65))) {
             test_Moisture += 3;
-        }
-        else if (((i > 36) && (i < 40)) || ((i > 66) && (i < 70)))
-        {
+        } else if (((i > 36) && (i < 40)) || ((i > 66) && (i < 70))) {
             test_Moisture -= 0.8;
-        }
-        else
-        {
+        } else {
             test_Moisture -= 0.3;
         }
     }
@@ -479,29 +475,24 @@ int main(void)
     oledMinute = tm.tm_min;
 
    	//Store Time variables into strings for printing
-    if (oledHour == 0)
-    {
+    if (oledHour == 0) {
     	//Takes Care of 12:00 AM Error
         sprintf(timeBuffer, "%02d:%02d AM", (oledHour + 12), oledMinute);
-    }
-    else if (oledHour < 12)
-    {
+    } else if (oledHour < 12) {
         sprintf(timeBuffer, "%02d:%02d AM", oledHour, oledMinute);
-    }
-    else if (oledHour == 12)
-    {
+    } else if (oledHour == 12) {
     	//Takes care of prev error w/ 12:00 PM
         sprintf(timeBuffer, "%02d:%02d PM", oledHour, oledMinute);
-    }
-    else
-    {
+    } else {
         sprintf(timeBuffer, "%02d:%02d PM", (oledHour - 12), oledMinute);
     }
 
     printf("now: %d-%02d-%02d %02d:%02d:%02d\n", tm.tm_year + 1900, tm.tm_mon 
 		+ 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
 
-	DEBUG_LOG("Begin Loop");
+
+
+	DEBUG_LOG("Begin Loop...");
     while (1)
     {
        	// Keep the network updated
@@ -511,8 +502,9 @@ int main(void)
        	//    addresses the new nodes
         mesh.DHCP();
 
-        /****Check For Available Network Data ****/
-		DEBUG_LOG("Checking for Available Network Data");
+        /******************************Check For Available Network Data******************************/
+
+		DEBUG_LOG("Checking for Available Network Data...");
 		
        	// Check for incoming data from other nodes
         if (network.available())
@@ -557,7 +549,7 @@ int main(void)
                         sensor_data[sd_index] = D_Dat;
                         break;
 
-                       	// Do not read the header data, instead print the address inidicated by the header type
+                    // Do not read the header data if incorrect message type/corrupt data
                     default:
                         break;
                 }
@@ -569,41 +561,46 @@ int main(void)
                 network.read(header, 0, 0);
             }
         }
-	DEBUG_LOG("Checking for Available Network Data Complete");
+	    DEBUG_LOG("Checking for Available Network Data Completed");
 
-        /****Update List of Nodes ****/
-	DEBUG_LOG("Updating Node List");
 
-        if (Timer(MIN_2, connectionTimer))
+        /******************************Update List of Nodes******************************/
+
+	    DEBUG_LOG("Updating Node List...");
+
+        if (Timer(MIN_2, connectionTimer)) 
         {
             connectionTimer = millis();
            	// Other option is to create a dict after receiving a message
-            if (num_nodes != mesh.addrListTop)
+            if (num_nodes != mesh.addrListTop) 
             {
                 num_nodes = mesh.addrListTop;
                 printf("\nConnected nodes: ");
                 int i = 0;
-                for (i = 0; i < mesh.addrListTop; i++)
+                for (i = 0; i < mesh.addrListTop; i++) 
                 {
                    	// Add sensor nodes to the list of sensors mapped to the hose
                     Hose[HOSE0].sensors[i] = mesh.addrList[i].nodeID;
-                    if (i == (mesh.addrListTop - 1))
+                    if (i == (mesh.addrListTop - 1)) 
                     {
                         printf("%d\n", mesh.addrList[i].nodeID);
                     }
-                    else
+                    else 
                     {
                         printf("%d, ", mesh.addrList[i].nodeID);
                     }
                 }
                	// Reset the water level threshold according to the # of sensors
+                // This only uses a single hose for testing purposes, the process can be completed
+                // better through the use of the UI
                 Hose[HOSE0].waterLevel = i / 2;
                 printf("Water Level Threshold: %d\n\n", Hose[HOSE0].waterLevel);
             }
         }
-		DEBUG_LOG("Finished Updating List of Nodes");
+		DEBUG_LOG("Updating List of Nodes Completed");
 
-        /****Data Logging ****/
+
+        /******************************Data Logging******************************/
 
         if (dFlag)
         {
@@ -611,7 +608,7 @@ int main(void)
             dFlag = 0;
 
             /****Write Data Values to SD Card ****/
-			DEBUG_LOG("Begin Logging Data");
+			DEBUG_LOG("Begin Logging Data...");
 			
            	/* create/open the file to append to (this is the file that stores 
 				all the sensor data) */
@@ -619,8 +616,7 @@ int main(void)
 
            	// prints out main column headers for the data file.
            	// conditional here: output if first loop, dont afterward, controlled by column_flag
-            if (column_flag == 0)
-            {
+            if (column_flag == 0) {
                 fprintf(dataLog_fp, "Soil_Moisture, Ambient_Light, "
 				"Ambient_Temp, Barometric_Pressure, Precip_Prob, "
 				"Digital_Output, Node_ID, Battery_Level, Hose_1, Hose_2, "
@@ -672,25 +668,26 @@ int main(void)
 			
 			DEBUG_LOG("Data Logging Completed");
 
-            /****SQLite Database ****/
 
-			DEBUG_LOG("Accessing Database");
+            /******************************SQLite Database******************************/
+
+			DEBUG_LOG("Accessing Database...");
            	// creates and opens database
             rc = sqlite3_open("sensordata.db", &db);
 
-            if (rc)
+            // checks if the database could be opened
+            if (rc) 
             {
                 fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
             }
-            else
-            {
+            else {
                 fprintf(stdout, "Opened database successfully\n");
             }
 
            	// creates the table in the database
             createTable(db);
 
-			DEBUG_LOG("Updating Database.");
+			DEBUG_LOG("Updating Database...");
 					
            	/* takes in the data from the csv file (ignores the first line of 
 			headers), and places the data into the table */
@@ -699,18 +696,19 @@ int main(void)
             /*Close database */
             rc = sqlite3_close(db);
 
-			DEBUG_LOG("Database Update Complete.");
+			DEBUG_LOG("Database Update Complete");
 			
            	//Update Struct Variables for Data
+            //This process is hardcoded for the specific nodes used in testing to demonstrate proof of concept
             if (D_Dat.nodeID == 2)
             {
             	// Update Recent Sensor Node Value
+                // checks if the index is at the max # of elements
                 if (sd_index_1 >= MAX_ELEMENTS)
                 {
-                	// checks if the index is at the max # of elements
                     int i, j = 0;
                    	// Now we transfer the 10 most recent data values to the bottom of the list
-                    for ((i = MAX_ELEMENTS - 10); i < MAX_ELEMENTS; i++)
+                    for ((i = MAX_ELEMENTS - 10); i < MAX_ELEMENTS; i++) 
                     {
                         sensor1_data[j] = sensor1_data[i];	// j is the bottom, i is the top
                         j++;
@@ -727,9 +725,9 @@ int main(void)
             }
             else if (D_Dat.nodeID == 5)
             {
+                // checks if the index is at the max # of elements
                 if (sd_index_2 >= MAX_ELEMENTS)
                 {
-                	// checks if the index is at the max # of elements
                     int i, j = 0;
                    	// Now we transfer the 10 most recent data values to the bottom of the list
                     for ((i = MAX_ELEMENTS - 10); i < MAX_ELEMENTS; i++)
@@ -749,9 +747,9 @@ int main(void)
             }
             else if (D_Dat.nodeID == 4)
             {
+                // checks if the index is at the max # of elements
                 if (sd_index_3 >= MAX_ELEMENTS)
                 {
-                	// checks if the index is at the max # of elements
                     int i, j = 0;
                    	// Now we transfer the 10 most recent data values to the bottom of the list
                     for ((i = MAX_ELEMENTS - 10); i < MAX_ELEMENTS; i++)
@@ -770,7 +768,7 @@ int main(void)
                 new_Data = TRUE;
             }
 
-            /****'S' and 'C' Type Message Responses ****/
+            /******************************'S' and 'C' Type Message Responses******************************/
 
            	// Here we condition on if the node should be sent a configure message instead
            	// Send to the message stored in the fromNode nodeID, message type 'S'
@@ -782,14 +780,17 @@ int main(void)
             }
         }
 
-        /****Water Delivery ****/
 
+        /******************************Water Delivery******************************/
+
+        // Every 1 minute, we want to check each hose to see if we need to turn on/off water
         if (Timer(MIN_1, waterDeliveryTimer))
         {
            	// reset the timer
             waterDeliveryTimer = millis();
             printf("Checking Water Delivery\n");
            	// Then call WaterDelivery to see if we need to turn on each hose
+            // HOSE 0
             if (Hose[0].control == AUTOMATIC)
             {
                 hose_statuses = WaterDelivery(HOSE0);
@@ -822,6 +823,8 @@ int main(void)
                 Hose[0].status = WATER_OFF;
                 hose_statuses &= 0xFE;	//Clear Hose Status
             }
+
+            // HOSE 1
             if (Hose[1].control == AUTOMATIC)
             {
                 hose_statuses = WaterDelivery(HOSE1);
@@ -855,6 +858,8 @@ int main(void)
                 hose_statuses &= 0xFC;	//Clear Hose Status
 
             }
+
+            // HOSE 2
             if (Hose[2].control == AUTOMATIC)
             {
                 hose_statuses = WaterDelivery(HOSE2);
@@ -890,7 +895,8 @@ int main(void)
             }
         }
 
-        /****Forecast Data API Call ****/
+
+        /******************************Forecast Data API Call******************************/
 
         if (Timer(FORECAST_CALL, forecastTimer))
         {
@@ -933,9 +939,11 @@ int main(void)
             pclose(fp);
         }
 
-        /**Flow Sensor Management ****/
+
+        /******************************Flow Sensor Management******************************/
 
         int i;
+        // Here we can check the flow meter on each hose and convert pulses to volume per second
         for (i = 0; i > 3; i++)
         {
             recordPulses_FS(i);	//Record Flow Sensor Tach Signals 
@@ -944,7 +952,7 @@ int main(void)
             prev_Liters_fs[i] = water_liters_fs[i];
         }
 
-        /****UI Menu Control ****/
+        /******************************UI Menu Control******************************/
        	//Continously Update System Time each loop
         t = time(NULL);
         tm = *localtime(&t);
@@ -978,11 +986,13 @@ int main(void)
         checkButtons();
        	// Then call the oled function to operate the UI
         OLED_SM(oledColor);
-    }	// Loop
+    }	//While Loop
 
    	// Should NEVER get here
     return (1);
 }
+
+
 
 /******************************************************************************/
 /**** HELPER FXNS ****/
@@ -1000,7 +1010,7 @@ void DEBUG_LOG(const char* msg)
    @param: prevDelay - time in millis() when the timer started
    @return: digital high/low depending if timer elapsed or not
    This is a non-blocking timer that handles uint32_t overflow,
-   it works off the internal function millis() as reference
+   it works off the internal bcm2835 function millis() as reference
 */
 int Timer(uint32_t delayThresh, uint32_t prevDelay)
 {
@@ -1116,6 +1126,7 @@ void processCSV(sqlite3 *db)
     fgets(line, sizeof(line) - 1, fp);
     while (fgets(line, sizeof(line) - 1, fp) != NULL)
     {
+        // Retrieves the csv data from the file
         result = sscanf(line, "%[^','],%[^','],%[^','],%[^','],%[^','],%[^','],"
 			"%[^','],%[^','],%[^','],%[^','],%[^',']",
             data_param1, data_param2, data_param3, data_param4, data_param5, 
@@ -1136,6 +1147,7 @@ void processCSV(sqlite3 *db)
             fprintf(stderr, "Error: Incorrect number of values read from csv.\n");
         }
 		
+        // Now puts all retrieved data into usable objects
         soil_moisture = atof(data_param1);
         light = atoi(data_param2);
         temp = atoi(data_param3);
@@ -1147,7 +1159,6 @@ void processCSV(sqlite3 *db)
         hose1 = atoi(data_param9);
         hose2 = atoi(data_param10);
         hose3 = atoi(data_param11);
-       	//printf("%d\n %d\n %d\n %d\n %d\n %d\n %d\n", i, j, k, l, m, n, o);
         insert_into_database(db, soil_moisture, light, temp, pressure, precip_prob, output, nodeID, battery_lvl, hose1, hose2, hose3);
     }
 
@@ -1277,6 +1288,7 @@ uint8_t WaterDelivery(HOSE_NUM HOSE_IN)
             }
         }
     }
+
    	// Turn off the hose if the sensors indicate it is not dry enough to water
     else
     {
