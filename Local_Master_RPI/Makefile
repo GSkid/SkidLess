@@ -2,7 +2,7 @@ CXXFLAGS = -Ofast -mfpu=vfp -mfloat-abi=hard -march=armv6zk -mtune=arm1176jzf-s 
 VPATH = RF24:RF24Network:RF24Mesh
 C++ = gcc
 
-HEADERS =  ./Fonts/ASCII_Font.h ./obj/dev_hardware_i2c.h ./obj/sysfs_gpio.h ./obj/OLED_GFX.h ./obj/OLED_Driver.h ./obj/bcm2835.h ./obj/DEV_Config.h ./obj/dev_hardware_SPI.h  
+HEADERS =  ./Fonts/ASCII_Font.h ./obj/dev_hardware_i2c.h ./obj/sysfs_gpio.h ./obj/OLED_GFX.h ./obj/OLED_Driver.h ./obj/bcm2835.h ./obj/DEV_Config.h ./obj/dev_hardware_SPI.h  ./Local_Master_Defines.h
 SOURCES =  ./Fonts/font12.c ./Fonts/font16.c ./Fonts/font20.c ./Fonts/font8.c ./Fonts/font24.c  ./obj/dev_hardware_i2c.c ./obj/sysfs_gpio.c ./obj/OLED_GFX.c ./obj/OLED_Driver.c ./obj/bcm2835.c ./obj/DEV_Config.c ./obj/dev_hardware_SPI.c  
 OBJ_TARGETS = Local_Master.o font8.o font12.o font16.o font20.o font24.o font8.o  dev_hardware_SPI.o OLED_GFX.o OLED_Driver.o sysfs_gpio.o DEV_Config.o bcm2835.o 
 OBJ_TARGETS_LM = font8.o font12.o font16.o font20.o font24.o font8.o  dev_hardware_SPI.o OLED_GFX.o OLED_Driver.o sysfs_gpio.o DEV_Config.o bcm2835.o
