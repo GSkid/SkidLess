@@ -2,7 +2,7 @@
 #ifndef LOCAL_MASTER_DEFINES
 #define LOCAL_MASTER_DEFINES
 
-
+#include <stdint.h>
 
 
 /************************************* #DEFINES *************************************/
