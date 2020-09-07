@@ -19,6 +19,8 @@
 #include <time.h>
 #include <sqlite3.h>
 #include "obj/Debug.h"
+#include "Local_Master.h"
+#include "Local_Master_Defines.h"
 
 
 
@@ -130,36 +132,7 @@ static uint8_t hose_statuses = 0;
 static uint8_t prev_hose_statuses = 0;
 
 
-/******************************************************************************/
-/****Helper Fxn Prototypes ****/
-int Timer(const uint32_t&, uint32_t&);
-void setup(void);
-void checkButtons(void);
-void printHoseStatus(int16_t x, int16_t y, uint8_t status);
-int printGrid(int16_t x0, int16_t x1, int16_t y0, int16_t y1, int16_t xtics, 
-	int16_t ytics);
-int printAxesLabels(int16_t x0, int16_t y0);
-int plotSampleData(D_Struct data[], uint8_t dataType, int16_t size);
-int WaterDeliverySM(uint8_t status, uint32_t delayP_N, uint32_t pulseTime);
-void OLED_PrintArrow(int x, int y);
-void OLED_SM(uint16_t color);
-void LPMOS_Set(uint8_t status);
-void RPMOS_Set(uint8_t status);
-void LNMOS_Set(uint8_t status);
-void RNMOS_Set(uint8_t status);
-void recordPulses_FS(int i);
-float convertPulse_Liters(int pulseCount);
-float convertLiters_Gals(float liters);
-int convertFloat_String(float in, char buffer[100]);
-void Reset_System(void);
-void Set_Select(uint8_t hose_selected);
-uint8_t WaterDelivery(HOSE_NUM);
-void insert_into_database(sqlite3 *mDb, double soil_moisture, int light, 
-	int temp, double pressure, double precip_prob, int output, int nodeID, 
-	double battery_lvl, int hose1, int hose2, int hose3);
-void processCSV(sqlite3 *db);
-int createTable(sqlite3 *db);
-static int callback(void *NotUsed, int argc, char **argv, char **azColName);
+
 
 
 /******************************************************************************/
@@ -1252,20 +1225,22 @@ int WaterDeliverySM(uint8_t status, uint32_t delayP_N, uint32_t pulseTime)
 
 }
 
-/**
-   @Function LCD_PrintArrow(int state)
+/*
+   @Function OLED_PrintArrow(int state)
    @param int x, int y Used to determine x,y position of arrow
    @return None
    @brief This function prints Arrow on OLED at x,y coordinates
    @note
    @author Brian Naranjo, 1/25/20
-   @editor   */
+   @editor   
+ */
 
 void OLED_PrintArrow(int x, int y)
 {
     print_String(x, y, (const uint8_t *)
         "<", FONT_5X8);
 }
+
 /*@name: OLED_SM 
    @param: Color of Page Text
    @return: void
@@ -2692,12 +2667,10 @@ int plotSampleData(D_Struct TestData[], uint8_t dataType, int16_t size)
 
 }
 
-/*@name: plotSampleData 
-   @param: TestData - array of structs used for plotting
-   @param: dataType - type of sensor data to display
-   @param: size - # of elements in array
-   @return: TRUE/FALSE depending if data was successfully printed
+/*@name: Reset_System 
+   Resets the entire IAI system, including OLED
 */
+
 void Reset_System(void)
 {
     int i;
