@@ -132,7 +132,7 @@ static uint8_t prev_hose_statuses = 0;
 
 /******************************************************************************/
 /****Helper Fxn Prototypes ****/
-int Timer(uint32_t, uint32_t);
+int Timer(const uint32_t&, uint32_t&);
 void setup(void);
 void checkButtons(void);
 void printHoseStatus(int16_t x, int16_t y, uint8_t status);
@@ -160,7 +160,6 @@ void insert_into_database(sqlite3 *mDb, double soil_moisture, int light,
 void processCSV(sqlite3 *db);
 int createTable(sqlite3 *db);
 static int callback(void *NotUsed, int argc, char **argv, char **azColName);
-void DEBUG_LOG(const char*);
 
 
 /******************************************************************************/
@@ -226,9 +225,7 @@ void setup(void)
     radio.setPALevel(RF24_PA_MAX);
 
    	// Initialize the mesh and check for proper chip connection
-    if (mesh.begin())
-    {
-        printf("\nInitialized: %d\n", radio.isChipConnected());
+    if (mesh.begin()) printf("\nInitialized: %d\n", radio.isChipConnected();
     }
    	// Print out debugging information
     radio.printDetails();
@@ -266,13 +263,9 @@ void setup(void)
     //This is disabled for actual implementation
     for (i = 0; i < MAX_ELEMENTS; i++) {
         sensor2_data[i].soilMoisture = test_Moisture;
-        if (((i > 30) && (i < 35)) || ((i > 60) && (i < 65))) {
-            test_Moisture += 3;
-        } else if (((i > 36) && (i < 40)) || ((i > 66) && (i < 70))) {
-            test_Moisture -= 0.8;
-        } else {
-            test_Moisture -= 0.3;
-        }
+        if (((i > 30) && (i < 35)) || ((i > 60) && (i < 65))) test_Moisture += 3;
+        else if (((i > 36) && (i < 40)) || ((i > 66) && (i < 70))) test_Moisture -= 0.8;
+        else test_Moisture -= 0.3;
     }
     
     DEBUG_LOG("Setup Complete");
@@ -296,17 +289,10 @@ int main(void)
     oledMinute = tm.tm_min;
 
    	//Store Time variables into strings for printing
-    if (oledHour == 0) {
-    	//Takes Care of 12:00 AM Error
-        sprintf(timeBuffer, "%02d:%02d AM", (oledHour + 12), oledMinute);
-    } else if (oledHour < 12) {
-        sprintf(timeBuffer, "%02d:%02d AM", oledHour, oledMinute);
-    } else if (oledHour == 12) {
-    	//Takes care of prev error w/ 12:00 PM
-        sprintf(timeBuffer, "%02d:%02d PM", oledHour, oledMinute);
-    } else {
-        sprintf(timeBuffer, "%02d:%02d PM", (oledHour - 12), oledMinute);
-    }
+    if (oledHour == 0) sprintf(timeBuffer, "%02d:%02d AM", (oledHour + 12), oledMinute); //Takes Care of 12:00 AM Error
+    else if (oledHour < 12 ) sprintf(timeBuffer, "%02d:%02d AM", oledHour, oledMinute);
+    else if (oledHour == 12) sprintf(timeBuffer, "%02d:%02d PM", oledHour, oledMinute); //Takes care of prev error w/ 12:00 PM
+    else sprintf(timeBuffer, "%02d:%02d PM", (oledHour - 12), oledMinute);
 
     printf("now: %d-%02d-%02d %02d:%02d:%02d\n", tm.tm_year + 1900, tm.tm_mon 
 		+ 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
@@ -375,12 +361,9 @@ int main(void)
                         break;
                 }
             }
-            else
-            {
-               	// Generally will never get here
-               	// This basically just removes the message from the input buffer
-                network.read(header, 0, 0);
-            }
+            // Generally will never get here
+            // This basically just removes the message from the input buffer
+            else network.read(header, 0, 0);
         }
 	    DEBUG_LOG("Checking for Available Network Data Completed");
 
@@ -391,7 +374,6 @@ int main(void)
 
         if (Timer(MIN_2, connectionTimer)) 
         {
-            connectionTimer = millis();
            	// Other option is to create a dict after receiving a message
             if (num_nodes != mesh.addrListTop) 
             {
@@ -402,14 +384,8 @@ int main(void)
                 {
                    	// Add sensor nodes to the list of sensors mapped to the hose
                     Hose[HOSE0].sensors[i] = mesh.addrList[i].nodeID;
-                    if (i == (mesh.addrListTop - 1)) 
-                    {
-                        printf("%d\n", mesh.addrList[i].nodeID);
-                    }
-                    else 
-                    {
-                        printf("%d, ", mesh.addrList[i].nodeID);
-                    }
+                    if (i == (mesh.addrListTop - 1)) printf("%d\n", mesh.addrList[i].nodeID);
+                    else printf("%d, ", mesh.addrList[i].nodeID);
                 }
                	// Reset the water level threshold according to the # of sensors
                 // This only uses a single hose for testing purposes, the process can be completed
@@ -497,13 +473,8 @@ int main(void)
             rc = sqlite3_open("sensordata.db", &db);
 
             // checks if the database could be opened
-            if (rc) 
-            {
-                fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
-            }
-            else {
-                fprintf(stdout, "Opened database successfully\n");
-            }
+            if (rc) fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
+            else fprintf(stdout, "Opened database successfully\n");
 
            	// creates the table in the database
             createTable(db);
@@ -595,10 +566,7 @@ int main(void)
            	// Send to the message stored in the fromNode nodeID, message type 'S'
             RF24NetworkHeader p_header(mesh.getAddress(D_Dat.nodeID), 'S');
            	// Data_Dat is just a 1 telling the node to go to sleep
-            if (network.write(p_header, &dataDat, sizeof(dataDat)))
-            {
-                printf("Message Returned to %d\n\n", D_Dat.nodeID);
-            }
+            if (network.write(p_header, &dataDat, sizeof(dataDat))) printf("Message Returned to %d\n\n", D_Dat.nodeID);
         }
 
 
@@ -607,15 +575,10 @@ int main(void)
         // Every 1 minute, we want to check each hose to see if we need to turn on/off water
         if (Timer(MIN_1, waterDeliveryTimer))
         {
-           	// reset the timer
-            waterDeliveryTimer = millis();
             printf("Checking Water Delivery\n");
            	// Then call WaterDelivery to see if we need to turn on each hose
             // HOSE 0
-            if (Hose[0].control == AUTOMATIC)
-            {
-                hose_statuses = WaterDelivery(HOSE0);
-            }
+            if (Hose[0].control == AUTOMATIC) hose_statuses = WaterDelivery(HOSE0);
             else if (Hose[0].control == ON)
             {
                 if (Hose[0].status == WATER_OFF)
@@ -646,10 +609,7 @@ int main(void)
             }
 
             // HOSE 1
-            if (Hose[1].control == AUTOMATIC)
-            {
-                hose_statuses = WaterDelivery(HOSE1);
-            }
+            if (Hose[1].control == AUTOMATIC) hose_statuses = WaterDelivery(HOSE1);
             else if (Hose[1].control == ON)
             {
                 if (Hose[1].status == WATER_OFF)
@@ -681,10 +641,7 @@ int main(void)
             }
 
             // HOSE 2
-            if (Hose[2].control == AUTOMATIC)
-            {
-                hose_statuses = WaterDelivery(HOSE2);
-            }
+            if (Hose[2].control == AUTOMATIC) hose_statuses = WaterDelivery(HOSE2);
             else if (Hose[2].control == ON)
             {
 
@@ -722,13 +679,13 @@ int main(void)
         if (Timer(FORECAST_CALL, forecastTimer))
         {
             DEBUG_LOG("Opening call to forecast API...");
-            forecastTimer = millis();
            	// Opens and runs the python script in the terminal
             fp = popen("python RFpython_test.py", "r");
 
            	// error checking
             if (fp == NULL)
             {
+                DEBUG_LOG("Failed opening forecast api file...\n")
                 printf("Failed to run command.\n");
                 break;
             }
@@ -783,24 +740,10 @@ int main(void)
         	//if new minute, update time
             oledHour = tm.tm_hour;
             oledMinute = tm.tm_min;
-            if (oledHour == 0)
-            {
-            	//Takes care of error w/ 12:00AM
-                sprintf(timeBuffer, "%02d:%02d AM", (oledHour + 12), oledMinute);
-            }
-            else if (oledHour < 12)
-            {
-                sprintf(timeBuffer, "%02d:%02d AM", oledHour, oledMinute);
-            }
-            else if (oledHour == 12)
-            {
-            	//Takes care of prev error w/ 12:00 PM
-                sprintf(timeBuffer, "%02d:%02d PM", oledHour, oledMinute);
-            }
-            else
-            {
-                sprintf(timeBuffer, "%02d:%02d PM", (oledHour - 12), oledMinute);
-            }
+            if (oledHour == 0) sprintf(timeBuffer, "%02d:%02d AM", (oledHour + 12), oledMinute); //Takes care of error w/ 12:00AM
+            else if (oledHour < 12 ) sprintf(timeBuffer, "%02d:%02d AM", oledHour, oledMinute);
+            else if (oledHour == 12) sprintf(timeBuffer, "%02d:%02d PM", oledHour, oledMinute); //Takes care of prev error w/ 12:00 
+            else sprintf(timeBuffer, "%02d:%02d PM", (oledHour - 12), oledMinute);
         }
 
        	// First check the buttons to inform the oled 
@@ -817,13 +760,6 @@ int main(void)
 
 /******************************************************************************/
 /**** HELPER FXNS ****/
-void DEBUG_LOG(const char* msg)
-{
-    if (DEBUG_ON)
-    {
-        fprintf(stdout,"%s.\n", msg);
-    }
-}
 
 
 /*@name: Timer
@@ -833,18 +769,22 @@ void DEBUG_LOG(const char* msg)
    This is a non-blocking timer that handles uint32_t overflow,
    it works off the internal bcm2835 function millis() as reference
 */
-int Timer(uint32_t delayThresh, uint32_t prevDelay)
+int Timer(const uint32_t& delayThresh, uint32_t& prevDelay)
 {
    	// Checks if the current time is at or beyond the set timer
     if ((bcm2835_millis() - prevDelay) >= delayThresh)
     {
+        prevDelay = millis();
         return 1;
     }
+    // Now we check if millis() (the current time) is less than the previous time
+    // This is a unique check bc the only time we should get this is if we overflowed
     else if (millis() < prevDelay)
     {
-       	//Checks and responds to overflow of the millis() timer
+       	// We still have to check if the total time elapsed is greater than the timer delay
         if (((4294967296 - prevDelay) + bcm2835_millis()) >= delayThresh)
         {
+            prevDelay = millis();
             return 1;
         }
     }
@@ -896,24 +836,14 @@ void insert_into_database(sqlite3 *mDb, double soil_moisture, int light,
     sqlite3_bind_int(stmt, 11, hose3);
 
    	// error checking to ensure the command was committed to the database
-    if (sqlite3_step(stmt) != SQLITE_DONE)
-    {
-        printf("Commit Failed!\n");
-        printf("Error: %s.\n", sqlite3_errmsg(mDb));
-    }
-    else
-    {
-        printf("Commit Successful.\n");
-    }
+    if (sqlite3_step(stmt) != SQLITE_DONE) printf("Commit Failed.\nError: %s.\n", sqlite3_errmsg(mDb));
+    else printf("Commit Successful.\n");
 
     sqlite3_reset(stmt);
 
    	// execute the prepared statements
     sqlite3_exec(mDb, "COMMIT TRANSACTION", NULL, NULL, &errorMessage);
-    if (errorMessage != NULL)
-    {
-        printf("Error: %s\n", errorMessage);
-    }
+    if (errorMessage != NULL) printf("Error: %s\n", errorMessage);
     sqlite3_finalize(stmt);
 }
 
@@ -939,10 +869,7 @@ void processCSV(sqlite3 *db)
     FILE * fp;
     fp = fopen(CSVFILENAME, "r");
 
-    if (fp == NULL)
-    {
-        fprintf(stderr, "File not found.\n");
-    }
+    if (fp == NULL) fprintf(stderr, "File not found.\n");
    	// bypasses the first line of headers
     fgets(line, sizeof(line) - 1, fp);
     while (fgets(line, sizeof(line) - 1, fp) != NULL)
@@ -954,19 +881,9 @@ void processCSV(sqlite3 *db)
 			data_param6, data_param7, data_param8, data_param9, data_param10, 
 			data_param11);
 
-        if (DEBUG_ON)
-        {
-            fprintf(stdout, "Result: %d.\n", result);
-        }
-
-        if (result == DATA_PARAM_NUM)
-        {
-            fprintf(stdout, "Line correctly read from csv.\n");
-        }
-        else
-        {
-            fprintf(stderr, "Error: Incorrect number of values read from csv.\n");
-        }
+        if (DEBUG_ON) fprintf(stdout, "Result: %d.\n", result);
+        if (result == DATA_PARAM_NUM) fprintf(stdout, "Line correctly read from csv.\n");
+        else  fprintf(stderr, "Error: Incorrect number of values read from csv.\n");
 		
         // Now puts all retrieved data into usable objects
         soil_moisture = atof(data_param1);
@@ -1035,10 +952,7 @@ static int callback(void *NotUsed __attribute__((unused)), int argc,
     char **argv, char **azColName)
 {
     int i;
-    for (i = 0; i < argc; i++)
-    {
-        printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
-    }
+    for (i = 0; i < argc; i++) printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
     printf("\n");
     return 0;
 }
@@ -1060,10 +974,7 @@ uint8_t WaterDelivery(HOSE_NUM HOSE_IN)
     for (i = 0; i <= MAX_SENSORS; i++)
     {
        	// This just shuts down the for loop if the list of sensors is exhausted
-        if ((Hose[HOSE_IN].sensors[i] <= 0) || (sd_index == -1))
-        {
-            break;
-        }
+        if ((Hose[HOSE_IN].sensors[i] <= 0) || (sd_index == -1)) break;
         for (j = sd_index; j >= 0; j--)
         {
            	// Check if the data item is a sensor mapped to the hose
@@ -1111,34 +1022,21 @@ uint8_t WaterDelivery(HOSE_NUM HOSE_IN)
     }
 
    	// Turn off the hose if the sensors indicate it is not dry enough to water
-    else
-    {
-        Hose[HOSE_IN].status = WATER_OFF;
-    }
+    else Hose[HOSE_IN].status = WATER_OFF;
     printf("Hose %d Water Delivery:\nHose Status: %d;  Prev State = %d\n\n", HOSE_IN, Hose[HOSE_IN].status, prevstatus);
    	// Now we actually turn on or off the Hose
     if (prevstatus != Hose[HOSE_IN].status)
     {
        	// If statements to control terminal printing
-        if (Hose[HOSE_IN].status == WATER_ON)
-        {
-            printf("Turning ON hose...\n");
-        }
-        else
-        {
-            printf("Turning OFF hose...\n");
-        }
+        if (Hose[HOSE_IN].status == WATER_ON) printf("Turning ON hose...\n");
+        else printf("Turning OFF hose...\n");
+
        	// Call the state machine to open the solenoid valve
         while (!WaterDeliverySM(Hose[HOSE_IN].status, FET_DELAY, PULSE_DURATION));
+
        	// More if statments to control terminal printing
-        if (Hose[HOSE_IN].status == WATER_ON)
-        {
-            printf("Hose successfully turned ON\n\n");
-        }
-        else
-        {
-            printf("Hose successfully turned OFF\n\n");
-        }
+        if (Hose[HOSE_IN].status == WATER_ON) printf("Hose successfully turned ON\n\n");
+        else printf("Hose successfully turned OFF\n\n");
     }
    	// Create a bit array of hose states to return
     uint8_t hose_status = Hose[2].status *4 + Hose[1].status *2 + Hose[0].status;
@@ -1190,22 +1088,10 @@ void RNMOS_Set(uint8_t status)
 void recordPulses_FS(int i)
 {
 
-    if (i == 0)
-    {
-        tach_fs[i] = DEV_Digital_Read(FLOW_SENSOR_1_Pin);
-    }
-    else if (i == 1)
-    {
-        tach_fs[i] = DEV_Digital_Read(FLOW_SENSOR_2_Pin);
-    }
-    else if (i == 2)
-    {
-        tach_fs[i] = DEV_Digital_Read(FLOW_SENSOR_3_Pin);
-    }
-    else
-    {
-        printf("Error, Improper Flow Sensor Recorded");
-    }
+    if (i == 0) tach_fs[i] = DEV_Digital_Read(FLOW_SENSOR_1_Pin);
+    else if (i == 1) tach_fs[i] = DEV_Digital_Read(FLOW_SENSOR_2_Pin);
+    else if (i == 2) tach_fs[i] = DEV_Digital_Read(FLOW_SENSOR_3_Pin);
+    else printf("Error, Improper Flow Sensor Recorded");
 
     if (tach_fs[i] != prevTach_fs[i] && tach_fs[i] == 1)
     {
@@ -1227,16 +1113,8 @@ void recordPulses_FS(int i)
 float convertPulse_Liters(int pulseCount)
 {
     float liters = 0;
-
-    if (pulseCount < 6500)
-    {
-       	// FS_CAL_A  = 46.2   FS_CAL_B = 40.8
-        liters = pulseCount / (FS_CAL_A + (FS_CAL_B* log(pulseCount)));
-    }
-    else
-    {
-        liters = pulseCount / FS_CAL_STEADY;	//FS_CAL_STEADY = 404
-    }
+    if (pulseCount < 6500) liters = pulseCount / (FS_CAL_A + (FS_CAL_B* log(pulseCount))); // FS_CAL_A  = 46.2   FS_CAL_B = 40.8
+    else liters = pulseCount / FS_CAL_STEADY;	//FS_CAL_STEADY = 404
 
     return liters;
 }
@@ -1251,9 +1129,7 @@ float convertPulse_Liters(int pulseCount)
 float convertLiters_Gals(float liters)
 {
     float gallons = 0;
-
     gallons = liters * LITERS_TO_GAL;	//LITERS_TO_GAL = 0.264172
-
     return gallons;
 }
 
@@ -1420,27 +1296,14 @@ void OLED_SM(uint16_t color)
     if (DOWN_PRESSED)
     {
     	//if down, increment arrowstate.
-        if (arrowState >= 3)
-        {
-            arrowState = 0;
-        }
-        else
-        {
-            arrowState++;
-        }
+        if (arrowState >= 3) arrowState = 0;
+        else arrowState++;
         oledSleepTimer = bcm2835_millis();	//reset sleep timer after each button press
     }
     else if (UP_PRESSED)
     {
-        if (arrowState <= 0)
-        {
-        	//otherwise, decrement arrowstate.
-            arrowState = 3;
-        }
-        else
-        {
-            arrowState--;
-        }
+        if (arrowState <= 0) arrowState = 3; //otherwise, decrement arrowstate.
+        else arrowState--;
         oledSleepTimer = bcm2835_millis();	//reset sleep timer after each button press
     }
 
@@ -1496,34 +1359,17 @@ void OLED_SM(uint16_t color)
             print_String(35, 95, (const uint8_t *) timeBuffer, FONT_8X16);
 
            	//Update Oled Printing
-            if (arrowState == 0)
-            {
-                OLED_PrintArrow(70, 30);
-            }
-            else if (arrowState == 1)
-            {
-                OLED_PrintArrow(113, 45);
-            }
-            else
-            {
-                OLED_PrintArrow(55, 60);
-            }
+            if (arrowState == 0) OLED_PrintArrow(70, 30);
+            else if (arrowState == 1) OLED_PrintArrow(113, 45);
+            else OLED_PrintArrow(55, 60);
 
             if (ENTER_PRESSED)
             {
             	//Enter Page Corresponding to Arrow State
-                if (arrowState == 0)
-                {
-                    nextPage = SENSORS_HOME;
-                }
-                else if (arrowState == 1)
-                {
-                    nextPage = HOSES_HOME;
-                }
-                else
-                {
-                    nextPage = SETTINGS_HOME;
-                }
+                if (arrowState == 0) nextPage = SENSORS_HOME;
+                else if (arrowState == 1) nextPage = HOSES_HOME;
+                else nextPage = SETTINGS_HOME;
+
                 arrowState = 0;	//Reset Arrow State
                 Clear_Screen();
                 oledSleepTimer = bcm2835_millis();	//reset sleep timer after each button press
@@ -1539,11 +1385,7 @@ void OLED_SM(uint16_t color)
             break;
 
         case SENSORS_HOME:
-            if (prevArrowState != arrowState)
-            {
-            	//Update Screen if arrowState changes
-                Clear_Screen();
-            }
+            if (prevArrowState != arrowState) Clear_Screen(); //Update Screen if arrowState changes
 
             print_String(0, 0, (const uint8_t *)
                 "Sensors Home", FONT_8X16);
@@ -1556,34 +1398,17 @@ void OLED_SM(uint16_t color)
                 "Plot Sensor Data", FONT_5X8);
             print_String(35, 95, (const uint8_t *) timeBuffer, FONT_8X16);
 
-            if (arrowState == 0)
-            {
-                OLED_PrintArrow(110, 30);
-            }
-            else if (arrowState == 1)
-            {
-                OLED_PrintArrow(110, 45);
-            }
-            else
-            {
-                OLED_PrintArrow(110, 60);
-            }
+            if (arrowState == 0) OLED_PrintArrow(110, 30);
+            else if (arrowState == 1) OLED_PrintArrow(110, 45);
+            else OLED_PrintArrow(110, 60);
 
             if (ENTER_PRESSED)
             {
                 Clear_Screen();
-                if (arrowState == 0)
-                {
-                    nextPage = SENSORS_LIST;
-                }
-                else if (arrowState == 1)
-                {
-                    nextPage = SENSORS_CURRENT;
-                }
-                else
-                {
-                    nextPage = SENSORS_PLOT_START;
-                }
+                if (arrowState == 0) nextPage = SENSORS_LIST;
+                else if (arrowState == 1) nextPage = SENSORS_CURRENT;
+                else nextPage = SENSORS_PLOT_START;
+
                 arrowState = 0;
                 Clear_Screen();
                 oledSleepTimer = bcm2835_millis();	//reset sleep timer after each button press
@@ -1598,11 +1423,7 @@ void OLED_SM(uint16_t color)
             break;
 
         case SENSORS_LIST:
-            if (prevArrowState != arrowState)
-            {
-            	//Update Screen if arrowState changes
-                Clear_Screen();
-            }
+            if (prevArrowState != arrowState) Clear_Screen(); //Update Screen if arrowState changes
 
             print_String(0, 0, (const uint8_t *)
                 "Sensors List", FONT_8X16);
@@ -1619,15 +1440,8 @@ void OLED_SM(uint16_t color)
                 temp_y += 15;
             }
 
-            if (arrowState == 0)
-            {
-            	//Update Arrow State 
-                OLED_PrintArrow(110, 30);
-            }
-            else
-            {
-                OLED_PrintArrow(110, 45);
-            }
+            if (arrowState == 0) OLED_PrintArrow(110, 30); //Update Arrow State 
+            else OLED_PrintArrow(110, 45);
 
             if (ENTER_PRESSED)
             {
@@ -1647,16 +1461,13 @@ void OLED_SM(uint16_t color)
             break;
 
         case SENSORS_CURRENT:
-            if (prevArrowState != arrowState)
-            {
-                Clear_Screen();
-            }
-
+            if (prevArrowState != arrowState) Clear_Screen();
             if (new_Data)
             {
                 Clear_Screen();
                 new_Data = FALSE;
             }
+
             print_String(0, 0, (const uint8_t *)
                 "Current Data", FONT_8X16);
             print_String(0, 30, (const uint8_t *)
@@ -1697,39 +1508,18 @@ void OLED_SM(uint16_t color)
             print_String(60, 60, (const uint8_t *) currentBuffer2, FONT_5X8);
             print_String(55, 75, (const uint8_t *) currentBuffer3, FONT_5X8);
 
-            if (arrowState == 0)
-            {
-                OLED_PrintArrow(65, 30);
-            }
-            else if (arrowState == 1)
-            {
-                OLED_PrintArrow(115, 45);
-            }
-            else if (arrowState == 2)
-            {
-                OLED_PrintArrow(110, 60);
-            }
-            else
-            {
-                OLED_PrintArrow(70, 75);
-            }
+            if (arrowState == 0) OLED_PrintArrow(65, 30);
+            else if (arrowState == 1) OLED_PrintArrow(115, 45);
+            else if (arrowState == 2) OLED_PrintArrow(110, 60);
+            else OLED_PrintArrow(70, 75);
 
             if (ENTER_PRESSED)
             {
                 if (arrowState == 0)
                 {
-                    if (selected_Node == 2)
-                    {
-                        selected_Node = 5;
-                    }
-                    else if (selected_Node == 5)
-                    {
-                        selected_Node = 4;
-                    }
-                    else
-                    {
-                        selected_Node = 2;
-                    }
+                    if (selected_Node == 2) selected_Node = 5;
+                    else if (selected_Node == 5) selected_Node = 4;
+                    else selected_Node = 2;
                     new_Data = TRUE;
                 }
                 else if (arrowState == 1)
@@ -1773,34 +1563,17 @@ void OLED_SM(uint16_t color)
             print_String(0, 60, (const uint8_t *)
                 "Temperature", FONT_5X8);
 
-            if (arrowState == 0)
-            {
-                OLED_PrintArrow(110, 30);
-            }
-            else if (arrowState == 1)
-            {
-                OLED_PrintArrow(110, 45);
-            }
-            else
-            {
-                OLED_PrintArrow(110, 60);
-            }
+            if (arrowState == 0) OLED_PrintArrow(110, 30);
+            else if (arrowState == 1) OLED_PrintArrow(110, 45);
+            else OLED_PrintArrow(110, 60);
 
             if (ENTER_PRESSED)
             {
                 Clear_Screen();
-                if (arrowState == 2)
-                {
-                    dataType = TEMP;
-                }
-                else if (arrowState == 1)
-                {
-                    dataType = SUNLIGHT;
-                }
-                else
-                {
-                    dataType = MOISTURE;
-                }
+                if (arrowState == 2) dataType = TEMP;
+                else if (arrowState == 1) dataType = SUNLIGHT;
+                else dataType = MOISTURE;
+
                 nextPage = SENSORS_PLOT;
                 Clear_Screen();
                 oledSleepTimer = bcm2835_millis();	//reset sleep timer after each button press
@@ -1821,38 +1594,17 @@ void OLED_SM(uint16_t color)
             printAxesLabels(0, 115);
 
            	//Plot Corresponding to Sensor Node
-            if (selected_Node == 2)
-            {
-                plotSampleData(sensor1_data, dataType, MAX_ELEMENTS);
-            }
-            else if (selected_Node == 5)
-            {
-                plotSampleData(sensor2_data, dataType, MAX_ELEMENTS);
-            }
-            else if (selected_Node == 4)
-            {
-                plotSampleData(sensor3_data, dataType, MAX_ELEMENTS);
-            }
-            else
-            {
-                plotSampleData(sensor_data, dataType, MAX_ELEMENTS);
-            }
+            if (selected_Node == 2) plotSampleData(sensor1_data, dataType, MAX_ELEMENTS);
+            else if (selected_Node == 5) plotSampleData(sensor2_data, dataType, MAX_ELEMENTS);
+            else if (selected_Node == 4) plotSampleData(sensor3_data, dataType, MAX_ELEMENTS);
+            else plotSampleData(sensor_data, dataType, MAX_ELEMENTS);
 
             if (ENTER_PRESSED)
             {
             	//Update Sensor Struct for Plotting
-                if (selected_Node == 2)
-                {
-                    selected_Node = 5;
-                }
-                else if (selected_Node == 5)
-                {
-                    selected_Node = 4;
-                }
-                else
-                {
-                    selected_Node = 2;
-                }
+                if (selected_Node == 2) selected_Node = 5;
+                else if (selected_Node == 5) selected_Node = 4;
+                else selected_Node = 2;
 
                 Clear_Screen();
                 oledSleepTimer = bcm2835_millis();	//reset sleep timer after each button press
@@ -1867,10 +1619,7 @@ void OLED_SM(uint16_t color)
             break;
 
         case HOSES_HOME:
-            if (prevArrowState != arrowState)
-            {
-                Clear_Screen();
-            }
+            if (prevArrowState != arrowState) Clear_Screen();
 
             print_String(0, 0, (const uint8_t *)
                 "Hoses", FONT_8X16);
@@ -1885,43 +1634,19 @@ void OLED_SM(uint16_t color)
                 "Map Sensors ", FONT_5X8);
             print_String(35, 95, (const uint8_t *) timeBuffer, FONT_8X16);
 
-            if (arrowState == 0)
-            {
-            	//Update Arrow
-                OLED_PrintArrow(115, 30);
-            }
-            else if (arrowState == 1)
-            {
-                OLED_PrintArrow(80, 45);
-            }
-            else if (arrowState == 2)
-            {
-                OLED_PrintArrow(80, 60);
-            }
-            else
-            {
-                OLED_PrintArrow(85, 75);
-            }
+            if (arrowState == 0) OLED_PrintArrow(115, 30); //Update Arrow
+            else if (arrowState == 1) OLED_PrintArrow(80, 45);
+            else if (arrowState == 2) OLED_PrintArrow(80, 60);
+            else OLED_PrintArrow(85, 75);
 
             if (ENTER_PRESSED)
             {
             	//Menu traversal based on Arrowstate
-                if (arrowState == 0)
-                {
-                    nextPage = HOSES_STATUS;
-                }
-                else if (arrowState == 1)
-                {
-                    nextPage = HOSES_CONTROL;
-                }
-                else if (arrowState == 2)
-                {
-                    nextPage = HOSES_WATER;
-                }
-                else
-                {
-                    nextPage = HOSES_MAP;
-                }
+                if (arrowState == 0) nextPage = HOSES_STATUS;
+                else if (arrowState == 1) nextPage = HOSES_CONTROL;
+                else if (arrowState == 2) nextPage = HOSES_WATER;
+                else nextPage = HOSES_MAP;
+
                 arrowState = 0;
                 Clear_Screen();
                 oledSleepTimer = bcm2835_millis();	//reset sleep timer after each button press
@@ -1935,15 +1660,7 @@ void OLED_SM(uint16_t color)
             break;
 
         case HOSES_STATUS:
-            if (prevArrowState != arrowState)
-            {
-                Clear_Screen();
-            }
-
-            if (hose_statuses != prev_hose_statuses)
-            {
-                Clear_Screen();
-            }
+            if ((prevArrowState != arrowState) || (hose_statuses != prev_hose_statuses)) Clear_Screen();
 
             print_String(0, 0, (const uint8_t *)
                 "Hoses Status", FONT_8X16);
@@ -1987,18 +1704,9 @@ void OLED_SM(uint16_t color)
                 temp_x += 10;
             }
 
-            if (arrowState == 0)
-            {
-                OLED_PrintArrow(100, 40);
-            }
-            else if (arrowState == 1)
-            {
-                OLED_PrintArrow(100, 55);
-            }
-            else
-            {
-                OLED_PrintArrow(100, 70);
-            }
+            if (arrowState == 0) OLED_PrintArrow(100, 40);
+            else if (arrowState == 1) OLED_PrintArrow(100, 55);
+            else OLED_PrintArrow(100, 70);
 
             if (ENTER_PRESSED)
             {
@@ -2015,10 +1723,7 @@ void OLED_SM(uint16_t color)
             break;
 
         case HOSES_CONTROL:
-            if (prevArrowState != arrowState)
-            {
-                Clear_Screen();
-            }
+            if (prevArrowState != arrowState) Clear_Screen();
 
             if (element_Changed == TRUE)
             {
@@ -2057,43 +1762,19 @@ void OLED_SM(uint16_t color)
 
             }
 
-            if (arrowState == 0)
-            {
-                OLED_PrintArrow(100, 40);
-            }
-            else if (arrowState == 1)
-            {
-                OLED_PrintArrow(100, 55);
-            }
-            else
-            {
-                OLED_PrintArrow(100, 70);
-            }
+            if (arrowState == 0) OLED_PrintArrow(100, 40);
+            else if (arrowState == 1) OLED_PrintArrow(100, 55);
+            else OLED_PrintArrow(100, 70);
 
             i = 0;	//initialize index variable      
             if (ENTER_PRESSED)
             {
-                if (arrowState <= 1)
-                {
-                    i = arrowState;
-                }
-                else
-                {
-                    i = 2;	//else store as last element
-                }
+                if (arrowState <= 1) i = arrowState;
+                else i = 2;	//else store as last element
 
-                if (Hose[i].control == AUTOMATIC)
-                {
-                    Hose[i].control = OFF;
-                }
-                else if (Hose[i].control == OFF)
-                {
-                    Hose[i].control = ON;
-                }
-                else
-                {
-                    Hose[i].control = AUTOMATIC;
-                }
+                if (Hose[i].control == AUTOMATIC) Hose[i].control = OFF;
+                else if (Hose[i].control == OFF) Hose[i].control = ON;
+                else Hose[i].control = AUTOMATIC;
 
                 Clear_Screen();
                 oledSleepTimer = bcm2835_millis();	//reset sleep timer after each button press
@@ -2108,10 +1789,7 @@ void OLED_SM(uint16_t color)
             break;
 
         case HOSES_WATER:
-            if (prevArrowState != arrowState)
-            {
-                Clear_Screen();
-            }
+            if (prevArrowState != arrowState) Clear_Screen();
 
             for (i = 0; i > 3; i++)
             {
@@ -2164,24 +1842,11 @@ void OLED_SM(uint16_t color)
             print_String(90, 85, (const uint8_t *)
                 "L", FONT_5X8);
 
-            for (i = 0; i < 3; i++)
-            {
-                prev_Liters_fs[i] = water_liters_fs[i];	//Save previous readings
-            }
+            for (i = 0; i < 3; i++) prev_Liters_fs[i] = water_liters_fs[i];	//Save previous readings
 
-            if (arrowState == 0)
-            {
-            	//Update Arrow State
-                OLED_PrintArrow(100, 40);
-            }
-            else if (arrowState == 1)
-            {
-                OLED_PrintArrow(100, 55);
-            }
-            else
-            {
-                OLED_PrintArrow(100, 70);
-            }
+            if (arrowState == 0) OLED_PrintArrow(100, 40); //Update Arrow State
+            else if (arrowState == 1) OLED_PrintArrow(100, 55);
+            else OLED_PrintArrow(100, 70);
 
             if (ENTER_PRESSED)
             {
@@ -2200,10 +1865,7 @@ void OLED_SM(uint16_t color)
             break;
 
         case HOSES_MAP:
-            if (prevArrowState != arrowState)
-            {
-                Clear_Screen();
-            }
+            if (prevArrowState != arrowState) Clear_Screen();
 
             print_String(0, 0, (const uint8_t *)
                 "Map Sensors", FONT_8X16);
@@ -2257,94 +1919,42 @@ void OLED_SM(uint16_t color)
             if (arrowOptions == 4)
             {
             	//Update Arrow State Corresponding to # of connected sensors
-                if (arrowState == 0)
-                {
-                    OLED_PrintArrow(90, 45);
-                }
-                else if (arrowState == 1)
-                {
-                    OLED_PrintArrow(90, 60);
-                }
-                else if (arrowState == 2)
-                {
-                    OLED_PrintArrow(90, 75);
-                }
-                else
-                {
-                    OLED_PrintArrow(50, 90);
-                }
+                if (arrowState == 0) OLED_PrintArrow(90, 45);
+                else if (arrowState == 1) OLED_PrintArrow(90, 60);
+                else if (arrowState == 2) OLED_PrintArrow(90, 75);
+                else OLED_PrintArrow(50, 90);
             }
             else if (arrowOptions == 3)
             {
-                if (arrowState == 0)
-                {
-                    OLED_PrintArrow(90, 45);
-                }
-                else if (arrowState == 1)
-                {
-                    OLED_PrintArrow(90, 60);
-                }
-                else
-                {
-                    OLED_PrintArrow(50, 75);
-                }
+                if (arrowState == 0) OLED_PrintArrow(90, 45);
+                else if (arrowState == 1) OLED_PrintArrow(90, 60);
+                else OLED_PrintArrow(50, 75);
             }
             else if (arrowOptions == 2)
             {
-                if (arrowState == 0)
-                {
-                    OLED_PrintArrow(90, 45);
-                }
-                else if (arrowState == 1)
-                {
-                    OLED_PrintArrow(90, 60);
-                }
-                else
-                {
-                    OLED_PrintArrow(50, 75);
-                }
+                if (arrowState == 0) OLED_PrintArrow(90, 45);
+                else if (arrowState == 1) OLED_PrintArrow(90, 60);
+                else OLED_PrintArrow(50, 75);
             }
             else if (arrowOptions == 3)
             {
-                if (arrowState == 0)
-                {
-                    OLED_PrintArrow(90, 45);
-                }
-                else if (arrowState == 1)
-                {
-                    OLED_PrintArrow(90, 60);
-                }
-                else
-                {
-                    OLED_PrintArrow(50, 75);
-                }
+                if (arrowState == 0) OLED_PrintArrow(90, 45);
+                else if (arrowState == 1) OLED_PrintArrow(90, 60);
+                else OLED_PrintArrow(50, 75);
             }
             else if (arrowOptions == 3)
             {
-                if (arrowState == 0 || arrowState == 2)
-                {
-                    OLED_PrintArrow(90, 45);
-                }
-                else
-                {
-                    OLED_PrintArrow(50, 60);
-                }
+                if (arrowState == 0 || arrowState == 2) OLED_PrintArrow(90, 45);
+                else OLED_PrintArrow(50, 60);
             }
-            else if (arrowOptions == 1)
-            {
-                OLED_PrintArrow(90, 45);
-            }
+            else if (arrowOptions == 1) OLED_PrintArrow(90, 45);
 
             if (ENTER_PRESSED)
             {
                 sensorToMap = unmappedSensors[arrowState];	//Transition to corresponding arrowState
                 nextPage = HOSES_MAP_SELECT;	//Transition to Map Select 
 
-                if (!nodeUnmapped)
-                {
-                	//If There are no more nodes to map
-                    nextPage = HOSES_HOME;
-                }
+                if (!nodeUnmapped) nextPage = HOSES_HOME; //If There are no more nodes to map
 
                 arrowState = 0;	//reset arrow State
                 Clear_Screen();
@@ -2360,10 +1970,7 @@ void OLED_SM(uint16_t color)
             break;
 
         case HOSES_MAP_SELECT:	//page allowing for selection of hoses to map sensor to
-            if (prevArrowState != arrowState)
-            {
-                Clear_Screen();
-            }
+            if (prevArrowState != arrowState) Clear_Screen();
 
             print_String(0, 0, (const uint8_t *)
                 "Select Hose", FONT_8X16);
@@ -2375,34 +1982,13 @@ void OLED_SM(uint16_t color)
             print_String(0, 75, (const uint8_t *)
                 "Hose 3", FONT_5X8);
 
-            if (mesh.addrList[sensorToMap].nodeID == 2)
-            {
-                print_String(45, 30, (const uint8_t *)
-                    "(Node 2)", FONT_5X8);
-            }
-            else if (mesh.addrList[sensorToMap].nodeID == 2)
-            {
-                print_String(45, 30, (const uint8_t *)
-                    "(Node 4)", FONT_5X8);
-            }
-            else
-            {
-                print_String(45, 30, (const uint8_t *)
-                    "(Node 5)", FONT_5X8);
-            }
+            if (mesh.addrList[sensorToMap].nodeID == 2) print_String(45, 30, (const uint8_t *)"(Node 2)", FONT_5X8);
+            else if (mesh.addrList[sensorToMap].nodeID == 2) print_String(45, 30, (const uint8_t *)"(Node 4)", FONT_5X8);
+            else print_String(45, 30, (const uint8_t *)"(Node 5)", FONT_5X8);
 
-            if (arrowState == 0)
-            {
-                OLED_PrintArrow(50, 45);
-            }
-            else if (arrowState == 1)
-            {
-                OLED_PrintArrow(50, 60);
-            }
-            else
-            {
-                OLED_PrintArrow(50, 75);
-            }
+            if (arrowState == 0) OLED_PrintArrow(50, 45);
+            else if (arrowState == 1) OLED_PrintArrow(50, 60);
+            else OLED_PrintArrow(50, 75);
 
             if (ENTER_PRESSED)
             {
@@ -2443,10 +2029,7 @@ void OLED_SM(uint16_t color)
 
         case SETTINGS_HOME:
 
-            if (prevArrowState != arrowState)
-            {
-                Clear_Screen();
-            }
+            if (prevArrowState != arrowState) Clear_Screen();
 
            	//Print Settings Menu
             print_String(0, 0, (const uint8_t *)
@@ -2463,42 +2046,19 @@ void OLED_SM(uint16_t color)
             print_String(35, 95, (const uint8_t *) timeBuffer, FONT_8X16);
 
            	//Update Arrow Print statements depending on arrowState
-            if (arrowState == 0)
-            {
-                OLED_PrintArrow(112, 30);
-            }
-            else if (arrowState == 1)
-            {
-                OLED_PrintArrow(105, 45);
-            }
-            else if (arrowState == 2)
-            {
-                OLED_PrintArrow(112, 60);
-            }
-            else
-            {
-                OLED_PrintArrow(85, 75);
-            }
+            if (arrowState == 0) OLED_PrintArrow(112, 30);
+            else if (arrowState == 1) OLED_PrintArrow(105, 45);
+            else if (arrowState == 2) OLED_PrintArrow(112, 60);
+            else OLED_PrintArrow(85, 75);
 
             if (ENTER_PRESSED)
             {
             	//Traversal to Page
-                if (arrowState == 0)
-                {
-                    nextPage = SETTINGS_SLEEP;
-                }
-                else if (arrowState == 1)
-                {
-                    nextPage = SETTINGS_CAL;
-                }
-                else if (arrowState == 2)
-                {
-                    nextPage = SETTINGS_COLOR;
-                }
-                else
-                {
-                    nextPage = SETTINGS_RESET;
-                }
+                if (arrowState == 0) nextPage = SETTINGS_SLEEP;
+                else if (arrowState == 1) nextPage = SETTINGS_CAL;
+                else if (arrowState == 2) nextPage = SETTINGS_COLOR;
+                else nextPage = SETTINGS_RESET;
+
                 arrowState = 0;
                 Clear_Screen();
                 oledSleepTimer = bcm2835_millis();	//reset sleep timer after each button press
@@ -2514,10 +2074,7 @@ void OLED_SM(uint16_t color)
             break;
 
         case SETTINGS_SLEEP:
-            if (prevArrowState != arrowState)
-            {
-                Clear_Screen();
-            }
+            if (prevArrowState != arrowState) Clear_Screen();
 
             print_String(0, 0, (const uint8_t *)
                 "Sleep Settings", FONT_8X16);
@@ -2525,14 +2082,8 @@ void OLED_SM(uint16_t color)
            	//Print out current Sleep TIme 
             print_String(0, 30, (const uint8_t *)
                 "Current:", FONT_5X8);
-            if (sleepTime == 1)
-            {
-                sprintf(intBuffer, "%d Min", (sleepTime / MIN_1));
-            }
-            else
-            {
-                sprintf(intBuffer, "%d Mins", (sleepTime / MIN_1));
-            }
+            if (sleepTime == 1) sprintf(intBuffer, "%d Min", (sleepTime / MIN_1));
+            else sprintf(intBuffer, "%d Mins", (sleepTime / MIN_1));
 
            	//Sleep Menu Options
             print_String(70, 30, (const uint8_t *) intBuffer, FONT_5X8);
@@ -2546,38 +2097,17 @@ void OLED_SM(uint16_t color)
                 "SLEEP", FONT_5X8);
 
            	//Update Oled States 
-            if (arrowState == 0)
-            {
-                OLED_PrintArrow(65, 50);
-            }
-            else if (arrowState == 1)
-            {
-                OLED_PrintArrow(65, 65);
-            }
-            else if (arrowState == 2)
-            {
-                OLED_PrintArrow(65, 80);
-            }
-            else
-            {
-                OLED_PrintArrow(50, 95);
-            }
+            if (arrowState == 0) OLED_PrintArrow(65, 50);
+            else if (arrowState == 1)OLED_PrintArrow(65, 65);
+            else if (arrowState == 2)OLED_PrintArrow(65, 80);
+            else OLED_PrintArrow(50, 95);
 
             if (ENTER_PRESSED)
             {
             	//Set Timers corresponding to arrowState
-                if (arrowState == 0)
-                {
-                    sleepTime = MIN_1;
-                }
-                else if (arrowState == 1)
-                {
-                    sleepTime = MIN_3;
-                }
-                else if (arrowState == 2)
-                {
-                    sleepTime = MIN_5;
-                }
+                if (arrowState == 0) sleepTime = MIN_1;
+                else if (arrowState == 1) sleepTime = MIN_3;
+                else if (arrowState == 2) sleepTime = MIN_5;
                 else
                 {
                     nextPage = SLEEP;
@@ -2596,10 +2126,7 @@ void OLED_SM(uint16_t color)
             break;
 
         case SETTINGS_CAL:
-            if (prevArrowState != arrowState)
-            {
-                Clear_Screen();
-            }
+            if (prevArrowState != arrowState) Clear_Screen();
 
             if (new_Data)
             {
@@ -2649,49 +2176,27 @@ void OLED_SM(uint16_t color)
             print_String(10, 60, (const uint8_t *) currentBuffer1, FONT_5X8);
             print_String(10, 90, (const uint8_t *) currentBuffer5, FONT_5X8);
 
-            if (arrowState == 0 || arrowState == 2)
-            {
-                OLED_PrintArrow(95, 33);
-            }
-            else
-            {
-                OLED_PrintArrow(85, 110);
-            }
+            if (arrowState == 0 || arrowState == 2) OLED_PrintArrow(95, 33);
+            else OLED_PrintArrow(85, 110);
 
            	//Update Selected Node on Enter being pressed 
             if (ENTER_PRESSED)
             {
                 if (arrowState == 0 || arrowState == 2)
                 {
-                    if (selected_Node == 2)
-                    {
-                        selected_Node = 5;
-                    }
-                    else if (selected_Node == 5)
-                    {
-                        selected_Node = 4;
-                    }
-                    else
-                    {
-                        selected_Node = 2;
-                    }
+                    if (selected_Node == 2) selected_Node = 5;
+                    else if (selected_Node == 5) selected_Node = 4;
+                    else selected_Node = 2;
+
                     new_Data = TRUE;
                     arrowState = 0;
                 }
                 else
                 {
-                    if (selected_Node == 2)
-                    {
-                        moisture_s_thresh[0] = current_Dat_1.soilMoisture;
-                    }
-                    else if (selected_Node == 5)
-                    {
-                        moisture_s_thresh[1] = current_Dat_2.soilMoisture;
-                    }
-                    else
-                    {
-                        moisture_s_thresh[2] = current_Dat_3.soilMoisture;
-                    }
+                    if (selected_Node == 2) moisture_s_thresh[0] = current_Dat_1.soilMoisture;
+                    else if (selected_Node == 5) moisture_s_thresh[1] = current_Dat_2.soilMoisture;
+                    else moisture_s_thresh[2] = current_Dat_3.soilMoisture;
+
                     new_Data = TRUE;
                 }
                 Clear_Screen();
@@ -2707,10 +2212,7 @@ void OLED_SM(uint16_t color)
 
         case SETTINGS_COLOR:
 
-            if (prevArrowState != arrowState)
-            {
-                Clear_Screen();
-            }
+            if (prevArrowState != arrowState) Clear_Screen();
 
            	//Present Color Settings with available options 
             print_String(0, 0, (const uint8_t *)
@@ -2725,42 +2227,18 @@ void OLED_SM(uint16_t color)
             print_String(0, 75, (const uint8_t *)
                 "Red", FONT_5X8);
 
-            if (arrowState == 0)
-            {
-                OLED_PrintArrow(40, 30);
-            }
-            else if (arrowState == 1)
-            {
-                OLED_PrintArrow(40, 45);
-            }
-            else if (arrowState == 2)
-            {
-                OLED_PrintArrow(40, 60);
-            }
-            else
-            {
-                OLED_PrintArrow(40, 75);
-            }
+            if (arrowState == 0) OLED_PrintArrow(40, 30);
+            else if (arrowState == 1) OLED_PrintArrow(40, 45);
+            else if (arrowState == 2) OLED_PrintArrow(40, 60);
+            else OLED_PrintArrow(40, 75);
 
            	//Change color corresponding to arrowState on Enter Press
             if (ENTER_PRESSED)
             {
-                if (arrowState == 0)
-                {
-                    oledColor = WHITE;
-                }
-                else if (arrowState == 1)
-                {
-                    oledColor = BLUE;
-                }
-                else if (arrowState == 2)
-                {
-                    oledColor = GREEN;
-                }
-                else
-                {
-                    oledColor = RED;
-                }
+                if (arrowState == 0) oledColor = WHITE;
+                else if (arrowState == 1) oledColor = BLUE;
+                else if (arrowState == 2) oledColor = GREEN;
+                else oledColor = RED;
                 Clear_Screen();
                 oledSleepTimer = bcm2835_millis();	//reset sleep timer after each button press
             }
@@ -2774,10 +2252,7 @@ void OLED_SM(uint16_t color)
             break;
 
         case SETTINGS_RESET:
-            if (prevArrowState != arrowState)
-            {
-                Clear_Screen();
-            }
+            if (prevArrowState != arrowState) Clear_Screen();
 
            	//Print Reset Statement 
             print_String(0, 0, (const uint8_t *)
@@ -2797,21 +2272,12 @@ void OLED_SM(uint16_t color)
             print_String(80, 90, (const uint8_t *)
                 "Yes", FONT_5X8);
 
-            if (arrowState == 0 || arrowState == 2)
-            {
-                OLED_PrintArrow(95, 70);
-            }
-            else
-            {
-                OLED_PrintArrow(100, 90);
-            }
+            if (arrowState == 0 || arrowState == 2) OLED_PrintArrow(95, 70);
+            else OLED_PrintArrow(100, 90);
 
             if (ENTER_PRESSED)
             {
-                if (arrowState == 0 || arrowState == 2)
-                {
-                    nextPage = SETTINGS_HOME;
-                }
+                if (arrowState == 0 || arrowState == 2) nextPage = SETTINGS_HOME;
                 else
                 {
                     Reset_System();	//Resets all global variables of system
@@ -2873,10 +2339,7 @@ void checkButtons(void)
                 ENTER_PRESSED = TRUE;	//set flag TRUE
                 printf("Enter Pressed \r \n ");
             }
-            else
-            {
-                ENTER_PRESSED = FALSE;	//set flag FALSE
-            }
+            else ENTER_PRESSED = FALSE;	//set flag FALSE
             lastEnterButtonState = enterButtonValue;
         }
     }
@@ -2891,10 +2354,7 @@ void checkButtons(void)
                 DOWN_PRESSED = TRUE;	//set flag TRUE
                 printf("Down Pressed \r \n ");
             }
-            else
-            {
-                DOWN_PRESSED = FALSE;	//set flag FALSE
-            }
+            else DOWN_PRESSED = FALSE;	//set flag FALSE
             lastDownButtonState = downButtonValue;
         }
     }
@@ -2909,10 +2369,7 @@ void checkButtons(void)
                 UP_PRESSED = TRUE;	//set flag TRUE
                 printf("Up Pressed \r \n ");
             }
-            else
-            {
-                UP_PRESSED = FALSE;	//set flag FALSE
-            }
+            else UP_PRESSED = FALSE;	//set flag FALSE
             lastUpButtonState = upButtonValue;
         }
     }
@@ -2927,10 +2384,7 @@ void checkButtons(void)
                 BACK_PRESSED = TRUE;	//set flag TRUE
                 printf("Back Pressed \r \n ");
             }
-            else
-            {
-                BACK_PRESSED = FALSE;	//set flag FALSE
-            }
+            else BACK_PRESSED = FALSE;	//set flag FALSE
             lastBackButtonState = backButtonValue;
         }
     }
@@ -2958,14 +2412,8 @@ int convertFloat_String(float in, char buffer[100])
     decimalVal = trunc(temp_decimalVal *10000);	//Store decimal value as whole int
 
    	//Store Int Values into string to format as a float value
-    if (in < 0)
-    {
-        sprintf(buffer, "-%d.%01d", wholeVal, decimalVal);
-    }
-    else
-    {
-        sprintf(buffer, "%d.%01d", wholeVal, decimalVal);
-    }
+    if (in < 0) sprintf(buffer, "-%d.%01d", wholeVal, decimalVal);
+    else sprintf(buffer, "%d.%01d", wholeVal, decimalVal);
 
     return 0;
 }

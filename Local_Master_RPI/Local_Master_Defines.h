@@ -4,6 +4,9 @@
 
 /************************************* #DEFINES *************************************/
 
+// Function
+#define DEBUG_LOG(msg) DEBUG_ON ? fprintf(stdout,"%s.\n", msg) : return;
+
 // Globals
 #define LED RPI_BPLUS_GPIO_J8_07
 #define pushButton RPI_BPLUS_GPIO_J8_29
