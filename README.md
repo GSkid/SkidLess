@@ -6,7 +6,7 @@ please email Grant Skidmore at grant.skidmore@gmail.com
 
 ## How to Navigate the Repo
 ./Local_Master_RPI<br>
-	../bin<br>
+        ../bin<br>
 	../RF24<br>
 	../RF24Network<br>
 	../RF24Mesh<br>
