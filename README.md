@@ -30,7 +30,7 @@ please email Grant Skidmore at grant.skidmore@gmail.com
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;../RangeTesting_5Feb2020.txt<br>
 ./README.md<br>
 
-The most important directories here are Local_Master_RPI, which is where the main .cpp file is located as well as the binary executable, Local_Master_RPI_Testing, where you can find older versions of Local_Master_RPI used for testing, Multi_node, which contains the .ino file for the sensor nodes, Testing Results, which has a bunch of text files with results from testing, and the readme file. There are other, less notable directories in the repository but they don't contain any useful files or information.
+The most important directories here are Local_Master_RPI, which is where the main .cpp file is located as well as the binary executable, Local_Master_RPI_Testing, where you can find older versions of Local_Master_RPI used for testing, Multi_node, which contains the .ino file for the sensor nodes, Testing Results, which has a bunch of text files with results from testing, and the readme file. There are other, less notable directories not listed here that can be found in the repository but they don't contain any useful files or information.
 
 ## What is Intuitive Auto Irrigation
 Introducing Intuitive Auto-Irrigation (IAI), an intelligent way to go about everyday irrigation benefitting both water reserves and plant health. The system takes advantage of real-time sensor data and forecast predictions to trigger water delivery only when necessary, actively reducing the quantity of wastewater produced compared to traditional timer-based automatic irrigation systems. IAI implements a network of sensor nodes to get the most accurate data possible, even for those on a budget.
