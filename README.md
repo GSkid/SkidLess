@@ -6,28 +6,28 @@ please email Grant Skidmore at grant.skidmore@gmail.com
 
 ## How to Navigate the Repo
 ./Local_Master_RPI<br>
-&nbsp;&nbsp;&nbsp;&nbsp;../bin<br>
-&nbsp;&nbsp;&nbsp;&nbsp;../RF24<br>
-&nbsp;&nbsp;&nbsp;&nbsp;../RF24Network<br>
-&nbsp;&nbsp;&nbsp;&nbsp;../RF24Mesh<br>
-&nbsp;&nbsp;&nbsp;&nbsp;../RPi<br>
-&nbsp;&nbsp;&nbsp;&nbsp;../Local_Master.h<br>
-&nbsp;&nbsp;&nbsp;&nbsp;../Local_Master_Defines.h<br>
-&nbsp;&nbsp;&nbsp;&nbsp;../Local_Master.cpp<br>
-&nbsp;&nbsp;&nbsp;&nbsp;../Makefile<br>
-&nbsp;&nbsp;&nbsp;&nbsp;../Local_Master<br>
-&nbsp;&nbsp;&nbsp;&nbsp;../RFpython_test.py<br>
-&nbsp;&nbsp;&nbsp;&nbsp;../Data_Log.csv<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;../bin<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;../RF24<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;../RF24Network<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;../RF24Mesh<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;../RPi<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;../Local_Master.h<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;../Local_Master_Defines.h<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;../Local_Master.cpp<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;../Makefile<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;../Local_Master<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;../RFpython_test.py<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;../Data_Log.csv<br>
 ./Local_Master_RPI_Testing<br>
 ./Multi_Node<br>
-&nbsp;&nbsp;&nbsp;&nbsp;../Multi_Node.ino<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;../Multi_Node.ino<br>
 ./Testing Results<br>
-&nbsp;&nbsp;&nbsp;&nbsp;../LightLevelTests<br>
-&nbsp;&nbsp;&nbsp;&nbsp;../PrototypeTesting<br>
-&nbsp;&nbsp;&nbsp;&nbsp;../SoilMoistureTests_V2<br>
-&nbsp;&nbsp;&nbsp;&nbsp;../RangeTesting_29Feb2020<br>
-&nbsp;&nbsp;&nbsp;&nbsp;../RangeTesting_4March2020.txt<br>
-&nbsp;&nbsp;&nbsp;&nbsp;../RangeTesting_5Feb2020.txt<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;../LightLevelTests<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;../PrototypeTesting<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;../SoilMoistureTests_V2<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;../RangeTesting_29Feb2020<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;../RangeTesting_4March2020.txt<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;../RangeTesting_5Feb2020.txt<br>
 ./README.md<br>
 
 The most important directories here are Local_Master_RPI, which is where the main .cpp file is located as well as the binary executable, Local_Master_RPI_Testing, where you can find older versions of Local_Master_RPI used for testing, Multi_node, which contains the .ino file for the sensor nodes, Testing Results, which has a bunch of text files with results from testing, and the readme file. There are other, less notable directories in the repository but they don't contain any useful files or information.
