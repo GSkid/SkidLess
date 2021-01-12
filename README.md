@@ -5,30 +5,30 @@ Testing files are found in the Testing Results folder. For questions or more inf
 please email Grant Skidmore at grant.skidmore@gmail.com
 
 ## How to Navigate the Repo
-./Local_Master_RPI
-	../bin
-	../RF24
-	../RF24Network
-	../RF24Mesh
-	../RPi
-	../Local_Master.h
-	../Local_Master_Defines.h
-	../Local_Master.cpp
-	../Makefile
-	../Local_Master
-	../RFpython_test.py
-	../Data_Log.csv
-./Local_Master_RPI_Testing
-./Multi_Node
-	../Multi_Node.ino
-./Testing Results
-	../LightLevelTests
-	../PrototypeTesting
-	../SoilMoistureTests_V2
-	../RangeTesting_29Feb2020
-	../RangeTesting_4March2020.txt
-	../RangeTesting_5Feb2020.txt
-./README.md
+./Local_Master_RPI<br>
+	../bin<br>
+	../RF24<br>
+	../RF24Network<br>
+	../RF24Mesh<br>
+	../RPi<br>
+	../Local_Master.h<br>
+	../Local_Master_Defines.h<br>
+	../Local_Master.cpp<br>
+	../Makefile<br>
+	../Local_Master<br>
+	../RFpython_test.py<br>
+	../Data_Log.csv<br>
+./Local_Master_RPI_Testing<br>
+./Multi_Node<br>
+	../Multi_Node.ino<br>
+./Testing Results<br>
+	../LightLevelTests<br>
+	../PrototypeTesting<br>
+	../SoilMoistureTests_V2<br>
+	../RangeTesting_29Feb2020<br>
+	../RangeTesting_4March2020.txt<br>
+	../RangeTesting_5Feb2020.txt<br>
+./README.md<br>
 
 The most important directories here are Local_Master_RPI, which is where the main .cpp file is located as well as the binary executable, Local_Master_RPI_Testing, where you can find older versions of Local_Master_RPI used for testing, Multi_node, which contains the .ino file for the sensor nodes, Testing Results, which has a bunch of text files with results from testing, and the readme file. There are other, less notable directories in the repository but they don't contain any useful files or information.
 
